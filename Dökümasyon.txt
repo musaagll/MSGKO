@@ -1,0 +1,482 @@
+# PROJECT CONTROL DOCUMENT
+
+Proje Adı:
+MSG KNIGHT ONLINE
+
+Amaç:
+Gönderilen referans tasarımın modern, premium, gaming odaklı, ultra profesyonel bir versiyonunu geliştirmek.
+
+Sistem:
+Next.js kullanılacak.
+
+Framework:
+- Next.js (App Router)
+- React
+- Tailwind CSS
+- Framer Motion
+- TypeScript
+
+Deployment uyumlu olsun.
+
+Kod temiz, modüler, production-ready olacak.
+
+-----------------------------------------------------
+
+# CORE RULES
+
+Bu proje KIRO.DEV ile geliştirilecek.
+
+Referans tasarım mümkün olduğunca birebir korunacak.
+
+Öncelik:
+
+1. UI doğruluğu
+2. Responsive kalite
+3. Performans
+4. Clean architecture
+5. SEO
+
+Site premium gaming websitesi hissi vermeli.
+
+Dark fantasy + minimal + modern.
+
+-----------------------------------------------------
+
+# RESPONSIVE PRIORITY
+
+Kullanıcı dağılımı:
+
+%50 Desktop
+%50 Mobile
+
+Bu yüzden proje yalnızca responsive olmayacak.
+
+Gerçek cihaz davranışı mantığıyla optimize edilecek.
+
+Breakpoint testleri zorunlu:
+
+Desktop:
+1920px
+1600px
+1440px
+1366px
+
+Tablet:
+1024px
+820px
+768px
+
+Mobile:
+430px
+414px
+390px
+375px
+360px
+320px
+
+Her breakpointte test et.
+
+Layout bozulması kabul edilmez.
+
+Overflow hatası olmayacak.
+
+Yatay scroll oluşmayacak.
+
+Mobil performans optimize edilecek.
+
+Touch experience optimize edilecek.
+
+Safe-area uyumluluğu sağlanacak.
+
+Button spacing mobil kullanımına uygun olacak.
+
+Thumb-zone usability dikkate alınacak.
+
+-----------------------------------------------------
+
+# DESIGN SYSTEM
+
+Theme:
+
+Dark Premium Gaming UI
+
+Renkler:
+
+Background:
+
+#0B0B0F
+#111111
+#171717
+
+Text:
+
+#FFFFFF
+#D8D8D8
+#999999
+
+Accent:
+
+#2A2A2A
+#404040
+
+Border:
+
+rgba(255,255,255,0.08)
+
+-----------------------------------------------------
+
+# TYPOGRAPHY
+
+Primary Font:
+
+Inter
+
+Fallback:
+
+Poppins
+
+Font hierarchy korunacak.
+
+Modern gaming UI hissi.
+
+Bold heading system.
+
+Readable paragraph spacing.
+
+-----------------------------------------------------
+
+# HEADER
+
+Sticky Navbar.
+
+Blur effect on scroll.
+
+Desktop navbar:
+
+Logo sol tarafta.
+
+Menu center:
+
+- Ana Sayfa
+- Asas Eğitimleri
+- Okçu Eğitimleri
+- Rehberler
+- İletişim
+
+Right side:
+
+Search icon.
+
+Youtube CTA button.
+
+Hover animation olacak.
+
+Smooth underline animation.
+
+Mobile:
+
+Hamburger menu.
+
+Slide panel navigation.
+
+Body lock kullanılacak.
+
+Menu açıldığında scroll kapanacak.
+
+-----------------------------------------------------
+
+# HERO SECTION
+
+Tam genişlik.
+
+Large cinematic hero.
+
+Dark overlay.
+
+Gradient blend.
+
+Responsive image scaling.
+
+İçerik:
+
+Small title:
+
+KNIGHT ONLINE
+
+Main heading:
+
+EĞİTİM VİDEOLARI
+
+Description:
+
+Asas ve Okçu karakterler için en güncel, kapsamlı eğitim videoları burada.
+
+CTA Buttons:
+
+- ASAS EĞİTİMLERİ
+- OKÇU EĞİTİMLERİ
+
+Desktop:
+
+Split layout.
+
+Mobile:
+
+Stack layout.
+
+Hero yüksekliği viewport bazlı optimize edilecek.
+
+-----------------------------------------------------
+
+# CATEGORY SECTION
+
+Section title:
+
+KATEGORİLER
+
+Right action button:
+
+TÜM VİDEOLARI GÖR
+
+2 category cards.
+
+Card 1:
+
+Asas Eğitimleri
+
+Sword icon.
+
+Card 2:
+
+Okçu Eğitimleri
+
+Bow icon.
+
+Card requirements:
+
+Hover animation.
+
+Smooth transition.
+
+Shadow.
+
+Border.
+
+Premium spacing.
+
+Mobile:
+
+Single column.
+
+Desktop:
+
+2 columns.
+
+-----------------------------------------------------
+
+# VIDEO SECTION
+
+Title:
+
+SON VİDEOLAR
+
+4 adet video kartı.
+
+Card content:
+
+Thumbnail
+Title
+Author
+Views
+Date
+Duration
+
+Card interactions:
+
+Hover zoom.
+
+Image scale effect.
+
+Shadow grow.
+
+Smooth motion.
+
+Responsive grid.
+
+Desktop:
+
+4 columns.
+
+Tablet:
+
+2 columns.
+
+Mobile:
+
+1 column.
+
+-----------------------------------------------------
+
+# FEATURES SECTION
+
+4 information blocks.
+
+- Güncel İçerik
+- Detaylı Anlatım
+- Profesyonel Taktikler
+- Kaliteli İçerik
+
+Minimal premium layout.
+
+Icon + text.
+
+Equal spacing.
+
+Responsive support.
+
+-----------------------------------------------------
+
+# FOOTER
+
+4 column layout.
+
+Columns:
+
+1 Logo + description + social icons
+
+2 Quick access links
+
+3 Categories
+
+4 Contact area
+
+Dark gradient background.
+
+Divider lines.
+
+Responsive footer behavior.
+
+Mobile:
+
+Stack layout.
+
+-----------------------------------------------------
+
+# ANIMATION RULES
+
+Framer Motion kullanılacak.
+
+Hover scale:
+
+1.03
+
+Smooth easing.
+
+No aggressive animation.
+
+Professional feel.
+
+Navbar scroll animation.
+
+Button transition.
+
+Card hover transition.
+
+-----------------------------------------------------
+
+# PERFORMANCE
+
+Target:
+
+90+ Lighthouse Score.
+
+Optimize:
+
+CLS
+LCP
+INP
+
+Next/Image kullanılacak.
+
+Image optimization zorunlu.
+
+Code splitting yapılacak.
+
+Lazy loading kullanılacak.
+
+Unused renders azaltılacak.
+
+-----------------------------------------------------
+
+# SEO
+
+SEO optimized olacak.
+
+Metadata sistemi kurulacak.
+
+Open Graph support.
+
+Semantic HTML.
+
+Accessibility support.
+
+aria-label kuralları uygulanacak.
+
+-----------------------------------------------------
+
+# ACCESSIBILITY
+
+WCAG düşünülerek geliştir.
+
+Keyboard navigation desteklenecek.
+
+Focus states eksiksiz olacak.
+
+Contrast oranları korunacak.
+
+-----------------------------------------------------
+
+# FILE STRUCTURE
+
+Clean architecture.
+
+Components modular olacak.
+
+Example:
+
+app/
+components/
+sections/
+hooks/
+lib/
+styles/
+
+Kod okunabilir olacak.
+
+Reusable component mantığı uygulanacak.
+
+-----------------------------------------------------
+
+# FINAL DELIVERY RULES
+
+Kod production-ready olacak.
+
+Broken UI olmayacak.
+
+Responsive test yapılacak.
+
+Desktop + Mobile test tamamlanacak.
+
+Next.js best practices uygulanacak.
+
+Tüm componentler optimize edilmiş olacak.
+
+Modern coding standards uygulanacak.
+
+Amaç:
+
+Ultra premium gaming eğitim websitesi.
+
+Referans tasarıma mümkün olduğunca birebir sadık kal.
+
+NOT: Kiro.dev İstenildiği şekilde değişiklik yapabilir. altyapı login vs. sistemleri supabase de barınacak ve domain gibi bağlantılarda vercel de barınacak. 
