@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://www.kobugda.com/Calculator/Calculator" />
+    <link rel="icon" type="image/png" href="/symbolra.png" />
+    <title>Advanced Calculator | KO Bugda</title>
+    <meta name="description" content="KO Bugda Advanced Calculator: Fine-tune your character with detailed stat analysis and custom builds for Knight Online. Perfect your strategy today!" />
+
+    <script src="/bundles/jquery?v=KM8gzXUVjYrsGQXvVRbgjuioX6AobXwNeJPGyt2NwQE1"></script>
+
+    <script src="/bundles/init?v=zQ4DceQ1ZNVZDp_H-U6C7xXzMxaAgb9uR7Ew905z5ZQ1"></script>
+
+    <script src="/bundles/kendo?v=HXR5VcIW05anIe6iAktb78Bn-jYTOvQi2RWySXBe6hY1"></script>
+
+    <script src="/bundles/moment?v=rKwTgU7nJ8BKZ1hx1NSKscWzj7a5WDp7xaSl4VVww8Y1"></script>
+
+
+    <link href="/Content/kendo/2017.1.223/kendo.common.min.css" rel="stylesheet"/>
+
+
+    <link href="/Content/kendo/2017.1.223/kendo.moonlight.min.css" rel="stylesheet"/>
+
+    <link href="/Content/kendo/2017.1.223/kendo.moonlight.mobile.min.css" rel="stylesheet"/>
+
+
+    <link href="/Content/pureforms?v=s0NCV0Uv3MJfGsajYfG_rqn9cDiliFLy7hKLfOyGbs41" rel="stylesheet"/>
+
+    <link href="/Content/css?v=LCFErMJbFnaJP6kJkh46FDA1NEYJGe1CGDzTep7qjas1" rel="stylesheet"/>
+
+    <link href="/Content/moonlightcsstheme?v=J7stX4g3OZfEGn2y5jS1HodtJA6rhcQqMng-ObIB6NY1" rel="stylesheet"/>
+
+
+    <link href="/Content/min1024css?v=" rel="stylesheet"/>
+
+    <link href="/Content/min720css?v=dByQEtme8uDzANxH61xXyaak6vX9kbRhQ2B69c9NIsc1" rel="stylesheet"/>
+
+    <link href="/Content/min320css?v=fRqj-EgB7VyxUFZnCTd_0BVYX3S-mDzlygZQLPb4I741" rel="stylesheet"/>
+
+    <link href="/Content/max320css?v=nvttDX2L4_7hPksQ-c8YEz1Y7iHuCWKovnz2lWcm-7c1" rel="stylesheet"/>
+
+	
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1F69QKX1HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1F69QKX1HC');
+</script>
+	
+</head>
+<body>
+
+
+    <div id="wrappermenu">
+        <ul id="mainUl">
+            <li class=""> <a href="/">Home</a> </li>
+            <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    Calculators
+                </a>
+                <ul class="dropdown-menu">
+                    <li class=""> <a href="/Calculator">Basic AP Calculator</a> </li>
+                    <li class="active"> <a href="/Calculator/Calculator">Advanced Calculator</a> </li>
+					<li class=""> <a href="/SkillCalculator">Skill Calculator</a> </li>
+                </ul>
+            </li>
+            
+            <li class="dropdown ">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    Events
+                </a>
+                <ul class="dropdown-menu">
+                    <li class=""> <a href="/Events/Rules">Event list and rules</a> </li>
+                    <li class=""> <a href="/Events/Stko">Event timer (STKO)</a> </li>
+                    <li class=""> <a href="/Events/Usko">Event timer (USKO)</a> </li>
+                </ul>
+            </li>
+            
+            <li class=""> <a href="/Achievements">Achievements</a> </li>
+            <li class="dropdown ">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    Guides & Help
+                </a>
+                <ul class="dropdown-menu">
+                    <li class=""> <a href="/Drops">Drop list</a> </li>
+                    <li class=""> <a href="/Sets">Set items</a> </li>
+                    <li class=""> <a href="/Manufacturing">Manufacturing</a> </li>
+                    <li class="dropdown ">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Quests </a>
+                        <ul class="dropdown-menu">
+                            <li class=""> <a href="/Quest/List">Quest list</a> </li>
+                            <li class=""> <a href="/Quest/Skill">Skill quests</a> </li>
+                            <li class=""> <a href="/Quest/KeyHolder">Keyholder quest</a> </li>
+                        </ul>
+                    </li>
+                    <li class=""> <a href="/Rebirth">Rebirth level</a> </li>
+                </ul>
+            </li>
+            <li class="dropdown ">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    Tips & Info
+                </a>
+                <ul class="dropdown-menu">
+                    <li class=""> <a href="/Grade">Clan grades</a> </li>
+                    <li class=""> <a href="/Probabilities">Gambling probabilities</a> </li>
+                    <li class=""> <a href="/Reskill">Reskill &amp; Restat cost</a> </li>
+                    <li class=""> <a href="/Exp">Exp table</a> </li>
+                    <li class=""> <a href="/Symbol">PK Symbols</a> </li>
+                    <li class=""> <a href="/Resting">Resting system</a> </li>
+                    <li class=""> <a href="/MonsterStones">Monster stones</a> </li>
+                    <li class=""> <a href="/Bounty">Bounty Hunter system</a> </li>
+                </ul>
+            </li>
+            <li style="float: right;display:none" class="">
+                <!-- Logo PayPal --><a href="#">
+                                        <img src="https://www.paypalobjects.com/webstatic/mktg/logo/bdg_now_accepting_pp_2line_w.png" border="0" alt="Now accepting PayPal" style="width:100px; height: 35px;">
+                       </a><!-- Logo PayPal -->
+            </li>
+            
+            <li style="background-color: #f4af03;" class="">
+            <a href="https://www.kopazar.com/knight-online-item" target="_blank">Buy Knight Online item</a>
+            </li>
+			
+			
+            <li class="">
+            <a href="https://www.kopazar.com/knight-online-gold-bar" target="_blank">Knight Online Gb</a>
+            </li>
+            
+        </ul>
+    </div>
+
+    <div class="container body-content">
+        
+
+
+
+
+
+
+<div id="errorKurianAppender" style="margin-bottom: 15px;" class="k-content"></div>
+<span id="errorKurianNotification">
+
+</span>
+
+<div id="calculatorContainer">
+    <div style="display: inline-block; vertical-align: top;">
+        <fieldset id="classFieldset">
+            <legend> Class and level </legend>
+            <input id="class" class="calculator-dropdown" />
+            <input id="level" class="calculator-dropdown" />
+        </fieldset>
+        <fieldset style="margin: 10px;">
+            <legend> Find an item </legend>
+            <input id="categoryItem" class="calculator-dropdown" />
+            <input id="itemSelection" class="calculator-dropdown" />
+            <div>
+                <input id="normalreverse" class="calculator-dropdown" />
+                <input id="itemlevel" class="calculator-dropdown" />
+            </div>
+
+            <div id="itemStats">
+    <div class="item-stat-img" id="selectedItemImg" style="top: 10px; left:149px;">
+        <img style="max-width: 100%; max-height: 100%;" />
+    </div>
+    <div id="itemname"> </div>
+    <div class="item-stat-div" id="classAvailability"></div>
+
+    <div id="attackPowerStatDiv" class="item-stat-div">  </div>
+    <div id="attackSpeedDiv" class="item-stat-div">  </div>
+    <div id="effectiveRangeDiv" class="item-stat-div">  </div>
+
+    <div id="weightDiv" class="item-stat-div">  </div>
+    <div id="durabilityDiv" class="item-stat-div">  </div>
+
+    <div id="attackPowerRateDiv" class="item-stat-div">  </div>
+    <div id="dodgingRateDiv" class="item-stat-div">  </div>
+
+    <div id="defenseDiv" class="item-stat-div">  </div>
+
+    <div id="poisonDmgDiv" class="item-stat-div">  </div>
+    <div id="glacierDmgDiv" class="item-stat-div">  </div>
+    <div id="flameDmgDiv" class="item-stat-div">  </div>
+    <div id="lightingDmgDiv" class="item-stat-div">  </div>
+    <div id="dmgPercentageDiv" class="item-stat-div">  </div>
+    <div id="defPercentageDiv" class="item-stat-div">  </div>
+    <div id="dmgClassDiv" class="item-stat-div">  </div>
+
+    <div id="hpRecoveryDiv" class="item-stat-div">  </div>
+    <div id="mpRecoveryDiv" class="item-stat-div">  </div>
+
+    <div id="bonusHealthDiv" class="item-stat-div">  </div>
+    <div id="bonusStrDiv" class="item-stat-div">  </div>
+    <div id="bonusDexDiv" class="item-stat-div">  </div>
+    <div id="bonusIntDiv" class="item-stat-div">  </div>
+    <div id="bonusMagicPowerDiv" class="item-stat-div">  </div>
+
+    <div id="bonusHpdiv" class="item-stat-div">  </div>
+    <div id="bonusMpDiv" class="item-stat-div">  </div>
+
+    <div id="defJamadarDiv" class="item-stat-div">  </div>
+    <div id="defSwordDiv" class="item-stat-div">  </div>
+    <div id="defDaggerDiv" class="item-stat-div">  </div>
+    <div id="defClubDiv" class="item-stat-div">  </div>
+    <div id="defAxeDiv" class="item-stat-div">  </div>
+    <div id="defSpearDiv" class="item-stat-div">  </div>
+    <div id="defArrowDiv" class="item-stat-div">  </div>
+    <div id="defClassDiv" class="item-stat-div">  </div>
+
+    <div id="resistanceFlameDiv" class="item-stat-div">  </div>
+    <div id="resistanceGlacierDiv" class="item-stat-div">  </div>
+    <div id="resistanceLightingDiv" class="item-stat-div">  </div>
+    <div id="resistancePoisonDiv" class="item-stat-div">  </div>
+    <div id="resistanceDarkDiv" class="item-stat-div">  </div>
+    <div id="resistanceMagicDiv" class="item-stat-div">  </div>
+
+    <div id="bonusExpDiv" class="item-stat-div">  </div>
+    <div id="bonusWeightDiv" class="item-stat-div">  </div>
+    <div id="damageToMonstersDiv" class="item-stat-div">  </div>
+    <div id="bonusNpDiv" class="item-stat-div">  </div>
+    <div id="bonusNoahDiv" class="item-stat-div">  </div>
+
+    <div id="requiredLevelDiv" class="item-stat-div">  </div>
+    <div id="requiredDexDiv" class="item-stat-div">  </div>
+    <div id="requiredStrDiv" class="item-stat-div">  </div>
+    <div id="requiredMagicPowerDiv" class="item-stat-div">  </div>
+    <div id="requiredIntDiv" class="item-stat-div">  </div>
+    <div id="requiredHealthDiv" class="item-stat-div">  </div>
+
+    <div id="repelPhysicalAttackDiv" class="item-stat-div">  </div>
+
+    <div id="curseDiv" class="item-stat-div">  </div>
+
+    <div id="itemNoteDiv" class="item-stat-div">  </div>
+    <div id="itemGradeNoteDiv" class="item-stat-div">  </div>
+
+    <div id="equipBtnContainer"> </div>
+</div>
+        </fieldset>
+    </div>
+
+    <div style="display: inline-block;">
+        <div style="vertical-align: top;">
+            <fieldset style="width: 325px; display: inline-block;" id="scrollAndBuffFieldSet">
+                <legend> Scrolls and buffs </legend>
+                <div style="margin-top: 15px;"> Click to display buff options </div>
+                <div class="fa fa-chevron-circle-down fa-2x" id="buffContentToggler">
+                </div>
+                <div id="buffContent" style="display: none; position: absolute; z-index: 10; background-color: rgb(65, 69, 80); width: 660px; border: 1px solid white;">
+                    <div style="display: inline-block; float: left;">
+                        <h3> Buffs: </h3>
+                        <div class="pure-control-group">
+                            <input id="achievementDropDown" />
+                        </div>
+                        <div class="pure-control-group">
+                            <input id="hpBuffDropDown" />
+                        </div>
+                        <div class="pure-control-group">
+                            <input id="acBuffDropDown" />
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Pus/str scroll.png" class="img-in-div" />
+                            </div>
+                            <label>STR+ Scroll (+15 str):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="strBuffDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Pus/hp scroll.png" class="img-in-div" />
+                            </div>
+                            <label>HP+ Scroll (+15 health):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="healthBuffDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Pus/dex scroll.png" class="img-in-div" />
+                            </div>
+                            <label>DEX+ Scroll (+15 dex):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="dexBuffDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Pus/mp scroll.png" class="img-in-div" />
+                            </div>
+                            <label>MP+ Scroll (+15 MP):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="mpBuffDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Pus/int scroll.png" class="img-in-div" />
+                            </div>
+                            <label>INT+ Scroll (+15 int):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="intBuffDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Pus/red potion.png" class="img-in-div" />
+                            </div>
+                            <label>Red Potion (+10% AP):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="redPotionOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Pus/blue potion.png" class="img-in-div" />
+                            </div>
+                            <label>Blue Potion (+60 AC):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="bluePotionOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img" style="vertical-align: top;">
+                                <img src="../../Images/items/Pus/power of lion scroll.png" class="img-in-div" />
+                            </div>
+                            <label>Power of Lion Scroll (+10 str, dex, hp, mp, int):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="lionOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Others/blood of wolf.png" class="img-in-div" />
+                            </div>
+                            <label>Wolf (+20% attack power):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="wolfDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Pus/scroll of attack.png" class="img-in-div" />
+                            </div>
+                            <label>Scroll of Attack (+22% AP):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="apScrollDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Others/weapon enchant scroll.png" class="img-in-div" />
+                            </div>
+                            <label>Weapon Enchant Scroll:</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="wepDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Others/armor enchant scroll.png" class="img-in-div" />
+                            </div>
+                            <label>Armor Enchant Scroll:</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="aesDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Others/gem of defense.png" class="img-in-div" />
+                            </div>
+                            <label>Gem of Defense</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="gemDefDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Others/gem of life.png" class="img-in-div" />
+                            </div>
+                            <label>Gem of Life</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="gemHpDropDown" />
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 5px;"><strong> Buffs by Warriors </strong></div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/warrior/battle cry.png" class="img-in-div" />
+                            </div>
+                            <label>Battle Cry:</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="battleCryBuffDropDown" />
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 5px;"><strong> Buffs by Mage </strong></div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/mage/immunity fire.png" class="img-in-div" />
+                            </div>
+                            <label>Immunity fire (+80 FR): </label>
+                            <div class="onoff">
+                                <input type="checkbox" id="mageFrDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/mage/immunity cold.png" class="img-in-div" />
+                            </div>
+                            <label>Immunity cold (+80 IR): </label>
+                            <div class="onoff">
+                                <input type="checkbox" id="mageIrDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/mage/immunity lightning.png" class="img-in-div" />
+                            </div>
+                            <label>Immunity lighting (+80 LR): </label>
+                            <div class="onoff">
+                                <input type="checkbox" id="mageLrDropDown" />
+                            </div>
+                        </div>
+
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/mage/frozen armor.png" class="img-in-div" />
+                            </div>
+                            <label>Frozen Armor (+60 AC): </label>
+                            <div class="onoff">
+                                <input type="checkbox" id="mageFrozenArmorDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/mage/frozen shell.png" class="img-in-div" />
+                            </div>
+                            <label>Frozen Shell (+120 AC): </label>
+                            <div class="onoff">
+                                <input type="checkbox" id="mageFrozenShellDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/mage/ice barrier.png" class="img-in-div" />
+                            </div>
+                            <label>Ice Barrier (+180 AC): </label>
+                            <div class="onoff">
+                                <input type="checkbox" id="mageIceBarrierDropDown" />
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 5px;"><strong> War Commanders buffs </strong></div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/commander determination.png" class="img-in-div" />
+                            </div>
+                            <label>Determination (+30% AP):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="commanderDeterminationBuffDropDown" />
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: inline-block; float: right;">
+                        <h3> Dubuffs: </h3>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/priest/malice.png" class="img-in-div" />
+                            </div>
+                            <label>Malice</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="maliceOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/priest/torment.png" class="img-in-div" />
+                            </div>
+                            <label>Torment</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="tormentOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/priest/parasite.png" class="img-in-div" />
+                            </div>
+                            <label>Parasite</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="parasiteOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/priest/superior parasite.png" class="img-in-div" />
+                            </div>
+                            <label>Superior Parasite</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="superParasiteOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/priest/confusion.png" class="img-in-div" />
+                            </div>
+                            <label>Confusion</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="confusionOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/priest/massive.png" class="img-in-div" />
+                            </div>
+                            <label>Massive</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="massiveOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/skills/priest/subside.png" class="img-in-div" />
+                            </div>
+                            <label>Subside</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="subsideOnOff" />
+                            </div>
+                        </div>
+
+                        <h3> Pet buffs: </h3>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img class="img-in-div" />
+                            </div>
+                            <label>HP (+200)</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="petHpBuffOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group buff-group-odd">
+                            <div class="icon-buff-img">
+                                <img class="img-in-div" />
+                            </div>
+                            <label>Defense (+20)</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="petAcOnOff" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img class="img-in-div" />
+                            </div>
+                            <label>Attack (+5)</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="petApOnOff" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset style="width: 325px; display: inline-block; vertical-align: top;" id="warriorPassiveFieldset">
+                <legend> Warrior - Skill points in DEFENSE </legend>
+                <div class="pure-control-group">
+                    <input id="warriorDefenseDropDown" />
+                </div>
+                <div class="pure-control-group">
+                    <input id="warriorResistDropDown" />
+                </div>
+            </fieldset>
+
+            <fieldset style="width: 325px; display: inline-block; vertical-align: top;" id="warriorSpecificFieldset">
+                <legend> Warrior specific skills </legend>
+                <div class="pure-control-group buff-group">
+                    <div class="icon-buff-img">
+                        <img src="../../Images/skills/warrior/berserker.png" class="img-in-div" />
+                    </div>
+                    <label style="width: 200px;">Berserker:</label>
+                    <div class="onoff">
+                        <input type="checkbox" id="berserkerBuffDropDown" />
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset style="display: none; vertical-align: top;" id="priestPassiveFieldset">
+                <legend> Priest specific skills </legend>
+                <div style="display: flex;">
+                    <div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img" style="vertical-align: top;">
+                                <img src="../../Images/items/Others/prayer of god power.png" class="img-in-div" />
+                            </div>
+                            <label>Prayer of god's power (priest book - +50%):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="priestBookDropDown" />
+                            </div>
+                        </div>
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img" style="vertical-align: top;">
+                                <img src="../../Images/items/Others/prayer of god power.png" class="img-in-div" />
+                            </div>
+                            <label>Prayer of god's power (limited - +55%):</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="priestLimitedBookDropDown" />
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-left: 8px;">
+                        <div class="pure-control-group buff-group">
+                            <div class="icon-buff-img">
+                                <img src="../../Images/items/Others/blasting.png" class="img-in-div" />
+                            </div>
+                            <label>+30 STR buff:</label>
+                            <div class="onoff">
+                                <input type="checkbox" id="priestStrOnOff" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset style="width: 325px; display: none; vertical-align: top;" id="rogueSpecificFieldset">
+                <legend> Rogue specific skills </legend>
+                <div class="pure-control-group buff-group">
+                    <div class="icon-buff-img">
+                        <img src="../../Images/items/Others/magic shield.png" class="img-in-div" />
+                    </div>
+                    <label style="width: 200px;">Magic Shield:</label>
+                    <div class="onoff">
+                        <input type="checkbox" id="magicShieldBuffDropDown" />
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset style="width: 325px; display: none; vertical-align: top;" id="magePassiveFieldset">
+                <legend> Mage specific skills </legend>
+                <div class="pure-control-group buff-group">
+                    <div class="icon-buff-img">
+                        <img src="../../Images/items/spell of life.png" class="img-in-div" />
+                    </div>
+                    <label style="width: 200px;">Spell of life (+480 HP):</label>
+                    <div class="onoff">
+                        <input type="checkbox" id="spellOfLifeBuffDropDown" />
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset style="width: 325px; display: none; vertical-align: top;" id="kurianPassiveFieldset">
+                <legend> Kurian - Skill points in DEFENSE </legend>
+                <div class="pure-control-group">
+                    <input id="kurianDefenseDropDown" />
+                </div>
+                <div class="pure-control-group">
+                    <input id="kurianResistDropDown" />
+                </div>
+            </fieldset>
+        </div>
+
+        <div style="display: inline-block; margin: 20px;">
+            <div class="calculator-container tooltipDiv" style="display: inline-block; margin-right: 15px;">
+                <div class="calc-item" style="top: 17px; left:195px;" id="rightEarringEquiped" data-slot="1R">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 17px; left:247px;" id="helmEquiped" data-slot="5">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 17px; left: 299px;" id="leftEarringEquiped" data-slot="1L">
+                    <img class="calc-item-icon" />
+                </div>
+
+                <div class="calc-item" style="top: 69px; left:195px;" id="necklaceEquiped" data-slot="2">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 69px; left:247px;" id="pauldronEquiped" data-slot="6">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 69px; left: 299px;" id="petEquiped">
+                    <img class="calc-item-icon" />
+                </div>
+
+                <div class="calc-item" style="top: 121px; left:195px;" id="rightWeaponEquiped" data-slot="10R">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 121px; left:247px;" id="beltEquiped" data-slot="3">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 121px; left: 299px;" id="leftWeaponEquiped" data-slot="10L">
+                    <img class="calc-item-icon" />
+                </div>
+
+                <div class="calc-item" style="top: 173px; left:195px;" id="rightRingEquiped" data-slot="4R">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 173px; left:247px;" id="padsEquiped" data-slot="7">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 173px; left: 299px;" id="leftRingEquiped" data-slot="4L">
+                    <img class="calc-item-icon" />
+                </div>
+
+                <div class="calc-item" style="top: 225px; left:195px;" id="gauntletsEquiped" data-slot="8">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 225px; left:247px;" id="bootsEquiped" data-slot="9">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 225px; left: 299px;" id="trash">
+                    <img class="calc-item-icon" />
+                </div>
+
+                
+                
+            </div>
+
+            <div class="sub-calculator-container tooltipDiv">
+                <div class="calc-item" style="top: 14px; left:20px;" id="tattooEquiped" data-slot="15">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 14px; left:72px;" id="valkirieHelmetEquiped" data-slot="11">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 14px; left:124px;" id="emblemEquiped" data-slot="16">
+                    <img class="calc-item-icon" />
+                </div>
+
+                <div class="calc-item" style="top: 66px; left:20px;" id="rightPathosEquiped" data-slot="13R">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 66px; left:72px;" id="wingsEquiped" data-slot="14">
+                    <img class="calc-item-icon" />
+                </div>
+                <div class="calc-item" style="top: 66px; left:124px;" id="leftPathosEquiped" data-slot="13L">
+                    <img class="calc-item-icon" />
+                </div>
+
+                <div class="calc-item" style="top: 118px; left:72px;" id="valkiriePauldronEquiped" data-slot="12">
+                    <img class="calc-item-icon" />
+                </div>
+            </div>
+
+            <div class="calculator-stats" style="display: inline-block;">
+                <div class="stat-totalhp-div stat-div"> </div>
+                <div class="stat-totalmp-div stat-div"> </div>
+
+                <div class="stat-char-div stat-div"> Warrior </div>
+                <div class="stat-level-div stat-div"></div>
+                <div class="stat-attack-div stat-div"> 4 </div>
+                <div class="stat-defense-div stat-div"> 1 </div>
+                <div class="stat-str-div stat-div"> </div>
+                <div class="stat-hp-div stat-div"> </div>
+                <div class="stat-dex-div stat-div"> </div>
+                <div class="stat-mp-div stat-div"> </div>
+                <div class="stat-int-div stat-div"> </div>
+
+                
+                <span id="freeStatPoints"> 10 points </span>
+
+                <div class="stat-fire-div stat-div"> </div>
+                <div class="stat-glac-div stat-div"> </div>
+                <div class="stat-lighting-div stat-div"> </div>
+                <div class="stat-magic-div stat-div"> </div>
+                <div class="stat-dark-div stat-div"> </div>
+                <div class="stat-poison-div stat-div"> </div>
+
+                <div class="fa fa-plus-circle str-plus"></div>
+                <div class="fa fa-plus-circle hp-plus"></div>
+                <div class="fa fa-plus-circle dex-plus"></div>
+                <div class="fa fa-plus-circle mp-plus"></div>
+                <div class="fa fa-plus-circle int-plus"></div>
+            </div>
+        </div>
+
+        <div style="display: block;">
+            <div style="display:inline-block; position: relative; display: inline-block;">
+                <textarea id="configurationArea" style="width: 500px; height: 125px; display: block; background-color: #414550; border: 1px solid black; overflow: hidden; color: white;"></textarea>
+                <input type="button" value="Import equipement" style=" position:absolute; bottom:10px; left: 10px;" class="k-button" id="importBtn" />
+                <input type="button" value="Copy to clipboard" style=" position:absolute; bottom:10px; right: 10px; width:200px;" class="k-button" id="copyBtn" />
+            </div>
+            <div>
+                <div id="infoMessage" class="k-content" style="display: inline-block;"></div>
+                <span id="infoMessageNotification"></span>
+            </div>
+        </div>
+    </div>
+    <div id="statDialog">
+        <div id="freeStatToUseDiv"> Free stat points to use: <span style="color: red;"> 10 </span> </div>
+        <div id="freeRebithStatToUseDiv"> Free rebith stat points to use: <span style="color: red;"> 0 </span> </div>
+
+        <br />
+
+        <div class="pure-control-group">
+            <label> Strength / Rebith Strength: </label>
+            <input id="setStr" type="number" class="stat-txt-box"> /
+            <input id="setRebithStr" type="number" class="stat-txt-box">
+        </div>
+
+        <div class="pure-control-group">
+            <label> Health / Rebith Health: </label>
+            <input id="setHp" type="number" class="stat-txt-box"> /
+            <input id="setRebithHp" type="number" class="stat-txt-box">
+        </div>
+
+        <div class="pure-control-group">
+            <label> Dexterity / Rebith Dexterity: </label>
+            <input id="setDex" type="number" class="stat-txt-box"> /
+            <input id="setRebithDex" type="number" class="stat-txt-box">
+        </div>
+
+        <div class="pure-control-group">
+            <label> Magic Power / Rebith Magic Power: </label>
+            <input id="setMp" type="number" class="stat-txt-box"> /
+            <input id="setRebithMp" type="number" class="stat-txt-box">
+        </div>
+
+        <div class="pure-control-group" style="display: inline-block;">
+            <label> Intelligence / Rebith Intelligence: </label>
+            <input id="setInt" type="number" class="stat-txt-box"> /
+            <input id="setRebithInt" type="number" class="stat-txt-box">
+        </div>
+
+        <input type="button" value="Save" class="k-button" id="saveStats" />
+    </div>
+
+</div>
+
+<script id="tooltipTemplate" type="text/x-kendo-template">
+    <div>
+        <div class="item-stat-img selectedItemImgTooltip" style="top: 10px; margin: auto;">
+            <img class="calc-item-icon" />
+        </div>
+        <div class="itemNameTooltip"> </div>
+        <div class="item-stat-div classAvailabilityTooltip"></div>
+
+        <div class="item-stat-div attackPowerStatDivTooltip">  </div>
+        <div class="item-stat-div attackSpeedDivTooltip">  </div>
+        <div class="item-stat-div effectiveRangeDivTooltip">  </div>
+
+        <div class="item-stat-div weightDivTooltip">  </div>
+        <div class="item-stat-div durabilityDivTooltip">  </div>
+
+        <div class="item-stat-div attackPowerRateDivTooltip">  </div>
+        <div class="item-stat-div dodgingRateDivTooltip">  </div>
+
+        <div class="item-stat-div defenseDivTooltip">  </div>
+
+        <div class="item-stat-div poisonDmgDivTooltip">  </div>
+        <div class="item-stat-div glacierDmgDivTooltip">  </div>
+        <div class="item-stat-div flameDmgDivTooltip">  </div>
+        <div class="item-stat-div lightingDmgDivTooltip">  </div>
+        <div class="item-stat-div dmgPercentageDivTooltip">  </div>
+        <div class="item-stat-div defPercentageDivTooltip">  </div>
+        <div class="item-stat-div dmgClassDivTooltip">  </div>
+
+        <div class="item-stat-div hpRecoveryDivTooltip">  </div>
+        <div class="item-stat-div mpRecoveryDivTooltip">  </div>
+
+        <div class="item-stat-div bonusHealthDivTooltip">  </div>
+        <div class="item-stat-div bonusStrDivTooltip">  </div>
+        <div class="item-stat-div bonusDexDivTooltip">  </div>
+        <div class="item-stat-div bonusIntDivTooltip">  </div>
+        <div class="item-stat-div bonusMagicPowerDivTooltip">  </div>
+
+        <div class="item-stat-div requiredLevelDivTooltip">  </div>
+
+        <div class="item-stat-div bonusHpdivTooltip">  </div>
+        <div class="item-stat-div bonusMpDivTooltip">  </div>
+
+        <div class="item-stat-div setBonusHealthDivTooltip">  </div>
+        <div class="item-stat-div setBonusStrDivTooltip">  </div>
+        <div class="item-stat-div setBonusDexDivTooltip">  </div>
+        <div class="item-stat-div setBonusIntDivTooltip">  </div>
+        <div class="item-stat-div setBonusMagicPowerDivTooltip">  </div>
+
+        <div class="item-stat-div defJamadarDivTooltip">  </div>
+        <div class="item-stat-div defSwordDivTooltip">  </div>
+        <div class="item-stat-div defDaggerDivTooltip">  </div>
+        <div class="item-stat-div defClubDivTooltip">  </div>
+        <div class="item-stat-div defAxeDivTooltip">  </div>
+        <div class="item-stat-div defSpearDivTooltip">  </div>
+        <div class="item-stat-div defArrowDivTooltip">  </div>
+        <div class="item-stat-div defClassDivTooltip">  </div>
+
+        <div class="item-stat-div resistanceFlameDivTooltip">  </div>
+        <div class="item-stat-div resistanceGlacierDivTooltip">  </div>
+        <div class="item-stat-div resistanceLightingDivTooltip">  </div>
+        <div class="item-stat-div resistancePoisonDivTooltip">  </div>
+        <div class="item-stat-div resistanceDarkDivTooltip">  </div>
+        <div class="item-stat-div resistanceMagicDivTooltip">  </div>
+
+        <div class="item-stat-div bonusAcDivTooltip">  </div>
+
+        <div class="item-stat-div bonusExpDivTooltip">  </div>
+        <div class="item-stat-div bonusWeightDivTooltip">  </div>
+        <div class="item-stat-div damageToMonstersDivTooltip">  </div>
+        <div class="item-stat-div bonusNpDivTooltip">  </div>
+        <div class="item-stat-div bonusNoahDivTooltip">  </div>
+
+        <div class="item-stat-div requiredDexDivTooltip">  </div>
+        <div class="item-stat-div requiredStrDivTooltip">  </div>
+        <div class="item-stat-div requiredMagicPowerDivTooltip">  </div>
+        <div class="item-stat-div requiredIntDivTooltip">  </div>
+        <div class="item-stat-div requiredHealthDivTooltip">  </div>
+
+        <div class="item-stat-div repelPhysicalAttackDivTooltip">  </div>
+
+        <div class="item-stat-div curseDivTooltip">  </div>
+        <div class="item-stat-div noteDivTooltip">  </div>
+        <div class="item-stat-div noteGradeDivTooltip">  </div>
+    </div>
+</script>
+
+<div id="changeBonusStatDialog">
+    <ul>
+        <li>
+            <input type="radio" name="selectBonus" id="noBonus" class="k-radio" value="no" />
+            <label class="k-radio-label" for="noBonus"> No bonus </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonus" id="strBonus" class="k-radio" value="str" />
+            <label class="k-radio-label" for="strBonus"> Strength </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonus" id="hpBonus" class="k-radio" value="hp" />
+            <label class="k-radio-label" for="hpBonus"> Health </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonus" id="dexBonus" class="k-radio" value="dex" />
+            <label class="k-radio-label" for="dexBonus"> Dexterity </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonus" id="mpBonus" class="k-radio" value="mp" />
+            <label class="k-radio-label" for="mpBonus"> Magic Power </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonus" id="intBonus" class="k-radio" value="int" />
+            <label class="k-radio-label" for="intBonus"> Intelligence </label>
+        </li>
+    </ul>
+
+    <input type="button" value="Confirm" class="k-button" id="confirmChangeStat" />
+</div>
+
+<div id="changeBonusShieldDialog">
+    <ul>
+        <li>
+            <input type="radio" name="selectBonusShield" id="noBonusShield" class="k-radio" value="no" />
+            <label class="k-radio-label" for="noBonusShield"> No bonus </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonusShield" id="strBonusShield" class="k-radio" value="str" />
+            <label class="k-radio-label" for="strBonusShield"> Strength </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonusShield" id="hpBonusShield" class="k-radio" value="hp" />
+            <label class="k-radio-label" for="hpBonusShield"> Health </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonusShield" id="dexBonusShield" class="k-radio" value="dex" />
+            <label class="k-radio-label" for="dexBonusShield"> Dexterity </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonusShield" id="mpBonusShield" class="k-radio" value="mp" />
+            <label class="k-radio-label" for="mpBonusShield"> Magic Power </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonusShield" id="intBonusShield" class="k-radio" value="int" />
+            <label class="k-radio-label" for="intBonusShield"> Intelligence </label>
+        </li>
+        <li>
+            <input type="radio" name="selectBonusShield" id="resBonusShield" class="k-radio" value="res" />
+            <label class="k-radio-label" for="resBonusShield"> Resistances (Flame, Glacier) </label>
+        </li>
+        
+        <li>
+            <input type="radio" name="selectBonusShield" id="repelBonusShield" class="k-radio" value="repel" />
+            <label class="k-radio-label" for="repelBonusShield"> Repel Physical Attack </label>
+        </li>
+    </ul>
+
+    <input type="button" value="Confirm" class="k-button" id="confirmChangeShield" />
+</div>
+
+<div id="changeRecoveryDialog">
+    <ul>
+        <li>
+            <input type="radio" name="selectRecovery" id="hpRecovery" class="k-radio" value="hpRecovery" />
+            <label class="k-radio-label" for="hpRecovery"> HP Recovery </label>
+        </li>
+        <li>
+            <input type="radio" name="selectRecovery" id="mpRecovery" class="k-radio" value="mpRecovery" />
+            <label class="k-radio-label" for="mpRecovery"> MP Recovery </label>
+        </li>
+    </ul>
+
+    <input type="button" value="Confirm" class="k-button" id="confirmChangeRecovery" />
+</div>
+
+
+<script type="text/x-kendo-template" id="achievement-template">
+    <div id="achievementTemplateName">#= name #</div>
+    <div id="achievementTemplateDescription"> #= bonus # </div>
+</script>
+
+<div id="importDialog">
+    <div id="importLog" style="overflow-y: auto;">
+        <h3 style="font-weight: bold; color: #f4af03; text-align: center;"> Import in progress, please wait! </h3>
+    </div>
+    <div style="margin-top: 5px;">
+        <input type="button" class="k-button" value="Ok - Close dialog" id="closeImportDialog" style="width: 300px; margin-left: 30%;" />
+    </div>
+</div>
+
+<script>
+    var loadConfigurationUrl = "/Calculator/GetItemStats";
+    var equipSetUrl = "/Calculator/EquipSet";
+</script>
+
+
+
+    </div>
+
+
+    
+    <script src="/bundles/achievementsdata?v=hCLzgN_OEwV_O07K2BrC9Q3rikut3VdNGRaRyYyA7WA1"></script>
+
+    <script src="/bundles/calculatorformulas?v=aPoGkT1D8o1cuxTmIS1LJ_m-7M2dPbQOalTNzrT9pfE1"></script>
+
+    <script src="/bundles/setsdata?v=rMuLcSx75cA9Fe6K4TQI0IQ8cpIY3N06E2cXPKZq_m81"></script>
+
+
+    <script src="/bundles/advancedcalc?v=vgf-YmTP6P9rCl18JBhGZxs4Ob-3JZcuA5YB9NN1HKs1"></script>
+
+    <script src="/bundles/calc?v=oZYXPtt24TVDoGjaMG4txguRasB-sIw33r6pSx-EpP41"></script>
+
+
+    
+    <link href="/Content/calc?v=f7dl5bpTRd9kCB0O30P7JPEWWnysBSIv0HLlj3zRBFQ1" rel="stylesheet"/>
+
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"b594dbe39f3c408684d3325d439c40ff","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

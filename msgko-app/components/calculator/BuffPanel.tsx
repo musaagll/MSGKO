@@ -136,10 +136,10 @@ export function BuffPanel({ state, dispatch }: Props) {
               className={SELECT_CLASS}
             >
               <option value={1} className="bg-neutral-900">HP buff - OFF</option>
-              <option value={2} className="bg-neutral-900">1500</option>
-              <option value={3} className="bg-neutral-900">2000</option>
-              <option value={4} className="bg-neutral-900">60%</option>
-              <option value={5} className="bg-neutral-900">2200</option>
+              <option value={2} className="bg-neutral-900">HP buff - 1500</option>
+              <option value={3} className="bg-neutral-900">HP buff - 2000</option>
+              <option value={4} className="bg-neutral-900">HP buff - 60% (Undying)</option>
+              <option value={5} className="bg-neutral-900">HP buff - 2200</option>
             </select>
           </div>
 
@@ -152,10 +152,10 @@ export function BuffPanel({ state, dispatch }: Props) {
               className={SELECT_CLASS}
             >
               <option value={1} className="bg-neutral-900">AC buff - OFF</option>
-              <option value={2} className="bg-neutral-900">200</option>
-              <option value={3} className="bg-neutral-900">300</option>
-              <option value={4} className="bg-neutral-900">350</option>
-              <option value={5} className="bg-neutral-900">380</option>
+              <option value={2} className="bg-neutral-900">AC buff - +200</option>
+              <option value={3} className="bg-neutral-900">AC buff - +300</option>
+              <option value={4} className="bg-neutral-900">AC buff - +350</option>
+              <option value={5} className="bg-neutral-900">AC buff - +380</option>
             </select>
           </div>
 

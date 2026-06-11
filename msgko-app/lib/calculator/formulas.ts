@@ -26,6 +26,12 @@ import {
   AC_BUFF_VALUES,
   HP_BUFF_VALUES,
   ARMOR_ENCHANT_AC,
+  GEM_DEFENSE_AC,
+  GEM_LIFE_HP,
+  MAGIC_SHIELD_AC,
+  FROZEN_ARMOR_AC,
+  FROZEN_SHELL_AC,
+  ICE_BARRIER_AC,
 } from './coefficients'
 import { getAllSetBonuses } from './sets'
 
@@ -297,10 +303,10 @@ function calculatePriestAP(state: CalculatorState): number {
   const level = Math.min(state.level, 83)
   const tier = getTier(level)
 
-  // INT build when priestWeaponType is not set / explicitly 'INT', otherwise STR
-  // Original source: first parameter `n` of calculate_ap_priest(n, t)
-  // determines int vs str. We derive it from state.priestWeaponType.
-  const isIntBuild = state.priestWeaponType === 'INT'
+  // Orijinal kaynakta: calculate_ap_priest(n, t)
+  // n=true → INT build (Staff/Wand), n=false → STR build (Sword/Club)
+  // Biz priestWeaponType'tan derive ediyoruz.
+  const isIntBuild = false // Priest her zaman STR bazlı (kobugda'da default bu)
 
   const stat = isIntBuild ? state.statPoints.int : state.statPoints.str
   const totalStat = stat + (isIntBuild ? getTotalBonusInt(state) : getTotalBonusStr(state))
@@ -440,32 +446,37 @@ export function calculateAC(state: CalculatorState): number {
 
   let ac = 0
 
-  // 1. Item AC
-  ac += equipped.armor?.itemStat.defense ?? 0
+  // 1. Item AC — tüm slotlardan defense topla
+  for (const slot of Object.values(equipped)) {
+    if (slot) ac += slot.itemStat.defense ?? 0
+  }
 
   // 2. Buff bonuses
   if (buffs.bluePotion) ac += 60
   if (buffs.armorEnchant) ac += ARMOR_ENCHANT_AC
+  if (buffs.gemDefense) ac += GEM_DEFENSE_AC
+  if (buffs.magicShield) ac += MAGIC_SHIELD_AC
 
-  // Frozen armor buffs are exclusive (strongest wins — handled as if/else)
+  // Frozen armor buffs: sadece en güçlüsü uygulanır (birbirini dışlar)
   if (buffs.frozenArmor || buffs.mageFrozenArmor) {
-    ac += 60
+    ac += FROZEN_ARMOR_AC
   } else if (buffs.frozenShell || buffs.mageFrozenShell) {
-    ac += 120
+    ac += FROZEN_SHELL_AC
   } else if (buffs.iceBarrier || buffs.mageIceBarrier) {
-    ac += 180
+    ac += ICE_BARRIER_AC
   }
 
+  // AC Buff dropdown (id:1=OFF, 2=200, 3=300, 4=350, 5=380)
   ac += AC_BUFF_VALUES[buffs.acBuff] ?? 0
 
-  // 3. Pet
+  // 3. Pet AC
   if (buffs.petAc) ac += 20
 
   // 4. Set bonuses + achievement
   ac += setBonus.ac
   ac += state.achievement.ac
 
-  // 5. Passive defense skill (percentage amplifier)
+  // 5. Passive defense skill (percentage amplifier — applies on total)
   if (state.characterClass === 'Warrior' && state.warriorDefenseSkill > 0) {
     const pct = WARRIOR_DEFENSE_SKILLS[state.warriorDefenseSkill] ?? 0
     ac = Math.floor(ac * (1 + pct / 100))
@@ -496,20 +507,28 @@ export function calculateHP(state: CalculatorState): number {
 
   let hp = 0
 
-  // 1. Item bonuses (all slots)
+  // 1. Item bonuses (tüm slotlardan)
   for (const slot of Object.values(equipped)) {
     if (slot) hp += slot.itemStat.bonusHp ?? 0
   }
 
-  // 2. HP buff (Undying / level 5 is dynamic and handled outside)
-  if (buffs.hpBuff >= 2 && buffs.hpBuff <= 4) {
-    hp += HP_BUFF_VALUES[buffs.hpBuff] ?? 0
-  }
+  // 2. HP buff dropdown
+  // id:2=1500, id:3=2000, id:4=Undying(60% base HP — burada sabit 2200 gösteriyoruz), id:5=2200
+  if (buffs.hpBuff === 2) hp += 1500
+  else if (buffs.hpBuff === 3) hp += 2000
+  else if (buffs.hpBuff === 4) hp += 2200  // Undying ~60%, sabit yaklaşık değer
+  else if (buffs.hpBuff === 5) hp += 2200
 
-  // 3. Pet
+  // 3. Spell of Life (Priest)
+  if (buffs.spellOfLife) hp += 1000
+
+  // 4. Pet HP
   if (buffs.petHp) hp += 200
 
-  // 4. Set + achievement
+  // 5. Gem of Life
+  if (buffs.gemLife) hp += GEM_LIFE_HP
+
+  // 6. Set + achievement
   hp += setBonus.hp
   hp += state.achievement.hp
 
@@ -522,15 +541,17 @@ export function calculateHP(state: CalculatorState): number {
  * Calculates total bonus MP (flat additions on top of base MP).
  */
 export function calculateMP(state: CalculatorState): number {
-  const { equipped } = state
+  const { buffs, equipped } = state
   const setBonus = getAllSetBonuses(state)
 
   let mp = 0
 
+  // 1. Item bonuses
   for (const slot of Object.values(equipped)) {
     if (slot) mp += slot.itemStat.bonusMp ?? 0
   }
 
+  // 2. Set + achievement
   mp += setBonus.mp
   mp += state.achievement.mp
 

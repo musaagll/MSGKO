@@ -49,38 +49,38 @@ const CLASS_OPTIONS = [
 
 const WARRIOR_DEFENSE_SKILLS = [
   { value: 0, label: 'Select Defense Skill' },
-  { value: 1, label: 'Hinder -10%' },
-  { value: 2, label: 'Arrest -15%' },
-  { value: 3, label: 'Bulwark -20%' },
-  { value: 4, label: 'Evading -25%' },
-  { value: 5, label: 'Iron Skin -30%' },
-  { value: 6, label: 'Iron Body -40%' },
+  { value: 1, label: 'Hinder +10% AC (5 pts)' },
+  { value: 2, label: 'Arrest +15% AC (15 pts)' },
+  { value: 3, label: 'Bulwark +20% AC (35 pts)' },
+  { value: 4, label: 'Evading +25% AC (55 pts)' },
+  { value: 5, label: 'Iron Skin +30% AC (70 pts)' },
+  { value: 6, label: 'Iron Body +40% AC (80 pts)' },
 ]
 
 const WARRIOR_RESIST_SKILLS = [
   { value: 0, label: 'Select Resist Skill' },
-  { value: 1, label: 'Resist -30%' },
-  { value: 2, label: 'Endure -60%' },
-  { value: 3, label: 'Immunity -90%' },
+  { value: 1, label: 'Resist +30 (10 pts)' },
+  { value: 2, label: 'Endure +60 (20 pts)' },
+  { value: 3, label: 'Immunity +90 (40 pts)' },
 ]
 
 // ─── Kurian pasif skill seçenekleri ──────────────────────────────────────────
 
 const KURIAN_DEFENSE_SKILLS = [
   { value: 0, label: 'Select Defense Skill' },
-  { value: 1, label: 'Hinder -5%' },
-  { value: 2, label: 'Arrest -8%' },
-  { value: 3, label: 'Bulwark -10%' },
-  { value: 4, label: 'Evading -13%' },
-  { value: 5, label: 'Iron Skin -15%' },
-  { value: 6, label: 'Iron Linker -20%' },
+  { value: 1, label: 'Hinder +5% AC (5 pts)' },
+  { value: 2, label: 'Arrest +8% AC (15 pts)' },
+  { value: 3, label: 'Bulwark +10% AC (35 pts)' },
+  { value: 4, label: 'Evading +13% AC (55 pts)' },
+  { value: 5, label: 'Iron Skin +15% AC (70 pts)' },
+  { value: 6, label: 'Iron Linker +20% AC (80 pts)' },
 ]
 
 const KURIAN_RESIST_SKILLS = [
   { value: 0, label: 'Select Resist Skill' },
-  { value: 1, label: 'Resist +15' },
-  { value: 2, label: 'Endure +30' },
-  { value: 3, label: 'Immunity +45' },
+  { value: 1, label: 'Resist +15 (10 pts)' },
+  { value: 2, label: 'Endure +30 (20 pts)' },
+  { value: 3, label: 'Immunity +45 (40 pts)' },
 ]
 
 // ─── Priest weapon seçenekleri ────────────────────────────────────────────────

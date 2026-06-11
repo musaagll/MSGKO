@@ -37,19 +37,19 @@ export interface ItemCategory {
 // ─── Categories ───────────────────────────────────────────────────────────────
 
 export const ITEM_CATEGORIES: ItemCategory[] = [
-  { id: 'weapon-warrior', name: 'Weapon - Warrior' },
-  { id: 'weapon-rogue', name: 'Weapon - Rogue' },
-  { id: 'weapon-priest', name: 'Weapon - Priest' },
-  { id: 'weapon-mage', name: 'Weapon - Mage' },
-  { id: 'weapon-kurian', name: 'Weapon - Kurian' },
-  { id: 'armor-warrior', name: 'Armor - Warrior' },
-  { id: 'armor-rogue', name: 'Armor - Rogue' },
-  { id: 'armor-priest', name: 'Armor - Priest' },
-  { id: 'armor-mage', name: 'Armor - Mage' },
-  { id: 'armor-kurian', name: 'Armor - Kurian' },
-  { id: 'accessories', name: 'Accessories' },
-  { id: 'pathos', name: 'Pathos' },
-  { id: 'tattoo', name: 'Tattoo / Wings / Emblem' },
+  { id: 'weapon-warrior', name: 'Silah - Warrior' },
+  { id: 'weapon-rogue',   name: 'Silah - Rogue' },
+  { id: 'weapon-priest',  name: 'Silah - Priest' },
+  { id: 'weapon-mage',    name: 'Silah - Mage' },
+  { id: 'weapon-kurian',  name: 'Silah - Kurian' },
+  { id: 'armor-warrior',  name: 'Zırh - Warrior' },
+  { id: 'armor-rogue',    name: 'Zırh - Rogue' },
+  { id: 'armor-priest',   name: 'Zırh - Priest' },
+  { id: 'armor-mage',     name: 'Zırh - Mage' },
+  { id: 'armor-kurian',   name: 'Zırh - Kurian' },
+  { id: 'accessories',    name: 'Accessories' },
+  { id: 'pathos',         name: 'Pathos' },
+  { id: 'tattoo',         name: 'Tattoo / Wings / Emblem' },
 ]
 
 // ─── Grade Helpers ────────────────────────────────────────────────────────────
