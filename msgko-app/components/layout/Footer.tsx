@@ -164,10 +164,7 @@ export function Footer() {
               msgko.net
             </a>
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-purple-500/70 animate-pulse" style={{ animationDuration: '3s' }} />
-            <p className="text-[0.62rem] tracking-[0.1em] uppercase text-purple-500/50">Kiro.dev ile geliştirildi</p>
-          </div>
+
         </div>
       </div>
     </footer>
