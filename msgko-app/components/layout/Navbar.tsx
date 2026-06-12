@@ -15,7 +15,7 @@ import { KarakterlerDropdown } from '@/components/ui/KarakterlerDropdown'
 import { SearchBar } from '@/components/ui/SearchBar'
 import { SidePanel } from '@/components/ui/SidePanel'
 import { YoutubePanel } from '@/components/ui/YoutubePanel'
-import { InstagramPanel } from '@/components/ui/InstagramPanel'
+import { InstagramModal } from '@/components/ui/InstagramModal'
 import { DuyurularModal } from '@/components/ui/DuyurularModal'
 import { WallpaperModal } from '@/components/ui/WallpaperModal'
 import { NAV_ITEMS } from '@/lib/data'
@@ -241,25 +241,8 @@ export function Navbar() {
         <YoutubePanel />
       </SidePanel>
 
-      {/* Instagram Side Panel */}
-      <SidePanel
-        isOpen={wsMovieOpen}
-        onClose={() => setWsMovieOpen(false)}
-        title="Instagram"
-        subtitle="@msgclip"
-        accentColor="#833ab4"
-        externalUrl="https://www.instagram.com/msgclip"
-        externalLabel="Instagram'da Takip Et"
-        icon={
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(167,112,246,0.9)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-          </svg>
-        }
-      >
-        <InstagramPanel />
-      </SidePanel>
+      {/* Instagram Modal (tam ekran, WallpaperModal gibi) */}
+      <InstagramModal isOpen={wsMovieOpen} onClose={() => setWsMovieOpen(false)} />
 
       {/* Duyurular Modal (tam ekran, WallpaperModal gibi) */}
       <DuyurularModal isOpen={duyurularOpen} onClose={() => setDuyurularOpen(false)} />
