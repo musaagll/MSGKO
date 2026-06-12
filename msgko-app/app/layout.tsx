@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: '%s | MSGKO Knight Online',
   },
   description:
-    'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas ve Okçu build rehberleri, PK taktikleri, farm rotaları, skill kombo videoları. msgko.net — MSG Knight Online eğitim platformu.',
+    'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas Okçu Priest Warrior oynanış, PK taktikleri, farm taktikleri, skill kombo videoları. msgko.net — MSG Knight Online gelişim platformu.',
   keywords: [
     // Marka
     'msgko',
