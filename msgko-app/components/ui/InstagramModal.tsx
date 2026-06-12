@@ -149,7 +149,7 @@ export function InstagramModal({ isOpen, onClose }: InstagramModalProps) {
 
           {/* ── Reels Grid ── */}
           <div className="relative z-10 flex-1 overflow-y-auto px-6 md:px-12 py-8">
-            <div className="max-w-[900px] mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="max-w-[1000px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {REELS.map((reel, i) => (
                 <motion.div
                   key={reel.id}
@@ -218,7 +218,7 @@ export function InstagramModal({ isOpen, onClose }: InstagramModalProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="max-w-[900px] mx-auto mt-8"
+              className="max-w-[1000px] mx-auto mt-8"
             >
               <a
                 href="https://www.instagram.com/msgclip"
