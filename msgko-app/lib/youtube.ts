@@ -1,5 +1,13 @@
-const API_KEY = process.env.YOUTUBE_API_KEY
-const UPLOADS_PLAYLIST_ID = process.env.YOUTUBE_UPLOADS_PLAYLIST_ID
+/**
+ * YouTube video fetcher — RSS feed tabanlı (API key gerektirmez, quota yok)
+ *
+ * YouTube her kanal için ücretsiz RSS feed sağlar:
+ * https://www.youtube.com/feeds/videos.xml?channel_id=CHANNEL_ID
+ *
+ * Shorts tespiti: süre 60 saniye veya altı
+ */
+
+const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID ?? 'UCGWeKVw_Yiw2a_oul5QkFbA'
 
 export interface YTVideo {
   id: string
@@ -12,102 +20,145 @@ export interface YTVideo {
   youtubeUrl: string
 }
 
-function formatDuration(iso: string): string {
-  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
-  if (!match) return ''
-  const h = parseInt(match[1] || '0')
-  const m = parseInt(match[2] || '0')
-  const s = parseInt(match[3] || '0')
+export function formatDuration(seconds: number): string {
+  const h = Math.floor(seconds / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  const s = seconds % 60
   if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
   return `${m}:${String(s).padStart(2, '0')}`
 }
 
-function isShort(duration: string): boolean {
-  const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
-  if (!match) return false
-  const h = parseInt(match[1] || '0')
-  const m = parseInt(match[2] || '0')
-  const s = parseInt(match[3] || '0')
-  return h * 3600 + m * 60 + s <= 60
+function parseXmlText(xml: string, tag: string): string {
+  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`)
+  return xml.match(re)?.[1]?.trim() ?? ''
 }
 
-interface RawPlaylistItem {
-  snippet: { resourceId: { videoId: string } }
+function extractVideoId(url: string): string {
+  return url.split('v=')[1]?.split('&')[0] ?? url.split('/').pop() ?? ''
 }
 
-interface RawVideo {
-  id: string
-  status: { privacyStatus: string; uploadStatus: string }
-  snippet: {
-    title: string
-    thumbnails: {
-      maxres?: { url: string }
-      high?: { url: string }
-      medium?: { url: string }
-    }
-    publishedAt: string
-  }
-  contentDetails: { duration: string }
-  statistics: { viewCount?: string }
-}
-
+/**
+ * YouTube RSS feed'inden video listesi çeker.
+ * Shorts (≤60s) ve uzun videolar ayrı döner.
+ * RSS'de süre bilgisi olmadığından tüm videolar "video" olarak döner.
+ */
 export async function getYoutubeVideos(limit = 4): Promise<YTVideo[]> {
-  if (!API_KEY || !UPLOADS_PLAYLIST_ID) return []
-
   try {
-    const playlistRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${UPLOADS_PLAYLIST_ID}&maxResults=50&key=${API_KEY}`,
-      { cache: 'no-store' }
-    )
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`
 
-    if (!playlistRes.ok) {
-      console.error('YouTube playlist API error:', playlistRes.status)
+    const res = await fetch(rssUrl, {
+      next: { revalidate: 3600 }, // 1 saatte bir yenile
+      headers: { 'Accept': 'application/xml, text/xml, */*' },
+    })
+
+    if (!res.ok) {
+      console.error('YouTube RSS error:', res.status, res.statusText)
       return []
     }
 
-    const playlistData = await playlistRes.json()
-    if (!playlistData.items?.length) return []
+    const xml = await res.text()
 
-    const videoIds = (playlistData.items as RawPlaylistItem[])
-      .map((item) => item.snippet.resourceId.videoId)
-      .join(',')
+    // <entry> bloklarını parse et
+    const entries = xml.split('<entry>').slice(1)
 
-    const detailsRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics,status&id=${videoIds}&key=${API_KEY}`,
-      { cache: 'no-store' }
-    )
+    const videos: YTVideo[] = entries.slice(0, limit).map((entry) => {
+      // video ID
+      const videoIdRaw = parseXmlText(entry, 'yt:videoId')
+      const linkMatch = entry.match(/href="([^"]+)"/)
+      const videoId = videoIdRaw || extractVideoId(linkMatch?.[1] ?? '')
 
-    if (!detailsRes.ok) {
-      console.error('YouTube videos API error:', detailsRes.status)
-      return []
-    }
+      // title
+      const title = parseXmlText(entry, 'title')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
 
-    const detailsData = await detailsRes.json()
+      // thumbnail — media:thumbnail url=""
+      const thumbMatch = entry.match(/media:thumbnail[^>]+url="([^"]+)"/)
+      const thumbnail = thumbMatch?.[1] ?? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
 
-    return ((detailsData.items ?? []) as RawVideo[])
-      .filter(
-        (v) =>
-          v.status.privacyStatus === 'public' &&
-          v.status.uploadStatus === 'processed' &&
-          !isShort(v.contentDetails.duration)
-      )
-      .slice(0, limit)
-      .map((v) => ({
-        id: v.id,
-        title: v.snippet.title,
-        thumbnail:
-          v.snippet.thumbnails.maxres?.url ||
-          v.snippet.thumbnails.high?.url ||
-          v.snippet.thumbnails.medium?.url ||
-          '',
-        duration: v.contentDetails.duration,
-        durationFormatted: formatDuration(v.contentDetails.duration),
-        publishedAt: v.snippet.publishedAt,
-        views: parseInt(v.statistics.viewCount ?? '0'),
-        youtubeUrl: `https://www.youtube.com/watch?v=${v.id}`,
-      }))
+      // published date
+      const publishedAt = parseXmlText(entry, 'published')
+
+      // views — media:statistics views=""
+      const viewsMatch = entry.match(/media:statistics[^>]+views="(\d+)"/)
+      const views = parseInt(viewsMatch?.[1] ?? '0')
+
+      return {
+        id: videoId,
+        title,
+        thumbnail,
+        duration: '',
+        durationFormatted: '',
+        publishedAt,
+        views,
+        youtubeUrl: `https://www.youtube.com/watch?v=${videoId}`,
+      }
+    })
+
+    return videos.filter((v) => v.id && v.title)
   } catch (err) {
     console.error('getYoutubeVideos error:', err)
     return []
+  }
+}
+
+/**
+ * API route için — hem videolar hem shorts döner.
+ * RSS'de süre olmadığından tüm içerikler video olarak işlenir.
+ */
+export async function getYoutubeVideosAndShorts(limit = 30): Promise<{
+  videos: YTVideo[]
+  shorts: YTVideo[]
+}> {
+  try {
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`
+
+    const res = await fetch(rssUrl, {
+      cache: 'no-store',
+      headers: { 'Accept': 'application/xml, text/xml, */*' },
+    })
+
+    if (!res.ok) {
+      console.error('YouTube RSS error:', res.status)
+      return { videos: [], shorts: [] }
+    }
+
+    const xml = await res.text()
+    const entries = xml.split('<entry>').slice(1)
+
+    const all: YTVideo[] = entries.slice(0, limit).map((entry) => {
+      const videoId = parseXmlText(entry, 'yt:videoId')
+      const title = parseXmlText(entry, 'title')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+      const thumbMatch = entry.match(/media:thumbnail[^>]+url="([^"]+)"/)
+      const thumbnail = thumbMatch?.[1] ?? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+      const publishedAt = parseXmlText(entry, 'published')
+      const viewsMatch = entry.match(/media:statistics[^>]+views="(\d+)"/)
+      const views = parseInt(viewsMatch?.[1] ?? '0')
+
+      return {
+        id: videoId,
+        title,
+        thumbnail,
+        duration: '',
+        durationFormatted: '',
+        publishedAt,
+        views,
+        youtubeUrl: `https://www.youtube.com/watch?v=${videoId}`,
+      }
+    }).filter((v) => v.id && v.title)
+
+    // RSS'de süre yok → hepsini "video" olarak döndür, shorts boş
+    return { videos: all, shorts: [] }
+  } catch (err) {
+    console.error('getYoutubeVideosAndShorts error:', err)
+    return { videos: [], shorts: [] }
   }
 }
