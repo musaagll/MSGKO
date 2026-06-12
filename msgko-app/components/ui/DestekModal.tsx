@@ -229,20 +229,11 @@ export function DestekModal({ isOpen, onClose }: DestekModalProps) {
                       style={{ background: p.accent }}
                     />
 
-                    {/* İkon */}
-                    <div className="flex-shrink-0 w-14 h-14 flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-                      style={{
-                        background: `linear-gradient(135deg, ${p.accentDim}, rgba(255,255,255,0.02))`,
-                        border: `1px solid ${p.accentBorder}`,
-                        color: p.accent,
-                      }}
-                    >
-                      {p.icon}
-                    </div>
+                    {/* İkon — kaldırıldı */}
 
-                    {/* Yazı */}
-                    <div className="flex-1 min-w-0">
-                      <span className="text-[1.15rem] font-black tracking-[0.1em] uppercase text-white"
+                    {/* Yazı — tam orta */}
+                    <div className="flex-1 flex items-center justify-center">
+                      <span className="text-[1.4rem] font-black tracking-[0.15em] uppercase text-white"
                         style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
                         {p.name}
                       </span>
