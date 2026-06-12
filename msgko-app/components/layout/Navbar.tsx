@@ -18,7 +18,6 @@ import { YoutubePanel } from '@/components/ui/YoutubePanel'
 import { InstagramModal } from '@/components/ui/InstagramModal'
 import { DuyurularModal } from '@/components/ui/DuyurularModal'
 import { WallpaperModal } from '@/components/ui/WallpaperModal'
-import { DestekModal } from '@/components/ui/DestekModal'
 import { NAV_ITEMS } from '@/lib/data'
 
 const NAV_BUTTON_CLASS =
@@ -34,7 +33,6 @@ export function Navbar() {
   const [asasModalOpen, setAsasModalOpen] = useState(false)
   const [wallpaperOpen, setWallpaperOpen] = useState(false)
   const [duyurularOpen, setDuyurularOpen] = useState(false)
-  const [destekOpen, setDestekOpen] = useState(false)
 
   return (
     <>
@@ -167,7 +165,7 @@ export function Navbar() {
             </button>
 
             {/* Destek nav button */}
-            <button type="button" onClick={() => setDestekOpen(true)} className={NAV_BUTTON_CLASS}>
+            <Link href="/destek" className={NAV_BUTTON_CLASS}>
               <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-pink-500/[0.06]" />
               <span className="relative z-10 flex items-center gap-2">
                 <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 group-hover:scale-110"
@@ -179,7 +177,7 @@ export function Navbar() {
                 </span>
                 <span className="text-[#C8C8D8]/50 group-hover:text-pink-300 transition-colors duration-200">Destek</span>
               </span>
-            </button>
+            </Link>
 
             <button
               type="button"
@@ -263,9 +261,6 @@ export function Navbar() {
 
       {/* Duyurular Modal (tam ekran, WallpaperModal gibi) */}
       <DuyurularModal isOpen={duyurularOpen} onClose={() => setDuyurularOpen(false)} />
-
-      {/* Destek Modal */}
-      <DestekModal isOpen={destekOpen} onClose={() => setDestekOpen(false)} />
 
     </>
   )
