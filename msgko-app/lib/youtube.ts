@@ -1,14 +1,22 @@
 /**
  * YouTube video fetcher
  *
- * Strateji:
- * 1. RSS feed ile video listesi al (API key gerektirmez)
- * 2. Shorts tespiti için her video ID'si üzerinde YouTube oEmbed API çağır
- *    (ücretsiz, key gerektirmez) — thumbnail'in yüksekliği > genişliği ise Short
- * 3. Ek olarak başlıkta #shorts/#short tag'i ve thumbnail URL'ini kontrol et
+ * İki ayrı RSS feed kullanır — API key gerektirmez, quota yok:
+ *
+ *  Videolar : channel uploads → UC{channelId_suffix}  →  UU{suffix}  playlist
+ *  Shorts   : shorts playlist → UC{suffix}            →  UUSH{suffix} playlist
+ *
+ * Channel ID: UCGWeKVw_Yiw2a_oul5QkFbA
+ *   Videos  playlist: UUGWeKVw_Yiw2a_oul5QkFbA   (UC→UU)
+ *   Shorts  playlist: UUSHGWeKVw_Yiw2a_oul5QkFbA  (UC→UUSH)
  */
 
 const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID ?? 'UCGWeKVw_Yiw2a_oul5QkFbA'
+
+// UC → UU  (tüm uploads, shorts dahil — ana sayfa kartları için)
+const UPLOADS_PLAYLIST = CHANNEL_ID.replace(/^UC/, 'UU')
+// UC → UUSH  (sadece shorts)
+const SHORTS_PLAYLIST  = CHANNEL_ID.replace(/^UC/, 'UUSH')
 
 export interface YTVideo {
   id: string
@@ -22,13 +30,8 @@ export interface YTVideo {
   isShort?: boolean
 }
 
-function parseXmlText(xml: string, tag: string): string {
-  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`)
-  return xml.match(re)?.[1]?.trim() ?? ''
-}
-
-function decodeHtml(str: string): string {
-  return str
+function decodeHtml(s: string): string {
+  return s
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
@@ -37,120 +40,87 @@ function decodeHtml(str: string): string {
     .replace(/&apos;/g, "'")
 }
 
-/**
- * RSS'deki bir entry'den raw video objesini parse eder.
- */
-function parseEntry(entry: string): YTVideo | null {
-  const videoId = parseXmlText(entry, 'yt:videoId')
-  if (!videoId) return null
-
-  const title = decodeHtml(parseXmlText(entry, 'title'))
-  if (!title) return null
-
-  // thumbnail — media:thumbnail width="" height="" url=""
-  const thumbMatch = entry.match(/media:thumbnail[^>]+url="([^"]+)"/)
-  const thumbnail = thumbMatch?.[1] ?? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
-
-  const publishedAt = parseXmlText(entry, 'published')
-
-  const viewsMatch = entry.match(/media:statistics[^>]+views="(\d+)"/)
-  const views = parseInt(viewsMatch?.[1] ?? '0')
-
-  // Thumbnail width/height — RSS'de bazen var
-  const thumbWidthMatch  = entry.match(/media:thumbnail[^>]+width="(\d+)"/)
-  const thumbHeightMatch = entry.match(/media:thumbnail[^>]+height="(\d+)"/)
-  const thumbW = parseInt(thumbWidthMatch?.[1]  ?? '0')
-  const thumbH = parseInt(thumbHeightMatch?.[1] ?? '0')
-
-  // Shorts tespiti kriterleri:
-  // 1. Başlıkta #shorts/#short tag'i
-  // 2. Thumbnail dikey (height > width) — Shorts genellikle 9:16
-  // 3. Thumbnail URL'inde "shorts" geçiyor
-  const titleLower = title.toLowerCase()
-  const hasShortTag = /#shorts?\b/.test(titleLower)
-  const isVerticalThumb = thumbW > 0 && thumbH > 0 && thumbH > thumbW
-  const thumbUrlHasShorts = thumbnail.toLowerCase().includes('shorts')
-
-  const isShort = hasShortTag || isVerticalThumb || thumbUrlHasShorts
-
-  return {
-    id: videoId,
-    title,
-    thumbnail,
-    duration: '',
-    durationFormatted: '',
-    publishedAt,
-    views,
-    youtubeUrl: isShort
-      ? `https://www.youtube.com/shorts/${videoId}`
-      : `https://www.youtube.com/watch?v=${videoId}`,
-    isShort,
-  }
+function parseXmlField(entry: string, tag: string): string {
+  return entry.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`))?.[1]?.trim() ?? ''
 }
 
-/**
- * Her video için oEmbed çağrısıyla shorts tespiti yapar.
- * thumbnail_height > thumbnail_width ise Short.
- * Toplu istek için Promise.allSettled kullanır.
- */
-async function detectShortsViaOembed(
-  videos: YTVideo[],
-  timeoutMs = 3000
-): Promise<YTVideo[]> {
-  const results = await Promise.allSettled(
-    videos.map(async (v) => {
-      try {
-        const controller = new AbortController()
-        const timer = setTimeout(() => controller.abort(), timeoutMs)
+/** RSS feed'inden entry listesini parse eder */
+function parseRss(xml: string, isShort: boolean): YTVideo[] {
+  return xml
+    .split('<entry>')
+    .slice(1)
+    .map((entry): YTVideo | null => {
+      const id = parseXmlField(entry, 'yt:videoId')
+      if (!id) return null
 
-        // shorts URL'iyle oEmbed'e sor — short ise başarıyla döner, değilse hata
-        const res = await fetch(
-          `https://www.youtube.com/oembed?url=https://www.youtube.com/shorts/${v.id}&format=json`,
-          { signal: controller.signal, cache: 'no-store' }
-        )
-        clearTimeout(timer)
+      const title = decodeHtml(parseXmlField(entry, 'title'))
+      if (!title) return null
 
-        if (res.ok) {
-          const data = await res.json()
-          // Shorts'un thumbnail'i dikey olur
-          const isShort = (data.thumbnail_height ?? 0) > (data.thumbnail_width ?? 0)
-          return { ...v, isShort, youtubeUrl: isShort ? `https://www.youtube.com/shorts/${v.id}` : `https://www.youtube.com/watch?v=${v.id}` }
-        }
-        return v
-      } catch {
-        return v
+      const thumbMatch = entry.match(/media:thumbnail[^>]+url="([^"]+)"/)
+      const thumbnail  = thumbMatch?.[1] ?? `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
+
+      const publishedAt = parseXmlField(entry, 'published')
+
+      const viewsMatch = entry.match(/media:statistics[^>]+views="(\d+)"/)
+      const views = parseInt(viewsMatch?.[1] ?? '0')
+
+      return {
+        id,
+        title,
+        thumbnail,
+        duration: '',
+        durationFormatted: '',
+        publishedAt,
+        views,
+        youtubeUrl: isShort
+          ? `https://www.youtube.com/shorts/${id}`
+          : `https://www.youtube.com/watch?v=${id}`,
+        isShort,
       }
     })
-  )
-
-  return results.map((r, i) => (r.status === 'fulfilled' ? r.value : videos[i]))
+    .filter((v): v is YTVideo => v !== null)
 }
 
+async function fetchRss(playlistId: string, revalidate?: number): Promise<string> {
+  const url = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`
+  const opts: RequestInit = revalidate != null
+    ? { next: { revalidate } }
+    : { cache: 'no-store' }
+
+  const res = await fetch(url, opts)
+  if (!res.ok) throw new Error(`RSS fetch failed: ${res.status} for ${playlistId}`)
+  return res.text()
+}
+
+// ─── Public API ───────────────────────────────────────────────────────────────
+
 /**
- * RSS feed'inden video listesi çeker (ana sayfa için, sadece videolar).
+ * Ana sayfa için: sadece normal videolar (shorts hariç).
+ * Uploads playlist'ten çeker, UUSH filtrelemesi ile shorts çıkarır.
  */
 export async function getYoutubeVideos(limit = 4): Promise<YTVideo[]> {
   try {
-    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`
-    const res = await fetch(rssUrl, {
-      next: { revalidate: 3600 },
-    })
+    // Uploads playlist shorts içerir — bu nedenle ayrıca shorts'ları al ve çıkar
+    const [uploadsXml, shortsXml] = await Promise.allSettled([
+      fetchRss(UPLOADS_PLAYLIST, 3600),
+      fetchRss(SHORTS_PLAYLIST,  3600),
+    ])
 
-    if (!res.ok) return []
+    if (uploadsXml.status === 'rejected') return []
 
-    const xml = await res.text()
-    const entries = xml.split('<entry>').slice(1)
+    const uploads = parseRss(uploadsXml.value, false)
 
-    const parsed = entries
-      .slice(0, 20)
-      .map(parseEntry)
-      .filter((v): v is YTVideo => v !== null)
+    // Shorts ID'lerini bir set'e al
+    const shortIds = new Set(
+      shortsXml.status === 'fulfilled'
+        ? parseRss(shortsXml.value, true).map((v) => v.id)
+        : []
+    )
 
-    // oEmbed ile shorts tespiti yap
-    const withShorts = await detectShortsViaOembed(parsed, 2000)
-
-    // Sadece normal videolar döndür
-    return withShorts.filter((v) => !v.isShort).slice(0, limit)
+    // Shorts'ları filtrele, sadece normal videolar al
+    return uploads
+      .filter((v) => !shortIds.has(v.id))
+      .slice(0, limit)
   } catch (err) {
     console.error('getYoutubeVideos error:', err)
     return []
@@ -158,36 +128,34 @@ export async function getYoutubeVideos(limit = 4): Promise<YTVideo[]> {
 }
 
 /**
- * API route için — hem videolar hem shorts döner.
+ * YouTube panel için: videolar ve shorts ayrı ayrı.
  */
-export async function getYoutubeVideosAndShorts(limit = 30): Promise<{
+export async function getYoutubeVideosAndShorts(maxEach = 30): Promise<{
   videos: YTVideo[]
   shorts: YTVideo[]
 }> {
   try {
-    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`
-    const res = await fetch(rssUrl, { cache: 'no-store' })
+    const [uploadsXml, shortsXml] = await Promise.allSettled([
+      fetchRss(UPLOADS_PLAYLIST),
+      fetchRss(SHORTS_PLAYLIST),
+    ])
 
-    if (!res.ok) {
-      console.error('YouTube RSS error:', res.status)
-      return { videos: [], shorts: [] }
+    // Shorts ID set'i
+    const shortsRaw = shortsXml.status === 'fulfilled'
+      ? parseRss(shortsXml.value, true)
+      : []
+    const shortIds = new Set(shortsRaw.map((v) => v.id))
+
+    // Uploads'dan shorts'ları çıkar
+    const uploadsRaw = uploadsXml.status === 'fulfilled'
+      ? parseRss(uploadsXml.value, false)
+      : []
+    const videosOnly = uploadsRaw.filter((v) => !shortIds.has(v.id))
+
+    return {
+      videos: videosOnly.slice(0, maxEach),
+      shorts: shortsRaw.slice(0, maxEach),
     }
-
-    const xml = await res.text()
-    const entries = xml.split('<entry>').slice(1)
-
-    const parsed = entries
-      .slice(0, Math.min(limit, 50))
-      .map(parseEntry)
-      .filter((v): v is YTVideo => v !== null)
-
-    // oEmbed ile shorts tespiti — timeout 3s
-    const withShorts = await detectShortsViaOembed(parsed, 3000)
-
-    const videos = withShorts.filter((v) => !v.isShort)
-    const shorts = withShorts.filter((v) => v.isShort)
-
-    return { videos, shorts }
   } catch (err) {
     console.error('getYoutubeVideosAndShorts error:', err)
     return { videos: [], shorts: [] }
