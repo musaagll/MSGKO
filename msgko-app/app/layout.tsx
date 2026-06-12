@@ -25,7 +25,7 @@ const BASE_URL = 'https://msgko.net'
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: 'MSGKO — Knight Online Asas & Okçu Eğitim Videoları | msgko.net',
+    default: 'MSGKO — Knight Online Gelişim Rehberi | msgko.net',
     template: '%s | MSGKO Knight Online',
   },
   description:
