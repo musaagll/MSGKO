@@ -7,13 +7,12 @@ import { X, ArrowLeft, ExternalLink, Heart } from 'lucide-react'
 const PLATFORMS = [
   {
     id: 'kopazar',
-    name: 'KoPazar',
-    description: 'Türkiye\'nin lider Knight Online pazaryeri',
+    name: 'KOPAZAR',
     url: 'https://www.kopazar.com/streamer/musaagll',
     accent: '#f59e0b',
-    accentDim: 'rgba(245,158,11,0.12)',
-    accentBorder: 'rgba(245,158,11,0.25)',
-    accentGlow: 'rgba(245,158,11,0.15)',
+    accentDim: 'rgba(245,158,11,0.10)',
+    accentBorder: 'rgba(245,158,11,0.22)',
+    accentGlow: 'rgba(245,158,11,0.12)',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
@@ -21,40 +20,35 @@ const PLATFORMS = [
         <path d="M16 10a4 4 0 0 1-8 0"/>
       </svg>
     ),
-    badge: 'Pazaryeri',
   },
   {
     id: 'bynogame',
-    name: 'ByNoGame',
-    description: 'Oyun içi destek ve bağış platformu',
+    name: 'BYNOGAME',
     url: 'https://donate.bynogame.com/musaagll',
     accent: '#8b5cf6',
-    accentDim: 'rgba(139,92,246,0.12)',
-    accentBorder: 'rgba(139,92,246,0.25)',
-    accentGlow: 'rgba(139,92,246,0.15)',
+    accentDim: 'rgba(139,92,246,0.10)',
+    accentBorder: 'rgba(139,92,246,0.22)',
+    accentGlow: 'rgba(139,92,246,0.12)',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+        <circle cx="12" cy="12" r="10"/>
         <path d="M12 6v6l4 2"/>
       </svg>
     ),
-    badge: 'Destek & Bağış',
   },
   {
     id: 'knightpin',
-    name: 'KnightPİN',
-    description: 'Knight Online PIN ve item desteği',
+    name: 'KNİGHTPİN',
     url: 'https://www.knightpin.com/tr/donate/musaagll',
     accent: '#ec4899',
-    accentDim: 'rgba(236,72,153,0.12)',
-    accentBorder: 'rgba(236,72,153,0.25)',
-    accentGlow: 'rgba(236,72,153,0.15)',
+    accentDim: 'rgba(236,72,153,0.10)',
+    accentBorder: 'rgba(236,72,153,0.22)',
+    accentGlow: 'rgba(236,72,153,0.12)',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
       </svg>
     ),
-    badge: 'PIN & Item',
   },
 ]
 
@@ -101,6 +95,17 @@ export function DestekModal({ isOpen, onClose }: DestekModalProps) {
               radial-gradient(ellipse 70% 35% at 50% 100%, rgba(245,158,11,0.04) 0%, transparent 50%)
             `
           }} />
+
+          {/* Büyük logo arka plan */}
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
+            <img
+              src="/logo.png"
+              alt=""
+              aria-hidden="true"
+              className="w-[520px] md:w-[700px] opacity-[0.04] select-none"
+              style={{ mixBlendMode: 'screen', filter: 'grayscale(1) brightness(2)' }}
+            />
+          </div>
 
           {/* Top accent line */}
           <div className="absolute top-0 left-0 right-0 h-px pointer-events-none"
@@ -237,23 +242,10 @@ export function DestekModal({ isOpen, onClose }: DestekModalProps) {
 
                     {/* Yazı */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[1rem] font-black tracking-[0.06em] uppercase text-white group-hover:text-white transition-colors duration-200"
-                          style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-                          {p.name}
-                        </span>
-                        <span className="px-2 py-0.5 text-[0.55rem] font-bold tracking-[0.12em] uppercase"
-                          style={{
-                            background: p.accentDim,
-                            border: `1px solid ${p.accentBorder}`,
-                            color: p.accent,
-                          }}>
-                          {p.badge}
-                        </span>
-                      </div>
-                      <p className="text-[0.75rem] text-white/35 group-hover:text-white/50 transition-colors duration-200 truncate">
-                        {p.description}
-                      </p>
+                      <span className="text-[1.15rem] font-black tracking-[0.1em] uppercase text-white"
+                        style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
+                        {p.name}
+                      </span>
                     </div>
 
                     {/* Ok ikonu */}
