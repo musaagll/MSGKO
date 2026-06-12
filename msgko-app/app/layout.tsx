@@ -25,42 +25,71 @@ const BASE_URL = 'https://msgko.net'
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: 'MSG Knight Online — Eğitim Videoları',
-    template: '%s | MSG Knight Online',
+    default: 'MSGKO — Knight Online Asas & Okçu Eğitim Videoları | msgko.net',
+    template: '%s | MSGKO Knight Online',
   },
   description:
-    'Asas ve Okçu karakterler için en güncel, kapsamlı Knight Online eğitim videoları. PK taktikleri, farm rotaları, skill kombo rehberleri.',
+    'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas ve Okçu build rehberleri, PK taktikleri, farm rotaları, skill kombo videoları. msgko.net — MSG Knight Online eğitim platformu.',
   keywords: [
+    // Marka
+    'msgko',
+    'msgko.net',
+    'MSG Knight Online',
+    'musaagll',
+    // Oyun genel
     'Knight Online',
-    'Asas eğitim',
-    'Okçu eğitim',
-    'PK taktikleri',
-    'farm rotaları',
-    'skill kombo',
+    'Knight Online Türkçe',
+    'Knight Online rehber',
+    'Knight Online eğitim',
+    'Knight Online 2024',
+    'Knight Online 2025',
     'KO rehber',
+    'KO eğitim',
+    // Sınıf bazlı
+    'Knight Online Asas',
+    'Knight Online Asas rehberi',
+    'Knight Online Asas build',
+    'Knight Online Asas PK',
+    'Asas eğitim videosu',
+    'Knight Online Rogue',
+    'Knight Online Okçu',
+    'Knight Online Okçu rehberi',
+    'Knight Online Archer',
+    'Okçu eğitim',
+    // Oyun mekanikleri
+    'Knight Online PK taktikleri',
+    'Knight Online farm rotası',
+    'Knight Online skill kombo',
+    'Knight Online WS taktikleri',
+    'Knight Online exp farm',
+    // İçerik türü
+    'Knight Online video',
+    'Knight Online YouTube',
+    'Knight Online Türkçe video',
   ],
   openGraph: {
     type: 'website',
     locale: 'tr_TR',
     url: BASE_URL,
-    siteName: 'MSG Knight Online',
-    title: 'MSG Knight Online — Eğitim Videoları',
+    siteName: 'MSGKO — Knight Online',
+    title: 'MSGKO — Knight Online Asas & Okçu Eğitim Videoları',
     description:
-      'Asas ve Okçu karakterler için en güncel, kapsamlı Knight Online eğitim videoları.',
+      'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas ve Okçu build rehberleri, PK taktikleri, farm rotaları ve skill kombo videoları.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'MSG Knight Online',
+        alt: 'MSGKO — Knight Online Rehber Sitesi',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MSG Knight Online — Eğitim Videoları',
+    site: '@musaagll',
+    title: 'MSGKO — Knight Online Asas & Okçu Eğitim Videoları',
     description:
-      'Asas ve Okçu karakterler için en güncel, kapsamlı Knight Online eğitim videoları.',
+      'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas ve Okçu build rehberleri, PK taktikleri ve farm rotaları.',
     images: ['/og-image.png'],
   },
   robots: {
@@ -77,27 +106,30 @@ export const metadata: Metadata = {
   alternates: {
     canonical: BASE_URL,
   },
+  // Google Search Console doğrulama — ileride eklenebilir
+  // verification: {
+  //   google: 'BURAYA_GOOGLE_VERIFICATION_CODE',
+  // },
 }
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'MSG Knight Online',
+  name: 'MSGKO — Knight Online',
+  alternateName: ['msgko', 'MSG Knight Online', 'msgko.net'],
   url: BASE_URL,
   description:
-    'Asas ve Okçu karakterler için en güncel, kapsamlı Knight Online eğitim videoları.',
+    'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas ve Okçu build rehberleri, PK taktikleri, farm rotaları ve skill kombo videoları.',
+  inLanguage: 'tr',
   publisher: {
-    '@type': 'Organization',
-    name: 'MSG Knight Online',
+    '@type': 'Person',
+    name: 'Musa Ağıl',
     url: BASE_URL,
-    logo: {
-      '@type': 'ImageObject',
-      url: `${BASE_URL}/logo.png`,
-    },
     sameAs: [
       'https://www.youtube.com/@musaagll',
       'https://www.instagram.com/msgclip/',
     ],
+    image: `${BASE_URL}/logo.png`,
   },
   potentialAction: {
     '@type': 'SearchAction',
