@@ -12,12 +12,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${BASE_URL}/duyurular`,
-      lastModified: NOW,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
       url: `${BASE_URL}/destek`,
       lastModified: NOW,
       changeFrequency: 'monthly',

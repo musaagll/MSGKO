@@ -41,17 +41,6 @@ export const SEARCH_INDEX: SearchItem[] = [
     badgeColor: 'purple',
   },
   {
-    id: 'duyurular',
-    type: 'sayfa',
-    title: 'Duyurular',
-    description: 'Knight Online güncel duyuruları ve patch notları',
-    action: 'link',
-    href: '/duyurular',
-    keywords: ['duyuru', 'duyurular', 'patch', 'güncelleme', 'haber', 'yama', 'patch notes', 'etkinlik', 'event'],
-    badge: 'Sayfa',
-    badgeColor: 'amber',
-  },
-  {
     id: 'destek',
     type: 'sayfa',
     title: 'Destek',
@@ -252,20 +241,6 @@ export const SEARCH_INDEX: SearchItem[] = [
     ],
     badge: 'İçerik',
     badgeColor: 'purple',
-  },
-  {
-    id: 'duyurular-modal',
-    type: 'modal',
-    title: 'Knight Online Duyuruları',
-    description: 'Güncel Knight Online duyuruları, etkinlikler ve patch notları',
-    action: 'modal',
-    modalId: 'duyurular',
-    keywords: [
-      'duyuru', 'haber', 'patch', 'güncelleme', 'yama', 'etkinlik',
-      'event', 'patch notes', 'ko duyuru',
-    ],
-    badge: 'Duyuru',
-    badgeColor: 'amber',
   },
   {
     id: 'iletisim',

@@ -16,7 +16,6 @@ import { SearchBar } from '@/components/ui/SearchBar'
 import { SidePanel } from '@/components/ui/SidePanel'
 import { YoutubePanel } from '@/components/ui/YoutubePanel'
 import { InstagramModal } from '@/components/ui/InstagramModal'
-import { DuyurularModal } from '@/components/ui/DuyurularModal'
 import { WallpaperModal } from '@/components/ui/WallpaperModal'
 import { NAV_ITEMS } from '@/lib/data'
 
@@ -32,20 +31,15 @@ export function Navbar() {
   const [youtubeOpen, setYoutubeOpen] = useState(false)
   const [asasModalOpen, setAsasModalOpen] = useState(false)
   const [wallpaperOpen, setWallpaperOpen] = useState(false)
-  const [duyurularOpen, setDuyurularOpen] = useState(false)
 
-  // SearchBar'dan gelen modal açma event'lerini dinle
   useEffect(() => {
     const handler = (e: CustomEvent<{ modalId: string }>) => {
       switch (e.detail.modalId) {
-        case 'youtube':    setYoutubeOpen(true); break
-        case 'instagram':  setWsMovieOpen(true); break
-        case 'wallpaper':  setWallpaperOpen(true); break
-        case 'duyurular':  setDuyurularOpen(true); break
-        case 'iletisim':   setIletisimOpen(true); break
-        case 'asas':       setAsasModalOpen(true); break
-        case 'okcu':       /* OkcuModal navbar'da yok, KarakterlerDropdown'dan açılıyor */ break
-        case 'yakinda':    setDuyurularOpen(false); break
+        case 'youtube':   setYoutubeOpen(true); break
+        case 'instagram': setWsMovieOpen(true); break
+        case 'wallpaper': setWallpaperOpen(true); break
+        case 'iletisim':  setIletisimOpen(true); break
+        case 'asas':      setAsasModalOpen(true); break
       }
     }
     window.addEventListener('msgko:openModal', handler as EventListener)
@@ -166,22 +160,6 @@ export function Navbar() {
               </span>
             </button>
 
-            {/* Duyurular nav button */}
-            <button type="button" onClick={() => setDuyurularOpen(true)} className={NAV_BUTTON_CLASS}>
-              <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-amber-500/[0.06]" />
-              <span className="relative z-10 flex items-center gap-2">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 group-hover:scale-110"
-                  style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.25)' }}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                    className="text-amber-400 transition-colors duration-200">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                  </svg>
-                </span>
-                <span className="text-[#C8C8D8]/50 group-hover:text-amber-300 transition-colors duration-200">Duyurular</span>
-              </span>
-            </button>
-
             {/* Destek nav button */}
             <Link href="/destek" className={NAV_BUTTON_CLASS}>
               <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-pink-500/[0.06]" />
@@ -248,7 +226,6 @@ export function Navbar() {
         onInstagramOpen={() => setWsMovieOpen(true)}
         onIletisimOpen={() => setIletisimOpen(true)}
         onAsasOpen={() => setAsasModalOpen(true)}
-        onDuyurularOpen={() => setDuyurularOpen(true)}
       />
       <IletisimModal isOpen={iletisimOpen} onClose={() => setIletisimOpen(false)} />
       <AsasModal isOpen={asasModalOpen} onClose={() => setAsasModalOpen(false)} />
@@ -274,11 +251,8 @@ export function Navbar() {
         <YoutubePanel />
       </SidePanel>
 
-      {/* Instagram Modal (tam ekran, WallpaperModal gibi) */}
+      {/* Instagram Modal */}
       <InstagramModal isOpen={wsMovieOpen} onClose={() => setWsMovieOpen(false)} />
-
-      {/* Duyurular Modal (tam ekran, WallpaperModal gibi) */}
-      <DuyurularModal isOpen={duyurularOpen} onClose={() => setDuyurularOpen(false)} />
 
     </>
   )
