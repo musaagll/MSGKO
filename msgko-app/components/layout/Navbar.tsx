@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useScrollDetect } from '@/hooks/useScrollDetect'
 import { useMobileMenu } from '@/hooks/useMobileMenu'
@@ -33,6 +33,24 @@ export function Navbar() {
   const [asasModalOpen, setAsasModalOpen] = useState(false)
   const [wallpaperOpen, setWallpaperOpen] = useState(false)
   const [duyurularOpen, setDuyurularOpen] = useState(false)
+
+  // SearchBar'dan gelen modal açma event'lerini dinle
+  useEffect(() => {
+    const handler = (e: CustomEvent<{ modalId: string }>) => {
+      switch (e.detail.modalId) {
+        case 'youtube':    setYoutubeOpen(true); break
+        case 'instagram':  setWsMovieOpen(true); break
+        case 'wallpaper':  setWallpaperOpen(true); break
+        case 'duyurular':  setDuyurularOpen(true); break
+        case 'iletisim':   setIletisimOpen(true); break
+        case 'asas':       setAsasModalOpen(true); break
+        case 'okcu':       /* OkcuModal navbar'da yok, KarakterlerDropdown'dan açılıyor */ break
+        case 'yakinda':    setDuyurularOpen(false); break
+      }
+    }
+    window.addEventListener('msgko:openModal', handler as EventListener)
+    return () => window.removeEventListener('msgko:openModal', handler as EventListener)
+  }, [])
 
   return (
     <>
