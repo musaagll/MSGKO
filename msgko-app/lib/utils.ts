@@ -2,6 +2,11 @@
  * Merkezi yardımcı fonksiyonlar — tüm bileşenler buradan import eder.
  */
 
+/** Tailwind class'larını güvenli şekilde birleştirir (clsx/twMerge olmadan) */
+export function cn(...inputs: (string | undefined | null | false | 0)[]): string {
+  return inputs.filter(Boolean).join(' ')
+}
+
 /** ISO 8601 süre string'ini "dk:sn" veya "ss:dk:sn" formatına çevirir */
 export function formatDuration(iso: string): string {
   const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
