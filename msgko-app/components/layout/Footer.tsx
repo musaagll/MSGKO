@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { FOOTER_COLUMNS, SOCIAL_LINKS } from '@/lib/data'
+import { SOCIAL_LINKS } from '@/lib/data'
+import { CokYakindaModal } from '@/components/ui/CokYakindaModal'
 
 function SocialIcon({ platform }: { platform: string }) {
   switch (platform) {
@@ -24,149 +26,170 @@ function SocialIcon({ platform }: { platform: string }) {
   }
 }
 
+const CATEGORY_LINKS = [
+  'Asas PK Taktikleri',
+  'Asas Farm Rotaları',
+  'Okçu PK Taktikleri',
+  'Okçu Skill Rehberleri',
+  'Okçu Farm Rotaları',
+]
+
 export function Footer() {
+  const [yakindaOpen, setYakindaOpen] = useState(false)
+  const [yakindaTitle, setYakindaTitle] = useState('')
+
+  const openYakinda = (title: string) => {
+    setYakindaTitle(title)
+    setYakindaOpen(true)
+  }
+
   return (
-    <footer className="relative overflow-hidden" aria-label="Site footer">
-      <div className="absolute inset-0"
-        style={{
+    <>
+      <footer className="relative overflow-hidden" aria-label="Site footer">
+        <div className="absolute inset-0" style={{
           background: `
             radial-gradient(ellipse 60% 80% at 10% 100%, rgba(139,92,246,0.06) 0%, transparent 50%),
             radial-gradient(ellipse 40% 60% at 90% 0%, rgba(236,72,153,0.04) 0%, transparent 50%),
             linear-gradient(180deg, #0E0E14 0%, #07070B 100%)
           `
-        }}
-      />
-      <div className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.5), rgba(236,72,153,0.4), transparent)' }}
-      />
+        }} />
+        <div className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.5), rgba(236,72,153,0.4), transparent)' }}
+        />
 
-      <div className="relative max-w-[1280px] mx-auto px-8 pt-16 pb-0">
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1.5fr] gap-12 pb-14 border-b border-white/[0.05]">
+        <div className="relative max-w-[1280px] mx-auto px-8 pt-16 pb-0">
+          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1.5fr] gap-12 pb-14 border-b border-white/[0.05]">
 
-          {/* Col 1 */}
-          <div>
-            <div className="mb-5">
-              <Image
-                src="/logo.png"
-                alt="MSG"
-                width={64}
-                height={64}
-                className="h-16 w-auto"
-                style={{ mixBlendMode: 'screen' }}
-              />
-
-              <a
-                href="https://msgko.net"
-                className="inline-flex items-center gap-1.5 mt-1.5 group"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span className="w-1 h-1 rounded-full bg-purple-500/50 group-hover:bg-purple-400/80 transition-colors duration-200" />
-                <span className="text-[0.62rem] tracking-[0.1em] text-white/25 group-hover:text-purple-400/60 transition-colors duration-200">
-                  msgko.net
-                </span>
-              </a>
-            </div>
-            <p className="text-[0.78rem] leading-[1.8] mb-6 max-w-[220px] text-white/40">
-              Knight Online için asas ve okçu karakterlerine özel en kapsamlı eğitim videoları burada.
-            </p>
-            <div className="flex gap-2.5">
-              {SOCIAL_LINKS.map((social) => (
-                <a
-                  key={social.platform}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="w-9 h-9 flex items-center justify-center border border-white/[0.07] bg-white/[0.02] text-white/40 hover:border-purple-500/40 hover:text-purple-400 hover:bg-purple-500/[0.08] transition-all duration-200"
-                >
-                  <SocialIcon platform={social.platform} />
+            {/* Col 1 — Marka */}
+            <div>
+              <div className="mb-5">
+                <Image src="/logo.png" alt="MSG" width={64} height={64}
+                  className="h-16 w-auto" style={{ mixBlendMode: 'screen' }} />
+                <a href="https://msgko.net" className="inline-flex items-center gap-1.5 mt-1.5 group"
+                  target="_blank" rel="noopener noreferrer">
+                  <span className="w-1 h-1 rounded-full bg-purple-500/50 group-hover:bg-purple-400/80 transition-colors duration-200" />
+                  <span className="text-[0.62rem] tracking-[0.1em] text-white/25 group-hover:text-purple-400/60 transition-colors duration-200">
+                    msgko.net
+                  </span>
                 </a>
-              ))}
+              </div>
+              <p className="text-[0.78rem] leading-[1.8] mb-6 max-w-[220px] text-white/40">
+                Knight Online için asas ve okçu karakterlerine özel en kapsamlı eğitim videoları burada.
+              </p>
+              <div className="flex gap-2.5">
+                {SOCIAL_LINKS.map((social) => (
+                  <a key={social.platform} href={social.url} target="_blank" rel="noopener noreferrer"
+                    aria-label={social.label}
+                    className="w-9 h-9 flex items-center justify-center border border-white/[0.07] bg-white/[0.02] text-white/40 hover:border-purple-500/40 hover:text-purple-400 hover:bg-purple-500/[0.08] transition-all duration-200"
+                  >
+                    <SocialIcon platform={social.platform} />
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Col 2 & 3 */}
-          {FOOTER_COLUMNS.map((col) => (
-            <div key={col.heading}>
+            {/* Col 2 — Hızlı Erişim */}
+            <div>
               <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase mb-6 text-white/90">
-                {col.heading}
+                HIZLI ERİŞİM
               </h3>
               <nav className="flex flex-col gap-3">
-                {col.links.map((link) => (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1"
-                  >
+                <Link href="/"
+                  className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1">
+                  <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Ana Sayfa
+                </Link>
+                <button type="button" onClick={() => openYakinda('Asas Eğitimleri')}
+                  className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1 text-left">
+                  <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Asas Eğitimleri
+                </button>
+                <button type="button" onClick={() => openYakinda('Okçu Eğitimleri')}
+                  className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1 text-left">
+                  <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Okçu Eğitimleri
+                </button>
+                <Link href="/destek"
+                  className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1">
+                  <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Destek
+                </Link>
+              </nav>
+            </div>
+
+            {/* Col 3 — Kategoriler */}
+            <div>
+              <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase mb-6 text-white/90">
+                KATEGORİLER
+              </h3>
+              <nav className="flex flex-col gap-3">
+                {CATEGORY_LINKS.map((label) => (
+                  <button key={label} type="button" onClick={() => openYakinda(label)}
+                    className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1 text-left">
                     <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {link.label}
-                  </Link>
+                    {label}
+                  </button>
                 ))}
               </nav>
             </div>
-          ))}
 
-          {/* Col 4 */}
-          <div>
-            <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase mb-6 text-white/90">
-              İLETİŞİM
-            </h3>
-            <p className="text-[0.76rem] leading-[1.8] mb-6 text-white/40">
-              Bizimle iletişime geçmek için sosyal medya hesaplarımızdan bize ulaşabilirsiniz.
-            </p>
-            <div className="flex flex-col gap-2.5">
-              <a
-                href="https://www.instagram.com/msgclip"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center justify-between px-4 py-3 border border-purple-700/30 bg-purple-700/[0.05] hover:border-purple-500/60 hover:bg-purple-700/[0.12] transition-all duration-200"
-                aria-label="Instagram"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-1 h-5" style={{ background: 'linear-gradient(180deg, #833ab4, #fd1d1d, #fcb045)' }} />
-                  <span className="text-[0.72rem] font-bold tracking-[0.12em] uppercase text-white">INSTAGRAM</span>
-                </div>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                  className="text-white/40 group-hover:text-white/70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200">
-                  <path d="M7 17L17 7M17 7H7M17 7v10"/>
-                </svg>
-              </a>
+            {/* Col 4 — İletişim */}
+            <div>
+              <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase mb-6 text-white/90">
+                İLETİŞİM
+              </h3>
+              <p className="text-[0.76rem] leading-[1.8] mb-6 text-white/40">
+                Bizimle iletişime geçmek için sosyal medya hesaplarımızdan bize ulaşabilirsiniz.
+              </p>
+              <div className="flex flex-col gap-2.5">
+                <a href="https://www.instagram.com/msgclip" target="_blank" rel="noopener noreferrer"
+                  className="group flex items-center justify-between px-4 py-3 border border-purple-700/30 bg-purple-700/[0.05] hover:border-purple-500/60 hover:bg-purple-700/[0.12] transition-all duration-200"
+                  aria-label="Instagram">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-1 h-5" style={{ background: 'linear-gradient(180deg, #833ab4, #fd1d1d, #fcb045)' }} />
+                    <span className="text-[0.72rem] font-bold tracking-[0.12em] uppercase text-white">INSTAGRAM</span>
+                  </div>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                    className="text-white/40 group-hover:text-white/70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" aria-hidden="true">
+                    <path d="M7 17L17 7M17 7H7M17 7v10"/>
+                  </svg>
+                </a>
+                <a href="mailto:imusaagll@gmail.com"
+                  className="group flex items-center justify-between px-4 py-3 border border-white/[0.06] bg-white/[0.02] hover:border-purple-500/30 hover:bg-purple-500/[0.05] transition-all duration-200"
+                  aria-label="Gmail">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-1 h-5" style={{ background: 'linear-gradient(180deg, #a78bfa, #7c3aed)' }} />
+                    <span className="text-[0.72rem] font-bold tracking-[0.12em] uppercase text-white">GMAİL</span>
+                  </div>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                    className="text-white/40 group-hover:text-white/70 transition-colors duration-200" aria-hidden="true">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
 
-              <a
-                href="mailto:imusaagll@gmail.com"
-                className="group flex items-center justify-between px-4 py-3 border border-white/[0.06] bg-white/[0.02] hover:border-purple-500/30 hover:bg-purple-500/[0.05] transition-all duration-200"
-                aria-label="Gmail"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-1 h-5" style={{ background: 'linear-gradient(180deg, #a78bfa, #7c3aed)' }} />
-                  <span className="text-[0.72rem] font-bold tracking-[0.12em] uppercase text-white">GMAİL</span>
-                </div>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                  className="text-white/40 group-hover:text-white/70 transition-colors duration-200">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
-                </svg>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-5">
+            <div className="flex items-center gap-3">
+              <p className="text-[0.68rem] tracking-[0.08em] text-white/[0.18]">
+                © {new Date().getFullYear()} MSG Knight Online
+              </p>
+              <span className="text-white/[0.08]" aria-hidden="true">·</span>
+              <a href="https://msgko.net"
+                className="text-[0.68rem] tracking-[0.06em] text-purple-500/40 hover:text-purple-400/70 transition-colors duration-200">
+                msgko.net
               </a>
             </div>
           </div>
         </div>
+      </footer>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-5">
-          <div className="flex items-center gap-3">
-            <p className="text-[0.68rem] tracking-[0.08em] text-white/[0.18]">
-              © {new Date().getFullYear()} MSG Knight Online
-            </p>
-            <span className="text-white/[0.08]">·</span>
-            <a
-              href="https://msgko.net"
-              className="text-[0.68rem] tracking-[0.06em] text-purple-500/40 hover:text-purple-400/70 transition-colors duration-200"
-            >
-              msgko.net
-            </a>
-          </div>
-
-        </div>
-      </div>
-    </footer>
+      <CokYakindaModal
+        isOpen={yakindaOpen}
+        onClose={() => setYakindaOpen(false)}
+        title={yakindaTitle}
+      />
+    </>
   )
 }
