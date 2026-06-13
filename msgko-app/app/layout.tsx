@@ -25,47 +25,58 @@ const BASE_URL = 'https://msgko.net'
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: 'MSGKO — Knight Online Gelişim Rehberi | msgko.net',
-    template: '%s | MSGKO Knight Online',
+    default: 'MSGKO — Knight Online Asas, Okçu, Farm ve PK Rehberi | msgko.net',
+    template: '%s | MSGKO Knight Online Rehberi',
   },
   description:
-    'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas build, asas combo, asas skill dizilimi, asas PK taktikleri, okçu eğitim, farm rehberi ve skill videoları. msgko.net — musaagll Knight Online platformu.',
+    'Knight Online Türkçe rehber sitesi. Asas build, asas combo, asas skill dizilimi, asas PK taktikleri, okçu eğitim, okçu build, farm rehberi, warrior, mage, priest rehberi. 2025-2026 güncel meta. musaagll — msgko.net',
   keywords: [
-    // Marka & site
-    'msgko', 'msgko.net', 'msg', 'MSG Knight Online', 'musaagll',
+    // Marka
+    'msgko', 'msgko.net', 'MSG Knight Online', 'musaagll', 'msg ko',
     // Ana oyun
     'Knight Online', 'Knight Online Türkçe', 'Knight Online rehber',
     'Knight Online eğitim', 'Knight Online 2025', 'Knight Online 2026',
-    'KO rehber', 'KO eğitim', 'mmorpg', 'ko',
+    'KO rehber', 'KO eğitim', 'knight online karakter rehberi',
+    'knight online pvp', 'knight online skill', 'knight online build',
+    'knight online stat dağılımı', 'knight online combo', 'knight online 2026 rehber',
     // Asas / Rogue
-    'Knight Online asas', 'asas rehber', 'asas build', 'asas combo',
-    'asas skill dizilimi', 'asas PK', 'asas nasıl oynanır', 'asas taktikleri',
-    'asas teknikleri', 'asas eğitim', 'Knight Online rogue', 'rogue build',
+    'knight online asas', 'asas rehber', 'asas build', 'asas combo',
+    'asas skill dizilimi', 'asas pk', 'asas nasıl oynanır', 'asas taktikleri',
+    'asas teknikleri', 'asas eğitim', 'knight online rogue', 'rogue build',
+    'asas item rehberi', 'asas stat', 'asas pvp',
     // Okçu / Archer
-    'Knight Online okçu', 'okçu rehber', 'okçu build', 'okçu combo',
-    'okçu skill dizilimi', 'okçu PK', 'okçu eğitim', 'Knight Online archer',
+    'knight online okçu', 'okçu rehber', 'okçu build', 'okçu combo',
+    'okçu skill dizilimi', 'okçu pk', 'okçu eğitim', 'knight online archer',
+    'okçu item', 'okçu stat',
+    // Warrior
+    'knight online warrior', 'warrior rehber', 'warrior build',
+    // Mage
+    'knight online mage', 'mage rehber', 'mage build',
+    // Priest
+    'knight online priest', 'priest rehber', 'priest build',
     // Farm & genel
-    'Knight Online farm', 'Knight Online farm rotası', 'Knight Online exp farm',
-    'Knight Online PK taktikleri', 'Knight Online WS', 'Knight Online skill kombo',
-    'Knight Online guardian of 7 keys', 'anahtar görevi', 'knight online görev',
-    // Video & içerik
-    'Knight Online video', 'Knight Online YouTube', 'Knight Online Türkçe video',
+    'knight online farm', 'knight online farm rotası', 'knight online exp farm',
+    'knight online pk taktikleri', 'knight online ws', 'knight online skill kombo',
+    'knight online item rehberi', 'knight online guardian of 7 keys',
+    'anahtar görevi human', 'knight online görev',
+    // Video
+    'knight online video', 'knight online youtube', 'knight online türkçe video',
     'knight online eğitim videosu',
   ],
   openGraph: {
     type: 'website',
     locale: 'tr_TR',
     url: BASE_URL,
-    siteName: 'MSGKO — Knight Online',
-    title: 'MSGKO — Knight Online Asas, Okçu Eğitim ve Rehber Videoları',
+    siteName: 'MSGKO — Knight Online Rehberi',
+    title: 'MSGKO — Knight Online Asas, Okçu, Farm ve PK Rehberi',
     description:
-      'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas build, asas combo, okçu eğitim, farm rehberi, PK taktikleri ve skill videoları.',
+      'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas build, combo, okçu eğitim, warrior, mage, priest, farm rehberi ve PK taktikleri. 2025-2026 güncel meta.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'MSGKO — Knight Online Rehber Sitesi',
+        alt: 'MSGKO — Knight Online Rehber ve Eğitim Sitesi',
       },
     ],
   },
@@ -75,7 +86,7 @@ export const metadata: Metadata = {
     creator: '@musaagll',
     title: 'MSGKO — Knight Online Asas & Okçu Eğitim Videoları',
     description:
-      'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas build, combo, okçu eğitim, farm rehberi ve PK taktikleri.',
+      'Knight Online asas build, combo, okçu eğitim, farm rehberi ve PK taktikleri. musaagll — msgko.net',
     images: ['/og-image.png'],
   },
   robots: {
@@ -91,50 +102,74 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: BASE_URL,
+    languages: { 'tr-TR': BASE_URL },
   },
   category: 'gaming',
+  authors: [{ name: 'Musa Ağıl', url: BASE_URL }],
+  creator: 'musaagll',
+  publisher: 'MSGKO',
 }
 
 const jsonLd = [
-  // WebSite schema
+  // Organization schema
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'MSGKO',
+    alternateName: ['MSG Knight Online', 'msgko.net', 'musaagll'],
+    url: BASE_URL,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${BASE_URL}/logo.png`,
+      width: 512,
+      height: 512,
+    },
+    sameAs: [
+      'https://www.youtube.com/@musaagll',
+      'https://www.instagram.com/msgclip/',
+    ],
+    description: 'Knight Online Türkçe rehber ve eğitim platformu. Asas, okçu, warrior, mage, priest build ve taktik videoları.',
+    foundingDate: '2025',
+    inLanguage: 'tr',
+  },
+  // WebSite schema + SearchAction
   {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'MSGKO',
-    alternateName: ['msgko.net', 'MSG Knight Online', 'musaagll'],
+    name: 'MSGKO — Knight Online Rehberi',
+    alternateName: ['msgko.net', 'MSG Knight Online'],
     url: BASE_URL,
-    description: 'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas build, combo, okçu eğitim, farm rehberi ve PK taktikleri.',
+    description: 'Knight Online Türkçe rehber sitesi. Asas, okçu, warrior, mage, priest build, combo, farm ve PK taktikleri.',
     inLanguage: 'tr',
-    publisher: {
-      '@type': 'Person',
-      name: 'Musa Ağıl',
-      alternateName: 'musaagll',
-      url: BASE_URL,
-      sameAs: [
-        'https://www.youtube.com/@musaagll',
-        'https://www.instagram.com/msgclip/',
-      ],
-      image: `${BASE_URL}/logo.png`,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${BASE_URL}/?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
     },
   },
-  // Person schema (musaagll)
+  // Person schema
   {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: 'Musa Ağıl',
     alternateName: 'musaagll',
     url: BASE_URL,
+    image: `${BASE_URL}/logo.png`,
     sameAs: [
       'https://www.youtube.com/@musaagll',
       'https://www.instagram.com/msgclip/',
-      'https://msgko.net',
     ],
-    description: 'Knight Online Asas ve Okçu oyuncu ve içerik üreticisi. msgko.net kurucusu.',
+    description: 'Knight Online içerik üreticisi. Asas ve okçu karakter uzmanı. msgko.net kurucusu.',
+    jobTitle: 'İçerik Üreticisi',
     knowsAbout: [
-      'Knight Online', 'Asas', 'Okçu', 'PK taktikleri', 'farm rehberi', 'skill combo',
+      'Knight Online', 'Asas', 'Rogue', 'Okçu', 'Archer',
+      'PK taktikleri', 'Farm rehberi', 'Skill combo', 'Build rehberi',
     ],
   },
-  // FAQPage schema — arama sorgularına cevap
+  // FAQPage schema
   {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -144,23 +179,31 @@ const jsonLd = [
         name: 'Knight Online asas nasıl oynanır?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'MSGKO\'da Knight Online asas rehberleri, build önerileri, skill dizilimi ve PK taktikleri video eğitimleri bulunmaktadır.',
+          text: 'Knight Online asas karakteri hız ve combo odaklı bir DPS sınıfıdır. MSGKO\'da güncel asas build, skill dizilimi, stat dağılımı ve PK taktikleri video rehberlerine ulaşabilirsin.',
         },
       },
       {
         '@type': 'Question',
-        name: 'Knight Online asas build nedir?',
+        name: 'Knight Online asas build 2025-2026 nedir?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Asas build rehberi için msgko.net adresinde güncel stat ve item önerileri ile detaylı eğitim videoları mevcuttur.',
+          text: 'Güncel asas build için STR/DEX dengesi önemlidir. Detaylı stat dağılımı, item önerileri ve skill dizilimi için msgko.net rehberlerini inceleyebilirsin.',
         },
       },
       {
         '@type': 'Question',
-        name: 'Knight Online okçu eğitimi nerede bulunur?',
+        name: 'Knight Online asas combo sırası nedir?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'msgko.net\'te Knight Online okçu eğitim videoları, skill dizilimi ve PK rehberleri bulunmaktadır.',
+          text: 'Asas combo; hızlı kill için skill sırasının doğru kullanılmasını gerektirir. MSGKO\'da profesyonel oyuncuların combo rehberleri video formatında mevcuttur.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Knight Online okçu build nedir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Okçu için uzun menzilli DPS odaklı bir build tercih edilir. Güncel okçu build, skill dizilimi ve PK taktikleri için msgko.net\'i ziyaret edebilirsin.',
         },
       },
       {
@@ -168,10 +211,50 @@ const jsonLd = [
         name: 'Knight Online farm nasıl yapılır?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Knight Online farm rotaları ve exp rehberleri msgko.net\'te video formatında paylaşılmaktadır.',
+          text: 'Knight Online farm için en verimli rotalar, exp alanları ve item drop bölgeleri MSGKO\'da video rehber formatında paylaşılmaktadır.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Knight Online warrior rehberi nerede?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Knight Online warrior build, stat dağılımı ve PK taktikleri için msgko.net rehberlerini takip edebilirsin.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Knight Online pvp nasıl yapılır?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'PK başarısı için karakter build, combo sırası ve map bilgisi kritiktir. MSGKO\'da her sınıf için PK taktik videoları mevcuttur.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'MSGKO nedir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'MSGKO (msgko.net), musaagll tarafından yönetilen Knight Online Türkçe rehber ve eğitim platformudur. Asas, okçu, warrior, mage ve priest için build, combo, farm ve PK rehberleri içermektedir.',
         },
       },
     ],
+  },
+  // VideoObject schema (öne çıkan videolar)
+  {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: 'ZERO - NooaaH Culluk Asas WS İtemli Asas Movie 2026 | Knight Online',
+    description: 'Knight Online asas PK ve WS taktikleri videosu. 2026 meta asas oynanışı.',
+    thumbnailUrl: `https://i.ytimg.com/vi/61-BoM0df3E/hqdefault.jpg`,
+    uploadDate: '2025-06-01',
+    contentUrl: 'https://www.youtube.com/watch?v=61-BoM0df3E',
+    embedUrl: 'https://www.youtube.com/embed/61-BoM0df3E',
+    publisher: {
+      '@type': 'Person',
+      name: 'musaagll',
+      url: 'https://www.youtube.com/@musaagll',
+    },
   },
 ]
 
