@@ -71,6 +71,7 @@ export function SearchBar() {
         }}
       >
         <button
+          type="button"
           onClick={handleOpen}
           className="flex-shrink-0 transition-colors duration-200"
           style={{ color: isOpen ? 'rgba(139,92,246,0.8)' : 'rgba(200,200,216,0.45)' }}
@@ -93,9 +94,11 @@ export function SearchBar() {
             />
             {query && (
               <button
+                type="button"
                 onClick={() => { setQuery(''); setResults([]) }}
                 className="flex-shrink-0 transition-colors duration-200 hover:text-white"
                 style={{ color: 'rgba(200,200,216,0.3)' }}
+                aria-label="Aramayı temizle"
               >
                 <X size={12} />
               </button>
@@ -152,6 +155,7 @@ export function SearchBar() {
                 {results.map((video) => (
                   <li key={video.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                     <button
+                      type="button"
                       onClick={() => {
                         window.open(video.youtube_url, '_blank', 'noopener,noreferrer')
                         setIsOpen(false); setQuery('')

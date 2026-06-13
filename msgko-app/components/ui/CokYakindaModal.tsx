@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useCallback } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
+import { useModal } from '@/hooks/useModal'
 
 interface CokYakindaModalProps {
   isOpen: boolean
@@ -14,11 +15,8 @@ interface CokYakindaModalProps {
 }
 
 export function CokYakindaModal({ isOpen, onClose, title, icon = '⚔', img }: CokYakindaModalProps) {
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    if (isOpen) document.addEventListener('keydown', handleKey)
-    return () => document.removeEventListener('keydown', handleKey)
-  }, [isOpen, onClose])
+  const handleClose = useCallback(() => onClose(), [onClose])
+  useModal(isOpen, handleClose)
 
   return (
     <AnimatePresence>

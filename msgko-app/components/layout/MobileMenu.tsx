@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ChevronRight, ExternalLink } from 'lucide-react'
+import { X, ChevronRight, ExternalLink, Heart } from 'lucide-react'
 import { NAV_ITEMS } from '@/lib/data'
 
 interface MobileMenuProps {
@@ -292,6 +292,14 @@ export function MobileMenu({
 
             {/* Footer CTA — İletişim */}
             <div className="px-4 pb-6 pt-3 border-t border-white/[0.05] space-y-2.5">
+              <Link
+                href="/destek"
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 w-full py-3 text-[0.75rem] font-bold tracking-[0.1em] uppercase border border-pink-500/25 bg-pink-500/[0.07] text-pink-300/80 hover:border-pink-500/50 hover:bg-pink-500/[0.12] hover:text-white transition-all duration-200"
+              >
+                <Heart size={13} />
+                Destek
+              </Link>
               <button
                 type="button"
                 onClick={handleIletisim}
