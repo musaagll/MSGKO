@@ -28,8 +28,8 @@ export interface YTVideo {
 // { id: 'VIDEO_ID', title: 'Video Başlığı', publishedAt: '2025-01-01' }
 // ─────────────────────────────────────────────────────────────────
 const MANUAL_VIDEOS: Array<{ id: string; title: string; publishedAt: string }> = [
-  { id: '61-BoM0df3E', title: 'Knight Online Video 1', publishedAt: '2025-06-01' },
-  { id: '2N4zMIvjHSg', title: 'Knight Online Video 2', publishedAt: '2025-06-01' },
+  { id: '61-BoM0df3E', title: 'ZERO - NooaaH Culluk Asas WS İtemli Asas Movie 2026 | Knight online', publishedAt: '2025-06-01' },
+  { id: '2N4zMIvjHSg', title: 'Knight online - Güncel Rehber Guardian of 7 Keys | Anahtar Görevi Human', publishedAt: '2025-06-01' },
 ]
 
 // ─── RSS'ten Shorts çek ───────────────────────────────────────────
