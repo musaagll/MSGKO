@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Image, Video, BookOpen, Settings,
-  LogOut, Menu, X, ExternalLink, ChevronRight, Shield
+  LogOut, Menu, X, ExternalLink, Shield
 } from 'lucide-react'
 
 const NAV = [
@@ -16,10 +16,61 @@ const NAV = [
   { href: '/ayarlar',    icon: Settings,          label: 'Ayarlar' },
 ]
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+const S = {
+  sidebar: {
+    width: 220,
+    background: '#111118',
+    borderRight: '1px solid rgba(255,255,255,0.06)',
+    display: 'flex' as const,
+    flexDirection: 'column' as const,
+    height: '100%',
+  },
+  logoArea: {
+    padding: '20px 20px',
+    borderBottom: '1px solid rgba(255,255,255,0.06)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+  },
+  logoIcon: {
+    width: 32, height: 32,
+    background: 'rgba(124,58,237,0.2)',
+    border: '1px solid rgba(124,58,237,0.35)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0,
+  },
+  nav: { flex: 1, padding: '12px 10px', display: 'flex', flexDirection: 'column' as const, gap: 2 },
+  navItem: (active: boolean) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    padding: '10px 12px',
+    fontSize: 13,
+    fontWeight: active ? 600 : 400,
+    color: active ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)',
+    background: active ? 'rgba(124,58,237,0.15)' : 'transparent',
+    borderLeft: active ? '2px solid rgba(124,58,237,0.7)' : '2px solid transparent',
+    transition: 'all 0.15s',
+    textDecoration: 'none',
+  }),
+  footerNav: {
+    padding: '12px 10px',
+    borderTop: '1px solid rgba(255,255,255,0.06)',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: 2,
+  },
+  footerItem: {
+    display: 'flex', alignItems: 'center', gap: 10,
+    padding: '8px 12px', fontSize: 13,
+    color: 'rgba(255,255,255,0.35)', textDecoration: 'none',
+    transition: 'color 0.15s', background: 'none', border: 'none', width: '100%', textAlign: 'left' as const,
+  },
+}
+
+function SidebarContent({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
   const router = useRouter()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -27,98 +78,95 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.refresh()
   }
 
-  const Sidebar = () => (
-    <aside className="flex flex-col h-full"
-      style={{ background: 'rgba(255,255,255,0.02)', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
-
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0"
-          style={{ background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.3)' }}>
-          <Shield size={14} style={{ color: '#a78bfa' }} />
-        </div>
+  return (
+    <div style={S.sidebar}>
+      <div style={S.logoArea}>
+        <div style={S.logoIcon}><Shield size={14} color="#a78bfa" /></div>
         <div>
-          <p className="text-sm font-bold tracking-widest uppercase text-white">MSGKO</p>
-          <p className="text-[0.6rem] tracking-[0.15em] uppercase" style={{ color: 'rgba(124,58,237,0.7)' }}>Admin</p>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: '#fff', textTransform: 'uppercase' }}>MSGKO</div>
+          <div style={{ fontSize: 10, color: 'rgba(124,58,237,0.7)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Admin</div>
         </div>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav style={S.nav}>
         {NAV.map(({ href, icon: Icon, label }) => {
           const active = pathname === href || (href !== '/' && pathname.startsWith(href))
           return (
-            <Link key={href} href={href}
-              onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all duration-150"
-              style={{
-                background: active ? 'rgba(124,58,237,0.15)' : 'transparent',
-                borderLeft: active ? '2px solid rgba(124,58,237,0.7)' : '2px solid transparent',
-                color: active ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)',
-              }}
-              onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)' } }}
-              onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.45)' } }}
+            <Link key={href} href={href} onClick={onClose}
+              style={S.navItem(active)}
+              onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.75)' } }}
+              onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.45)' } }}
             >
               <Icon size={16} />
               <span>{label}</span>
-              {active && <ChevronRight size={12} className="ml-auto opacity-50" />}
             </Link>
           )
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="px-3 pb-4 space-y-1" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 12 }}>
-        <a href="https://msgko.net" target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-3 px-3 py-2.5 text-sm transition-all duration-150"
-          style={{ color: 'rgba(255,255,255,0.35)' }}
+      <div style={S.footerNav}>
+        <a href="https://msgko.net" target="_blank" rel="noopener noreferrer" style={S.footerItem}
           onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}
           onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}>
-          <ExternalLink size={15} />
-          <span>Siteyi Görüntüle</span>
+          <ExternalLink size={14} /><span>Siteyi Görüntüle</span>
         </a>
-        <button type="button" onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-all duration-150"
-          style={{ color: 'rgba(239,68,68,0.6)' }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'rgba(239,68,68,0.9)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(239,68,68,0.6)')}>
-          <LogOut size={15} />
-          <span>Çıkış Yap</span>
+        <button type="button" onClick={handleLogout} style={{ ...S.footerItem, color: 'rgba(239,68,68,0.6)', cursor: 'pointer' }}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(239,68,68,0.9)')}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(239,68,68,0.6)')}>
+          <LogOut size={14} /><span>Çıkış Yap</span>
         </button>
       </div>
-    </aside>
+    </div>
   )
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#09090f' }}>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#09090f' }}>
       {/* Desktop sidebar */}
-      <div className="hidden md:flex w-56 flex-shrink-0 h-full flex-col">
-        <Sidebar />
+      <div style={{ width: 220, flexShrink: 0, display: 'none' }} className="md-sidebar">
+        <SidebarContent />
       </div>
 
-      {/* Mobile sidebar overlay */}
+      {/* Always visible sidebar for larger screens — inline media query workaround */}
+      <style>{`
+        @media (min-width: 768px) {
+          .md-sidebar { display: block !important; }
+          .mobile-topbar { display: none !important; }
+        }
+        @media (max-width: 767px) {
+          .md-sidebar { display: none !important; }
+        }
+      `}</style>
+
+      {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex">
-          <div className="w-56 h-full flex flex-col"><Sidebar /></div>
-          <div className="flex-1 bg-black/60" onClick={() => setSidebarOpen(false)} />
+        <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex' }}>
+          <div style={{ width: 220, height: '100%' }}>
+            <SidebarContent onClose={() => setSidebarOpen(false)} />
+          </div>
+          <div style={{ flex: 1, background: 'rgba(0,0,0,0.65)' }} onClick={() => setSidebarOpen(false)} />
         </div>
       )}
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
         {/* Mobile topbar */}
-        <div className="md:hidden flex items-center justify-between px-4 py-3 flex-shrink-0"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
-          <button type="button" onClick={() => setSidebarOpen(true)}>
-            <Menu size={20} style={{ color: 'rgba(255,255,255,0.6)' }} />
+        <div className="mobile-topbar" style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+          background: 'rgba(255,255,255,0.02)',
+        }}>
+          <button type="button" onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', padding: 0 }}>
+            <Menu size={20} color="rgba(255,255,255,0.6)" />
           </button>
-          <span className="text-sm font-bold tracking-widest uppercase text-white">MSGKO Admin</span>
-          <div className="w-5" />
+          <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: '#fff', textTransform: 'uppercase' }}>MSGKO Admin</span>
+          <div style={{ width: 20 }} />
         </div>
 
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main style={{ flex: 1, overflowY: 'auto' }}>
           {children}
         </main>
       </div>

@@ -5,6 +5,18 @@ import { Plus, Trash2, Upload, X, Loader } from 'lucide-react'
 
 interface Wallpaper { id: number; label: string; src: string; category: string; created_at: string }
 
+const btn = (color = '#7c3aed'): React.CSSProperties => ({
+  display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px',
+  fontSize: 13, fontWeight: 600, cursor: 'pointer', border: `1px solid ${color}55`,
+  background: `${color}22`, color: color, transition: 'background 0.15s',
+})
+
+const inp: React.CSSProperties = {
+  width: '100%', padding: '10px 12px',
+  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+  color: '#fff', fontSize: 13, outline: 'none',
+}
+
 export default function WallpapersClient() {
   const [items, setItems] = useState<Wallpaper[]>([])
   const [loading, setLoading] = useState(true)
@@ -19,154 +31,122 @@ export default function WallpapersClient() {
 
   const load = () => {
     setLoading(true)
-    fetch('/api/wallpapers').then(r => r.json()).then(d => { setItems(d); setLoading(false) }).catch(() => setLoading(false))
+    fetch('/api/wallpapers').then(r => r.json()).then(d => { setItems(Array.isArray(d) ? d : []); setLoading(false) }).catch(() => setLoading(false))
   }
-
   useEffect(() => { load() }, [])
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0]
-    if (!f) return
-    setFile(f)
-    setLabel(f.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '))
-    setPreview(URL.createObjectURL(f))
+  const handleFile = (f: File) => {
+    setFile(f); setLabel(f.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')); setPreview(URL.createObjectURL(f))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!file) return
-    setUploading(true)
-    setMsg('')
-
-    // 1. Storage'a yükle
+    setUploading(true); setMsg('')
     const form = new FormData()
-    form.append('file', file)
-    form.append('bucket', 'wallpapers')
+    form.append('file', file); form.append('bucket', 'wallpapers')
     const upRes = await fetch('/api/upload', { method: 'POST', body: form })
     const upData = await upRes.json()
     if (!upRes.ok) { setMsg(upData.error ?? 'Yükleme hatası'); setUploading(false); return }
-
-    // 2. DB'ye kaydet
     const res = await fetch('/api/wallpapers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ label, src: upData.url, category }),
     })
-    if (res.ok) {
-      setMsg('✓ Eklendi')
-      setShowForm(false); setFile(null); setPreview(null); setLabel(''); setCategory('genel')
-      load()
-    } else {
-      const d = await res.json()
-      setMsg(d.error ?? 'Hata')
-    }
+    if (res.ok) { setMsg('✓ Eklendi'); setShowForm(false); setFile(null); setPreview(null); setLabel(''); setCategory('genel'); load() }
+    else { const d = await res.json(); setMsg(d.error ?? 'Hata') }
     setUploading(false)
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Bu wallpaper\'ı silmek istediğine emin misin?')) return
+    if (!confirm('Silmek istiyor musun?')) return
     await fetch('/api/wallpapers', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
     load()
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div style={{ padding: 24 }}>
+      {/* Başlık */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
-          <h1 className="text-xl font-bold text-white">Wallpaper Yönetimi</h1>
-          <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>{items.length} wallpaper</p>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Wallpaper Yönetimi</h1>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>{items.length} wallpaper</p>
         </div>
-        <button type="button" onClick={() => setShowForm(v => !v)}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
-          style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.35)', color: '#a78bfa' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(124,58,237,0.25)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(124,58,237,0.15)')}>
-          {showForm ? <X size={15} /> : <Plus size={15} />}
+        <button type="button" onClick={() => setShowForm(v => !v)} style={btn()}>
+          {showForm ? <X size={14} /> : <Plus size={14} />}
           {showForm ? 'İptal' : 'Yeni Ekle'}
         </button>
       </div>
 
       {/* Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="p-5 mb-6 space-y-4"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-          <h2 className="text-sm font-semibold text-white">Yeni Wallpaper</h2>
+        <form onSubmit={handleSubmit} style={{ padding: 20, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24 }}>
+          <h2 style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 16 }}>Yeni Wallpaper</h2>
 
-          {/* File drop zone */}
+          {/* Dropzone */}
           <div
-            className="relative flex flex-col items-center justify-center p-8 cursor-pointer transition-all"
-            style={{ border: '2px dashed rgba(124,58,237,0.3)', background: preview ? 'rgba(0,0,0,0.2)' : 'rgba(124,58,237,0.04)' }}
             onClick={() => fileRef.current?.click()}
-            onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'rgba(124,58,237,0.6)' }}
-            onDragLeave={e => (e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)')}
-            onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) { setFile(f); setPreview(URL.createObjectURL(f)) } }}>
-            {preview ? (
-              <img src={preview} alt="" className="max-h-40 object-contain" />
-            ) : (
-              <>
-                <Upload size={24} style={{ color: 'rgba(124,58,237,0.6)' }} className="mb-2" />
-                <p className="text-sm text-center" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                  Dosya seç veya sürükle<br /><span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.7rem' }}>PNG, JPG, WEBP</span>
-                </p>
-              </>
-            )}
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+            onDragOver={e => e.preventDefault()}
+            onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              padding: 32, cursor: 'pointer', marginBottom: 16,
+              border: '2px dashed rgba(124,58,237,0.35)', background: 'rgba(124,58,237,0.04)',
+              minHeight: 140,
+            }}>
+            {preview
+              ? <img src={preview} alt="" style={{ maxHeight: 120, objectFit: 'contain' }} />
+              : <>
+                  <Upload size={24} color="rgba(124,58,237,0.6)" style={{ marginBottom: 8 }} />
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textAlign: 'center' }}>
+                    Dosya seç veya sürükle<br /><span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>PNG, JPG, WEBP</span>
+                  </p>
+                </>
+            }
+            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
             <div>
-              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>Etiket</label>
-              <input type="text" value={label} onChange={e => setLabel(e.target.value)} required
-                className="w-full px-3 py-2.5 text-sm text-white outline-none"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }} />
+              <label style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Etiket</label>
+              <input type="text" value={label} onChange={e => setLabel(e.target.value)} required style={inp} />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>Kategori</label>
-              <input type="text" value={category} onChange={e => setCategory(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm text-white outline-none"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }} />
+              <label style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Kategori</label>
+              <input type="text" value={category} onChange={e => setCategory(e.target.value)} style={inp} />
             </div>
           </div>
 
-          {msg && <p className="text-sm" style={{ color: msg.startsWith('✓') ? '#4ade80' : '#f87171' }}>{msg}</p>}
+          {msg && <p style={{ fontSize: 13, marginBottom: 12, color: msg.startsWith('✓') ? '#4ade80' : '#f87171' }}>{msg}</p>}
 
-          <button type="submit" disabled={uploading || !file}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all disabled:opacity-40"
-            style={{ background: 'rgba(124,58,237,0.8)', color: '#fff', border: '1px solid rgba(124,58,237,0.5)' }}>
-            {uploading ? <><Loader size={14} className="animate-spin" /> Yükleniyor...</> : <><Upload size={14} /> Yükle</>}
+          <button type="submit" disabled={uploading || !file} style={{ ...btn(), opacity: (uploading || !file) ? 0.4 : 1 }}>
+            {uploading ? <><Loader size={14} style={{ animation: 'spin 1s linear infinite' }} /> Yükleniyor...</> : <><Upload size={14} /> Yükle</>}
           </button>
         </form>
       )}
 
       {/* Grid */}
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="aspect-video animate-pulse"
-              style={{ background: 'rgba(255,255,255,0.05)' }} />
-          ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
+          {[...Array(6)].map((_, i) => <div key={i} style={{ aspectRatio: '16/9', background: 'rgba(255,255,255,0.05)' }} />)}
         </div>
       ) : items.length === 0 ? (
-        <div className="text-center py-16" style={{ color: 'rgba(255,255,255,0.25)' }}>
-          <p>Henüz wallpaper yok</p>
-        </div>
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'rgba(255,255,255,0.25)' }}>Henüz wallpaper yok</div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
           {items.map(wp => (
-            <div key={wp.id} className="group relative overflow-hidden"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <div className="aspect-video overflow-hidden">
-                <img src={wp.src} alt={wp.label} loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <div key={wp.id} style={{ position: 'relative', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden' }}
+              onMouseEnter={e => { const btn = (e.currentTarget as HTMLElement).querySelector('.del-btn') as HTMLElement; if (btn) btn.style.opacity = '1' }}
+              onMouseLeave={e => { const btn = (e.currentTarget as HTMLElement).querySelector('.del-btn') as HTMLElement; if (btn) btn.style.opacity = '0' }}>
+              <div style={{ aspectRatio: '16/9', overflow: 'hidden' }}>
+                <img src={wp.src} alt={wp.label} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
-              <div className="p-2">
-                <p className="text-xs font-medium text-white truncate">{wp.label}</p>
-                <p className="text-[0.62rem] mt-0.5" style={{ color: 'rgba(255,255,255,0.3)' }}>{wp.category}</p>
+              <div style={{ padding: '8px 10px' }}>
+                <p style={{ fontSize: 12, fontWeight: 500, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{wp.label}</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{wp.category}</p>
               </div>
-              <button type="button" onClick={() => handleDelete(wp.id)}
-                className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: 'rgba(239,68,68,0.85)' }}>
-                <Trash2 size={12} className="text-white" />
+              <button type="button" className="del-btn" onClick={() => handleDelete(wp.id)}
+                style={{ position: 'absolute', top: 8, right: 8, width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(239,68,68,0.85)', border: 'none', cursor: 'pointer', opacity: 0, transition: 'opacity 0.2s' }}>
+                <Trash2 size={12} color="#fff" />
               </button>
             </div>
           ))}
