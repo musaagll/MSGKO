@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowLeft, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
@@ -22,10 +22,12 @@ interface InstagramModalProps {
 export function InstagramModal({ isOpen, onClose }: InstagramModalProps) {
   const [activeReel, setActiveReel] = useState<string | null>(null)
 
-  useModal(isOpen, () => {
+  const handleClose = useCallback(() => {
     if (activeReel) setActiveReel(null)
     else onClose()
-  })
+  }, [activeReel, onClose])
+
+  useModal(isOpen, handleClose)
 
   return (
     <AnimatePresence>

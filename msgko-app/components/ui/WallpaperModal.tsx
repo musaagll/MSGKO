@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Download, X, ZoomIn, ArrowLeft } from 'lucide-react'
 import { useModal } from '@/hooks/useModal'
@@ -29,10 +29,12 @@ interface WallpaperModalProps {
 export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
   const [lightbox, setLightbox] = useState<typeof WALLPAPERS[0] | null>(null)
 
-  useModal(isOpen, () => {
+  const handleClose = useCallback(() => {
     if (lightbox) setLightbox(null)
     else onClose()
-  })
+  }, [lightbox, onClose])
+
+  useModal(isOpen, handleClose)
 
   return (
     <AnimatePresence>
