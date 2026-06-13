@@ -96,7 +96,19 @@ export async function GET(
     if (src && !src.startsWith('http')) {
       $img.attr('src', `https://image.nttgame.com${src}`)
     }
+    // Güvenlik: img üzerinde event handler'ları kaldır
+    $img.removeAttr('onload').removeAttr('onerror').removeAttr('onclick')
   })
+
+  // Güvenlik: inline script ve event handler'ları kaldır
+  $contentEl.find('script').remove()
+  $contentEl.find('[onclick],[onload],[onerror],[onmouseover],[onfocus]').each((_, el) => {
+    const $el = $(el)
+    $el.removeAttr('onclick').removeAttr('onload').removeAttr('onerror')
+      .removeAttr('onmouseover').removeAttr('onfocus')
+  })
+  // javascript: protokolünü olan href'leri temizle
+  $contentEl.find('a[href^="javascript:"]').removeAttr('href')
 
   const content = $contentEl.html() ?? ''
 

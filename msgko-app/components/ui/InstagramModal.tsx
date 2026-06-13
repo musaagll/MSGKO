@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowLeft, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
+import { useModal } from '@/hooks/useModal'
 
 const REELS = [
   { id: 'DZFCMQMNr5C', title: 'Video 1' },
@@ -21,22 +22,10 @@ interface InstagramModalProps {
 export function InstagramModal({ isOpen, onClose }: InstagramModalProps) {
   const [activeReel, setActiveReel] = useState<string | null>(null)
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (activeReel) setActiveReel(null)
-        else onClose()
-      }
-    }
-    if (isOpen) {
-      document.addEventListener('keydown', handleKey)
-      document.body.style.overflow = 'hidden'
-    }
-    return () => {
-      document.removeEventListener('keydown', handleKey)
-      document.body.style.overflow = ''
-    }
-  }, [isOpen, activeReel, onClose])
+  useModal(isOpen, () => {
+    if (activeReel) setActiveReel(null)
+    else onClose()
+  })
 
   return (
     <AnimatePresence>

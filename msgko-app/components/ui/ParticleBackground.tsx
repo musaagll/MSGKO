@@ -20,7 +20,7 @@ export function ParticleBackground() {
 
     let animId: number
     const particles: Particle[] = []
-    const COUNT = 60
+    const COUNT = 35
 
     const resize = () => {
       canvas.width = window.innerWidth
@@ -87,6 +87,8 @@ export function ParticleBackground() {
       ref={canvasRef}
       id="particle-canvas"
       aria-hidden="true"
+      className="fixed inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 0 }}
     />
   )
 }

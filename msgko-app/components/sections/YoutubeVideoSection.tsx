@@ -4,21 +4,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, Play, Eye, Clock } from 'lucide-react'
 import type { YTVideo } from '@/lib/youtube'
-
-function formatViews(n: number): string {
-  if (n < 1000) return String(n)
-  if (n < 1_000_000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}B`
-  return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`
-}
-
-function timeAgo(dateStr: string): string {
-  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
-  if (diff < 3600) return `${Math.floor(diff / 60)} dk önce`
-  if (diff < 86400) return `${Math.floor(diff / 3600)} saat önce`
-  if (diff < 604800) return `${Math.floor(diff / 86400)} gün önce`
-  if (diff < 2592000) return `${Math.floor(diff / 604800)} hafta önce`
-  return `${Math.floor(diff / 2592000)} ay önce`
-}
+import { formatViews, timeAgo } from '@/lib/utils'
 
 interface Props {
   videos: YTVideo[]

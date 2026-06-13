@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import { ExternalLink, Heart, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import type { Metadata } from 'next'
 
 const PLATFORMS = [
   {

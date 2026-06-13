@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Download, X, ZoomIn, ArrowLeft } from 'lucide-react'
+import { useModal } from '@/hooks/useModal'
 
 const WALLPAPERS = [
   { id: 1,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_13.png', label: 'Wallpaper I' },
@@ -28,22 +29,10 @@ interface WallpaperModalProps {
 export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
   const [lightbox, setLightbox] = useState<typeof WALLPAPERS[0] | null>(null)
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (lightbox) setLightbox(null)
-        else onClose()
-      }
-    }
-    if (isOpen) {
-      document.addEventListener('keydown', handleKey)
-      document.body.style.overflow = 'hidden'
-    }
-    return () => {
-      document.removeEventListener('keydown', handleKey)
-      document.body.style.overflow = ''
-    }
-  }, [isOpen, lightbox, onClose])
+  useModal(isOpen, () => {
+    if (lightbox) setLightbox(null)
+    else onClose()
+  })
 
   return (
     <AnimatePresence>
@@ -167,6 +156,7 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
                   <img
                     src={wp.src}
                     alt={wp.label}
+                    loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
                   />
 

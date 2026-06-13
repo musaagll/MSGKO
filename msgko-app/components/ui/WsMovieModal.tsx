@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ArrowUpRight, Play } from 'lucide-react'
+import { X, ArrowUpRight } from 'lucide-react'
+import { useModal } from '@/hooks/useModal'
 
 interface WsMovieModalProps {
   isOpen: boolean
@@ -18,17 +18,7 @@ const INSTAGRAM_REELS = [
 ]
 
 export function WsMovieModal({ isOpen, onClose }: WsMovieModalProps) {
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    if (isOpen) {
-      document.addEventListener('keydown', handleKey)
-      document.body.style.overflow = 'hidden'
-    }
-    return () => {
-      document.removeEventListener('keydown', handleKey)
-      document.body.style.overflow = ''
-    }
-  }, [isOpen, onClose])
+  useModal(isOpen, onClose)
 
   return (
     <AnimatePresence>

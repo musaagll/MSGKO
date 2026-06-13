@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Clock } from 'lucide-react'
+import { useModal } from '@/hooks/useModal'
 
 interface AsasModalProps {
   isOpen: boolean
@@ -10,11 +10,7 @@ interface AsasModalProps {
 }
 
 export function AsasModal({ isOpen, onClose }: AsasModalProps) {
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    if (isOpen) document.addEventListener('keydown', handleKey)
-    return () => document.removeEventListener('keydown', handleKey)
-  }, [isOpen, onClose])
+  useModal(isOpen, onClose)
 
   return (
     <AnimatePresence>

@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowUpRight } from 'lucide-react'
+import { useModal } from '@/hooks/useModal'
 
 interface SidePanelProps {
   isOpen: boolean
@@ -21,17 +21,7 @@ export function SidePanel({
   accentColor, children, externalUrl, externalLabel
 }: SidePanelProps) {
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    if (isOpen) {
-      document.addEventListener('keydown', handleKey)
-      document.body.style.overflow = 'hidden'
-    }
-    return () => {
-      document.removeEventListener('keydown', handleKey)
-      document.body.style.overflow = ''
-    }
-  }, [isOpen, onClose])
+  useModal(isOpen, onClose)
 
   return (
     <AnimatePresence>
@@ -91,6 +81,7 @@ export function SidePanel({
                   ESC kapat
                 </span>
                 <button
+                  type="button"
                   onClick={onClose}
                   className="w-8 h-8 flex items-center justify-center border border-white/[0.08] text-white/40 hover:text-white hover:border-white/20 transition-all duration-200"
                   aria-label="Kapat"

@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
+import { useModal } from '@/hooks/useModal'
 
 interface IletisimModalProps {
   isOpen: boolean
@@ -10,11 +10,7 @@ interface IletisimModalProps {
 }
 
 export function IletisimModal({ isOpen, onClose }: IletisimModalProps) {
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    if (isOpen) document.addEventListener('keydown', handleKey)
-    return () => document.removeEventListener('keydown', handleKey)
-  }, [isOpen, onClose])
+  useModal(isOpen, onClose)
 
   return (
     <AnimatePresence>

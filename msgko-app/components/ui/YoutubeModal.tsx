@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Play, Clock, ArrowUpRight, Eye } from 'lucide-react'
+import { formatDuration, timeAgo, formatViews } from '@/lib/utils'
 
 interface YTVideo {
   id: string
@@ -20,36 +21,12 @@ interface YoutubeModalProps {
   onClose: () => void
 }
 
-function formatDuration(iso: string): string {
-  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
-  if (!match) return ''
-  const h = parseInt(match[1] || '0')
-  const m = parseInt(match[2] || '0')
-  const s = parseInt(match[3] || '0')
-  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
-  return `${m}:${String(s).padStart(2,'0')}`
-}
-
-function timeAgo(dateStr: string): string {
-  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
-  if (diff < 3600) return `${Math.floor(diff/60)} dk önce`
-  if (diff < 86400) return `${Math.floor(diff/3600)} saat önce`
-  if (diff < 604800) return `${Math.floor(diff/86400)} gün önce`
-  if (diff < 2592000) return `${Math.floor(diff/604800)} hafta önce`
-  return `${Math.floor(diff/2592000)} ay önce`
-}
-
-function formatViews(n: number): string {
-  if (n < 1000) return String(n)
-  if (n < 1000000) return `${(n/1000).toFixed(1)}B`
-  return `${(n/1000000).toFixed(1)}M`
-}
-
 export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
   const [tab, setTab] = useState<'videos' | 'shorts'>('videos')
   const [videos, setVideos] = useState<YTVideo[]>([])
   const [shorts, setShorts] = useState<YTVideo[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
   const [activeVideo, setActiveVideo] = useState<string | null>(null)
 
   useEffect(() => {
@@ -65,17 +42,23 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
       document.removeEventListener('keydown', handleKey)
       document.body.style.overflow = ''
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen])
 
   const fetchVideos = async () => {
     setLoading(true)
+    setError(false)
     try {
       const res = await fetch('/api/youtube?maxResults=30')
+      if (!res.ok) throw new Error('API hatası')
       const data = await res.json()
       setVideos(data.videos ?? [])
       setShorts(data.shorts ?? [])
-    } catch { /* silent */ }
-    setLoading(false)
+    } catch {
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const currentList = tab === 'videos' ? videos : shorts
@@ -111,6 +94,7 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
             }}
             role="dialog"
             aria-modal="true"
+            aria-label="YouTube Videoları"
           >
             {/* Top gradient border */}
             <div className="absolute top-0 left-0 right-0 h-[1px]"
@@ -127,18 +111,13 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
               style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
             >
               <div className="flex items-center gap-4">
-                {/* YouTube icon box */}
                 <div className="w-10 h-10 flex items-center justify-center flex-shrink-0"
-                  style={{
-                    background: 'rgba(255,0,0,0.1)',
-                    border: '1px solid rgba(255,0,0,0.25)',
-                  }}
+                  style={{ background: 'rgba(255,0,0,0.1)', border: '1px solid rgba(255,0,0,0.25)' }}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(255,80,80,1)">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(255,80,80,1)" aria-hidden="true">
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                   </svg>
                 </div>
-
                 <div>
                   <p className="text-white font-bold text-[0.95rem] tracking-[0.06em]">YouTube</p>
                   <a href="https://www.youtube.com/@musaagll" target="_blank" rel="noopener noreferrer"
@@ -151,11 +130,11 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
               </div>
 
               <div className="flex items-center gap-4">
-                <span className="text-[0.68rem] tracking-[0.1em] hidden sm:block"
-                  style={{ color: 'rgba(255,255,255,0.18)' }}>
+                <span className="text-[0.68rem] tracking-[0.1em] hidden sm:block" style={{ color: 'rgba(255,255,255,0.18)' }}>
                   ESC ile kapat
                 </span>
                 <button
+                  type="button"
                   onClick={() => { setActiveVideo(null); onClose() }}
                   className="w-8 h-8 flex items-center justify-center transition-all duration-200"
                   style={{ border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)' }}
@@ -177,12 +156,11 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
             </div>
 
             {/* Tabs */}
-            <div className="flex flex-shrink-0 px-8"
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-            >
+            <div className="flex flex-shrink-0 px-8" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
               {(['videos', 'shorts'] as const).map((t) => (
                 <button
                   key={t}
+                  type="button"
                   onClick={() => { setTab(t); setActiveVideo(null) }}
                   className="relative flex items-center gap-2 px-1 py-4 mr-8 text-[0.8rem] font-semibold tracking-[0.08em] uppercase transition-all duration-200"
                   style={{ color: tab === t ? '#fff' : 'rgba(180,180,200,0.35)' }}
@@ -213,7 +191,6 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
 
             {/* Body */}
             <div className="flex flex-1 overflow-hidden">
-              {/* Player */}
               {activeVideo && (
                 <div className="flex-1 bg-black">
                   <iframe
@@ -227,16 +204,13 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
                 </div>
               )}
 
-              {/* List */}
               <div className={`overflow-y-auto ${activeVideo ? 'w-80 flex-shrink-0' : 'flex-1 p-8'}`}
                 style={{ borderLeft: activeVideo ? '1px solid rgba(255,255,255,0.05)' : 'none' }}
               >
                 {loading && (
                   <div className="flex items-center justify-center h-40 gap-2">
                     {[0,1,2].map(i => (
-                      <motion.div
-                        key={i}
-                        className="w-1 h-8 rounded-full"
+                      <motion.div key={i} className="w-1 h-8 rounded-full"
                         style={{ background: 'rgba(255,80,80,0.5)' }}
                         animate={{ scaleY: [1, 2, 1] }}
                         transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.15 }}
@@ -245,33 +219,39 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
                   </div>
                 )}
 
-                {!loading && currentList.length === 0 && (
+                {!loading && error && (
+                  <div className="flex flex-col items-center justify-center h-40 gap-3">
+                    <p className="text-[0.82rem]" style={{ color: 'rgba(255,80,80,0.7)' }}>Videolar yüklenemedi</p>
+                    <button type="button" onClick={fetchVideos}
+                      className="px-4 py-1.5 text-[0.72rem] border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors duration-200">
+                      Tekrar Dene
+                    </button>
+                  </div>
+                )}
+
+                {!loading && !error && currentList.length === 0 && (
                   <div className="flex flex-col items-center justify-center h-40 gap-3">
                     <Clock size={28} style={{ color: 'rgba(255,255,255,0.15)' }} />
                     <p className="text-[0.82rem]" style={{ color: 'rgba(255,255,255,0.3)' }}>Video bulunamadı</p>
                   </div>
                 )}
 
-                {!loading && currentList.length > 0 && (
+                {!loading && !error && currentList.length > 0 && (
                   <div className={
-                    activeVideo
-                      ? 'flex flex-col'
-                      : tab === 'shorts'
-                        ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3'
-                        : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+                    activeVideo ? 'flex flex-col'
+                    : tab === 'shorts' ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3'
+                    : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
                   }>
                     {currentList.map((video, i) => (
                       <motion.button
                         key={video.id}
+                        type="button"
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.04 }}
                         onClick={() => setActiveVideo(video.id)}
-                        className={`text-left group transition-all duration-200 overflow-hidden ${
-                          activeVideo
-                            ? `flex items-start gap-3 p-3 ${activeVideo === video.id ? '' : ''}`
-                            : ''
-                        }`}
+                        aria-label={`${video.title} videosunu oynat`}
+                        className={`text-left group transition-all duration-200 overflow-hidden ${activeVideo ? 'flex items-start gap-3 p-3' : ''}`}
                         style={activeVideo ? {
                           borderBottom: '1px solid rgba(255,255,255,0.04)',
                           background: activeVideo === video.id ? 'rgba(255,80,80,0.06)' : 'transparent',
@@ -293,35 +273,26 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
                           }
                         }}
                       >
-                        {/* Thumbnail */}
                         <div className={`relative overflow-hidden bg-[#141420] flex-shrink-0 ${
-                          activeVideo
-                            ? 'w-20 aspect-video'
-                            : tab === 'shorts' ? 'aspect-[9/16] w-full' : 'aspect-video w-full'
+                          activeVideo ? 'w-20 aspect-video'
+                          : tab === 'shorts' ? 'aspect-[9/16] w-full' : 'aspect-video w-full'
                         }`}>
                           {video.thumbnail ? (
-                            <img
-                              src={video.thumbnail}
-                              alt={video.title}
+                            <img src={video.thumbnail} alt={video.title} loading="lazy"
                               className="w-full h-full object-cover transition-transform duration-400 group-hover:scale-[1.06]"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center"
-                              style={{ background: 'rgba(255,80,80,0.05)' }}>
-                              <Play size={20} style={{ color: 'rgba(255,80,80,0.3)' }} />
+                            <div className="w-full h-full flex items-center justify-center" style={{ background: 'rgba(255,80,80,0.05)' }}>
+                              <Play size={20} style={{ color: 'rgba(255,80,80,0.3)' }} aria-hidden="true" />
                             </div>
                           )}
-
-                          {/* Overlay */}
                           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
                             style={{ background: 'rgba(0,0,0,0.3)' }}>
                             <div className="w-10 h-10 rounded-full flex items-center justify-center"
                               style={{ background: 'rgba(255,80,80,0.85)', boxShadow: '0 0 16px rgba(255,80,80,0.4)' }}>
-                              <Play size={14} fill="white" className="text-white ml-0.5" />
+                              <Play size={14} fill="white" className="text-white ml-0.5" aria-hidden="true" />
                             </div>
                           </div>
-
-                          {/* Duration */}
                           {!activeVideo && video.duration && (
                             <span className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 text-white text-[0.62rem] font-bold"
                               style={{ background: 'rgba(0,0,0,0.85)' }}>
@@ -330,7 +301,6 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
                           )}
                         </div>
 
-                        {/* Info */}
                         <div className={activeVideo ? 'flex-1 min-w-0' : 'p-3'}>
                           <p className={`text-white font-medium leading-snug line-clamp-2 group-hover:text-red-300 transition-colors duration-200 ${
                             activeVideo ? 'text-[0.74rem]' : 'text-[0.82rem] mb-2'
@@ -338,13 +308,12 @@ export function YoutubeModal({ isOpen, onClose }: YoutubeModalProps) {
                             {video.title}
                           </p>
                           {!activeVideo && (
-                            <div className="flex items-center gap-2 text-[0.68rem]"
-                              style={{ color: 'rgba(180,180,200,0.4)' }}>
+                            <div className="flex items-center gap-2 text-[0.68rem]" style={{ color: 'rgba(180,180,200,0.4)' }}>
                               <div className="flex items-center gap-1">
-                                <Eye size={10} />
+                                <Eye size={10} aria-hidden="true" />
                                 <span>{formatViews(video.views)}</span>
                               </div>
-                              <span style={{ color: 'rgba(255,255,255,0.12)' }}>·</span>
+                              <span style={{ color: 'rgba(255,255,255,0.12)' }} aria-hidden="true">·</span>
                               <span>{timeAgo(video.publishedAt)}</span>
                             </div>
                           )}
