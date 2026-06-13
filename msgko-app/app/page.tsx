@@ -209,19 +209,71 @@ export default async function HomePage() {
           </div>
 
           {/* Alt açıklama — Featured Snippet hedef */}
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-xl font-black tracking-[0.06em] uppercase text-white mb-4"
-              style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-              MSGKO Nedir?
-            </h2>
-            <p className="text-[0.82rem] leading-[1.9] text-white/40">
-              <strong className="text-white/70">MSGKO (msgko.net)</strong>, Knight Online oyununun tüm sınıfları için
-              Türkçe rehber ve eğitim videoları sunan bir platformdur.
-              <strong className="text-white/70"> musaagll</strong> tarafından yönetilen sitede asas build, asas combo,
-              okçu eğitim, warrior, mage ve priest rehberleri bulunmaktadır.
-              Knight Online PK taktikleri, farm rotaları, skill dizilimi ve stat dağılımı konularında
-              2025-2026 güncel meta bilgileri video ve metin formatında paylaşılmaktadır.
-            </p>
+          <div className="max-w-3xl mx-auto">
+            {/* Üst accent çizgisi */}
+            <div className="w-16 h-px mx-auto mb-10"
+              style={{ background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.6), rgba(236,72,153,0.5), transparent)' }}
+            />
+
+            {/* Başlık */}
+            <div className="text-center mb-8">
+              <p className="text-[0.62rem] font-bold tracking-[0.32em] uppercase mb-3"
+                style={{ color: 'rgba(139,92,246,0.65)' }}>
+                MSGKO.NET
+              </p>
+              <h2 className="text-2xl md:text-3xl font-black tracking-[0.1em] uppercase text-white"
+                style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
+                Hedefimiz Nedir?
+              </h2>
+            </div>
+
+            {/* İçerik kutusu */}
+            <div className="relative p-8 md:p-10"
+              style={{
+                background: 'rgba(255,255,255,0.018)',
+                border: '1px solid rgba(139,92,246,0.15)',
+                boxShadow: '0 8px 40px rgba(0,0,0,0.3)',
+              }}>
+              {/* Sol accent çizgisi */}
+              <div className="absolute left-0 top-6 bottom-6 w-[2px]"
+                style={{ background: 'linear-gradient(180deg, transparent, rgba(139,92,246,0.6), rgba(236,72,153,0.4), transparent)' }}
+              />
+              {/* Köşe detayı */}
+              <div className="absolute top-0 left-0 w-8 h-8 pointer-events-none"
+                style={{ borderTop: '1px solid rgba(139,92,246,0.4)', borderLeft: '1px solid rgba(139,92,246,0.4)' }}
+              />
+              <div className="absolute bottom-0 right-0 w-8 h-8 pointer-events-none"
+                style={{ borderBottom: '1px solid rgba(236,72,153,0.3)', borderRight: '1px solid rgba(236,72,153,0.3)' }}
+              />
+
+              <p className="text-[0.88rem] md:text-[0.92rem] leading-[2] text-white/55 mb-6">
+                MSGKO.NET&apos;in hedefi, Knight Online oyuncularına yalnızca bilgi sunmak değil,
+                oyuna bakış açılarını geliştirmektir. Tecrübenin paylaşıldıkça değer kazandığına inanıyor;
+                PvP&apos;den farm stratejilerine, karakter gelişiminden oyun metalarına kadar her konuda
+                oyuncuların yanında yer alıyoruz.
+              </p>
+
+              <p className="text-[0.88rem] md:text-[0.92rem] leading-[2] text-white/55">
+                Amacımız, Türk Knight Online topluluğunun en güvenilir bilgi merkezi olmak ve
+                her oyuncunun oyun içerisinde bir adım daha ileriye ulaşmasına katkı sağlamaktır.
+              </p>
+
+              {/* Alt imza */}
+              <div className="mt-8 pt-6 flex items-center gap-3"
+                style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="w-6 h-6 flex-shrink-0">
+                  <img src="/logo.png" alt="MSGKO" className="w-full h-full object-contain"
+                    style={{ mixBlendMode: 'screen', filter: 'brightness(1.4)' }} />
+                </div>
+                <div className="h-px flex-1"
+                  style={{ background: 'linear-gradient(90deg, rgba(139,92,246,0.3), transparent)' }}
+                />
+                <span className="text-[0.62rem] font-bold tracking-[0.22em] uppercase"
+                  style={{ color: 'rgba(139,92,246,0.5)' }}>
+                  msgko.net — musaagll
+                </span>
+              </div>
+            </div>
           </div>
 
         </div>
