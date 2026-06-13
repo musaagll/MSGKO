@@ -1,25 +1,17 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Download, X, ZoomIn, ArrowLeft } from 'lucide-react'
 import { useModal } from '@/hooks/useModal'
+import { createClient } from '@/lib/supabase/client'
 
-const WALLPAPERS = [
-  { id: 1,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_13.png', label: 'Wallpaper I' },
-  { id: 2,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_20.png', label: 'Wallpaper II' },
-  { id: 3,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_23.png', label: 'Wallpaper III' },
-  { id: 4,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_27.png', label: 'Wallpaper IV' },
-  { id: 5,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_30.png', label: 'Wallpaper V' },
-  { id: 6,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_52_34.png', label: 'Wallpaper VI' },
-  { id: 7,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_54_36.png', label: 'Wallpaper VII' },
-  { id: 8,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_56_00.png', label: 'Wallpaper VIII' },
-  { id: 9,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_57_36.png', label: 'Wallpaper IX' },
-  { id: 10, src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_59_30.png', label: 'Wallpaper X' },
-  { id: 11, src: '/wallpaper/ChatGPT Image 9 Haz 2026 20_00_52.png', label: 'Wallpaper XI' },
-  { id: 12, src: '/wallpaper/ChatGPT Image 9 Haz 2026 20_02_08.png', label: 'Wallpaper XII' },
-  { id: 13, src: '/wallpaper/ChatGPT Image 9 Haz 2026 20_06_28.png', label: 'Wallpaper XIII' },
-]
+interface Wallpaper {
+  id: number
+  src: string
+  label: string
+  category: string
+}
 
 interface WallpaperModalProps {
   isOpen: boolean
@@ -27,7 +19,22 @@ interface WallpaperModalProps {
 }
 
 export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
-  const [lightbox, setLightbox] = useState<typeof WALLPAPERS[0] | null>(null)
+  const [wallpapers, setWallpapers] = useState<Wallpaper[]>([])
+  const [lightbox, setLightbox] = useState<Wallpaper | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!isOpen) return
+    const supabase = createClient()
+    supabase
+      .from('wallpapers')
+      .select('*')
+      .order('id', { ascending: true })
+      .then(({ data }) => {
+        setWallpapers(data ?? [])
+        setLoading(false)
+      })
+  }, [isOpen])
 
   const handleClose = useCallback(() => {
     if (lightbox) setLightbox(null)
@@ -115,7 +122,7 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
             style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}
           >
             <p className="text-[0.68rem] tracking-[0.06em] text-white/25">
-              {WALLPAPERS.length} duvar kağıdı
+              {wallpapers.length} duvar kağıdı
             </p>
             <div className="flex items-center gap-1.5">
               <motion.div
@@ -130,8 +137,21 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
 
           {/* ── Grid ── */}
           <div className="relative z-10 flex-1 overflow-y-auto px-6 md:px-12 py-8">
+            {loading ? (
+              <div className="flex items-center justify-center h-40">
+                <div className="flex gap-1.5">
+                  {[0,1,2].map(i => (
+                    <motion.div key={i} className="w-1 h-6 rounded-full"
+                      style={{ background: 'rgba(139,92,246,0.5)' }}
+                      animate={{ scaleY: [1, 2, 1] }}
+                      transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.15 }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : (
             <div className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-              {WALLPAPERS.map((wp, i) => (
+              {wallpapers.map((wp, i) => (
                 <motion.div
                   key={wp.id}
                   initial={{ opacity: 0, y: 28 }}
@@ -204,6 +224,7 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
                 </motion.div>
               ))}
             </div>
+            )}
 
             {/* Alt boşluk */}
             <div className="h-12" />
