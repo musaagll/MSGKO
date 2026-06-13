@@ -34,3 +34,28 @@ export function timeAgo(dateStr: string): string {
   if (diff < 2592000) return `${Math.floor(diff / 604800)} hafta önce`
   return `${Math.floor(diff / 2592000)} ay önce`
 }
+
+/** Tarihi Türkçe formata çevirir */
+export function formatDate(dateStr: string): string {
+  try {
+    return new Date(dateStr).toLocaleDateString('tr-TR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  } catch {
+    return dateStr
+  }
+}
+
+/** Kategori slug'ına göre badge CSS sınıfını döndürür */
+export function getCategoryBadgeClass(slug: string): string {
+  switch (slug) {
+    case 'asas':
+      return 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+    case 'okcu':
+      return 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+    default:
+      return 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+  }
+}
