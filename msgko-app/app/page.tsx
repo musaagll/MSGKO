@@ -122,7 +122,7 @@ export default async function HomePage() {
                 güncel farm meta rehberleri.
               </p>
               <ul className="flex flex-wrap gap-2">
-                {['Exp Farm', 'Item Farm', 'WS Taktik', 'Anahtar Görevi', 'Noah Farm'].map((tag) => (
+                {['Exp Farm', 'Item Farm', 'WS Taktik', 'Anahtar Görevi'].map((tag) => (
                   <li key={tag}
                     className="text-[0.6rem] font-bold tracking-[0.1em] uppercase px-2 py-1"
                     style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', color: 'rgba(252,211,77,0.8)' }}>
