@@ -8,7 +8,7 @@ const SECRET = new TextEncoder().encode(
 
 const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/logout', '/manifest.json', '/icons']
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // Public path — geç
