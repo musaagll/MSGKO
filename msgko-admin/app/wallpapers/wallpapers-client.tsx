@@ -138,7 +138,7 @@ export default function WallpapersClient() {
               onMouseEnter={e => { const btn = (e.currentTarget as HTMLElement).querySelector('.del-btn') as HTMLElement; if (btn) btn.style.opacity = '1' }}
               onMouseLeave={e => { const btn = (e.currentTarget as HTMLElement).querySelector('.del-btn') as HTMLElement; if (btn) btn.style.opacity = '0' }}>
               <div style={{ aspectRatio: '16/9', overflow: 'hidden' }}>
-                <img src={wp.src} alt={wp.label} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={wp.src.startsWith('http') ? wp.src : `https://msgko.net${wp.src}`} alt={wp.label} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div style={{ padding: '8px 10px' }}>
                 <p style={{ fontSize: 12, fontWeight: 500, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{wp.label}</p>
