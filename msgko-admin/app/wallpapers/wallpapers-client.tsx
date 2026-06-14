@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Plus, Trash2, Upload, X, Loader } from 'lucide-react'
 
-interface Wallpaper { id: number; label: string; src: string; category: string; created_at: string }
+interface Wallpaper { id: number; label: string; src: string; category: string; click_count: number; download_count: number; created_at: string }
 
 const btn = (color = '#7c3aed'): React.CSSProperties => ({
   display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px',
@@ -142,7 +142,11 @@ export default function WallpapersClient() {
               </div>
               <div style={{ padding: '8px 10px' }}>
                 <p style={{ fontSize: 12, fontWeight: 500, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{wp.label}</p>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{wp.category}</p>
+                <div style={{ display: 'flex', gap: 10, marginTop: 3 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.7)' }}>👁 {wp.click_count ?? 0}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(74,222,128,0.7)' }}>⬇ {wp.download_count ?? 0}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{wp.category}</span>
+                </div>
               </div>
               <button type="button" className="del-btn" onClick={() => handleDelete(wp.id)}
                 style={{ position: 'absolute', top: 8, right: 8, width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(239,68,68,0.85)', border: 'none', cursor: 'pointer', opacity: 0, transition: 'opacity 0.2s' }}>

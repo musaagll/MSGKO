@@ -36,6 +36,22 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
       })
   }, [isOpen])
 
+  const trackClick = (id: number) => {
+    fetch('/api/wallpapers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, type: 'click' }),
+    }).catch(() => {})
+  }
+
+  const trackDownload = (id: number) => {
+    fetch('/api/wallpapers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, type: 'download' }),
+    }).catch(() => {})
+  }
+
   const handleClose = useCallback(() => {
     if (lightbox) setLightbox(null)
     else onClose()
@@ -173,7 +189,7 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
                     e.currentTarget.style.borderColor = 'rgba(139,92,246,0.14)'
                     e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.4)'
                   }}
-                  onClick={() => setLightbox(wp)}
+                  onClick={() => { setLightbox(wp); trackClick(wp.id) }}
                 >
                   <img
                     src={wp.src}
@@ -202,7 +218,7 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
                         href={wp.src}
                         download={wp.label + '.png'}
                         className="w-11 h-11 flex items-center justify-center border border-white/25 bg-white/10 text-white hover:bg-purple-500/35 hover:border-purple-400/60 transition-all duration-200"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => { e.stopPropagation(); trackDownload(wp.id) }}
                         aria-label="İndir"
                       >
                         <Download size={16} />
@@ -280,6 +296,7 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
                   href={lightbox.src}
                   download={lightbox.label + '.png'}
                   className="flex items-center gap-2 px-5 py-2.5 text-[0.75rem] font-bold tracking-[0.1em] uppercase border border-purple-500/40 bg-purple-500/15 text-purple-300 hover:bg-purple-500/25 hover:text-white transition-all duration-200"
+                  onClick={() => trackDownload(lightbox.id)}
                 >
                   <Download size={13} />
                   İndir
