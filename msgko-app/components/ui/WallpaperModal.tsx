@@ -29,36 +29,36 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
     if (!isOpen) return
     setLoading(true)
     const supabase = createClient()
-    supabase
-      .from('wallpapers')
-      .select('*')
-      .order('id', { ascending: true })
-      .then(({ data, error }) => {
-        if (error || !data || data.length === 0) {
-          // Fallback: hardcode liste
-          setWallpapers([
-            { id: 1,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_13.png', label: 'Wallpaper I',    category: 'genel', click_count: 0, download_count: 0 },
-            { id: 2,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_20.png', label: 'Wallpaper II',   category: 'genel', click_count: 0, download_count: 0 },
-            { id: 3,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_23.png', label: 'Wallpaper III',  category: 'genel', click_count: 0, download_count: 0 },
-            { id: 4,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_27.png', label: 'Wallpaper IV',   category: 'genel', click_count: 0, download_count: 0 },
-            { id: 5,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_30.png', label: 'Wallpaper V',    category: 'genel', click_count: 0, download_count: 0 },
-            { id: 6,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_52_34.png', label: 'Wallpaper VI',   category: 'genel', click_count: 0, download_count: 0 },
-            { id: 7,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_54_36.png', label: 'Wallpaper VII',  category: 'genel', click_count: 0, download_count: 0 },
-            { id: 8,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_56_00.png', label: 'Wallpaper VIII', category: 'genel', click_count: 0, download_count: 0 },
-            { id: 9,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_57_36.png', label: 'Wallpaper IX',   category: 'genel', click_count: 0, download_count: 0 },
-            { id: 10, src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_59_30.png', label: 'Wallpaper X',    category: 'genel', click_count: 0, download_count: 0 },
-            { id: 11, src: '/wallpaper/ChatGPT Image 9 Haz 2026 20_00_52.png', label: 'Wallpaper XI',   category: 'genel', click_count: 0, download_count: 0 },
-            { id: 12, src: '/wallpaper/ChatGPT Image 9 Haz 2026 20_02_08.png', label: 'Wallpaper XII',  category: 'genel', click_count: 0, download_count: 0 },
-            { id: 13, src: '/wallpaper/ChatGPT Image 9 Haz 2026 20_06_28.png', label: 'Wallpaper XIII', category: 'genel', click_count: 0, download_count: 0 },
-          ])
-        } else {
-          setWallpapers(data)
-        }
+
+    const FALLBACK = [
+      { id: 1,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_13.png', label: 'Wallpaper I',    category: 'genel', click_count: 0, download_count: 0 },
+      { id: 2,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_20.png', label: 'Wallpaper II',   category: 'genel', click_count: 0, download_count: 0 },
+      { id: 3,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_23.png', label: 'Wallpaper III',  category: 'genel', click_count: 0, download_count: 0 },
+      { id: 4,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_27.png', label: 'Wallpaper IV',   category: 'genel', click_count: 0, download_count: 0 },
+      { id: 5,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 12_29_30.png', label: 'Wallpaper V',    category: 'genel', click_count: 0, download_count: 0 },
+      { id: 6,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_52_34.png', label: 'Wallpaper VI',   category: 'genel', click_count: 0, download_count: 0 },
+      { id: 7,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_54_36.png', label: 'Wallpaper VII',  category: 'genel', click_count: 0, download_count: 0 },
+      { id: 8,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_56_00.png', label: 'Wallpaper VIII', category: 'genel', click_count: 0, download_count: 0 },
+      { id: 9,  src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_57_36.png', label: 'Wallpaper IX',   category: 'genel', click_count: 0, download_count: 0 },
+      { id: 10, src: '/wallpaper/ChatGPT Image 9 Haz 2026 19_59_30.png', label: 'Wallpaper X',    category: 'genel', click_count: 0, download_count: 0 },
+      { id: 11, src: '/wallpaper/ChatGPT Image 9 Haz 2026 20_00_52.png', label: 'Wallpaper XI',   category: 'genel', click_count: 0, download_count: 0 },
+      { id: 12, src: '/wallpaper/ChatGPT Image 9 Haz 2026 20_02_08.png', label: 'Wallpaper XII',  category: 'genel', click_count: 0, download_count: 0 },
+      { id: 13, src: '/wallpaper/ChatGPT Image 9 Haz 2026 20_06_28.png', label: 'Wallpaper XIII', category: 'genel', click_count: 0, download_count: 0 },
+    ]
+
+    void (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('wallpapers')
+          .select('*')
+          .order('id', { ascending: true })
+        setWallpapers(!error && data && data.length > 0 ? data : FALLBACK)
+      } catch {
+        setWallpapers(FALLBACK)
+      } finally {
         setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-      })
+      }
+    })()
   }, [isOpen])
 
   const trackClick = (id: number) => {
