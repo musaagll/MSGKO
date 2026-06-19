@@ -226,6 +226,7 @@ export function Navbar() {
         onInstagramOpen={() => setWsMovieOpen(true)}
         onIletisimOpen={() => setIletisimOpen(true)}
         onAsasOpen={() => setAsasModalOpen(true)}
+        onWallpaperOpen={() => setWallpaperOpen(true)}
       />
       <IletisimModal isOpen={iletisimOpen} onClose={() => setIletisimOpen(false)} />
       <AsasModal isOpen={asasModalOpen} onClose={() => setAsasModalOpen(false)} />
