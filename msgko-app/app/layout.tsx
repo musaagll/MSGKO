@@ -26,7 +26,7 @@ const BASE_URL = 'https://msgko.net'
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: 'MSGKO — Knight Online Asas, Okçu, Farm ve PK Rehberi | msgko.net',
+    default: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
     template: '%s | MSGKO Knight Online Rehberi',
   },
   description:
@@ -64,20 +64,30 @@ export const metadata: Metadata = {
     'knight online video', 'knight online youtube', 'knight online türkçe video',
     'knight online eğitim videosu',
   ],
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/logo.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: [
+      { url: '/logo.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+  },
   openGraph: {
     type: 'website',
     locale: 'tr_TR',
     url: BASE_URL,
-    siteName: 'MSGKO — Knight Online Rehberi',
-    title: 'MSGKO — Knight Online Asas, Okçu, Farm ve PK Rehberi',
+    siteName: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
+    title: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
     description:
       'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas build, combo, okçu eğitim, warrior, mage, priest, farm rehberi ve PK taktikleri. 2025-2026 güncel meta.',
     images: [
       {
-        url: '/og-image.png',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'MSGKO — Knight Online Rehber ve Eğitim Sitesi',
+        alt: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
       },
     ],
   },
@@ -85,10 +95,10 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@musaagll',
     creator: '@musaagll',
-    title: 'MSGKO — Knight Online Asas & Okçu Eğitim Videoları',
+    title: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
     description:
       'Knight Online asas build, combo, okçu eğitim, farm rehberi ve PK taktikleri. musaagll — msgko.net',
-    images: ['/og-image.png'],
+    images: ['/opengraph-image'],
   },
   robots: {
     index: true,
@@ -124,6 +134,7 @@ const jsonLd = [
       url: `${BASE_URL}/logo.png`,
       width: 512,
       height: 512,
+      caption: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
     },
     sameAs: [
       'https://www.youtube.com/@musaagll',
@@ -137,7 +148,7 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'MSGKO — Knight Online Rehberi',
+    name: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
     alternateName: ['msgko.net', 'MSG Knight Online'],
     url: BASE_URL,
     description: 'Knight Online Türkçe rehber sitesi. Asas, okçu, warrior, mage, priest build, combo, farm ve PK taktikleri.',

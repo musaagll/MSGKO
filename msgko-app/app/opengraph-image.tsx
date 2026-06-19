@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'MSGKO — Knight Online Rehber Sitesi'
+export const alt = 'MSGKO - Knight Online Gelişim & Strateji Rehberi'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 

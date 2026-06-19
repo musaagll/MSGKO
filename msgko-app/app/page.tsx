@@ -8,7 +8,7 @@ import type { YTVideo } from '@/lib/youtube'
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: 'MSGKO — Knight Online Asas, Okçu, Farm ve PK Rehberi | msgko.net',
+  title: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
   description:
     'Knight Online Türkçe rehber. Asas build, asas combo, asas skill dizilimi, okçu eğitim, warrior, mage, priest, farm rotası ve PK taktikleri. 2025-2026 güncel meta. musaagll — msgko.net',
   alternates: {
