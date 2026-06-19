@@ -3,18 +3,6 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   devIndicators: false,
 
-  async redirects() {
-    return [
-      // www → non-www canonical yönlendirmesi (SEO için kritik)
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'www.msgko.net' }],
-        destination: 'https://msgko.net/:path*',
-        permanent: true,
-      },
-    ]
-  },
-
   async headers() {
     return [
       {
