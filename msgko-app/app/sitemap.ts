@@ -1,19 +1,24 @@
 import type { MetadataRoute } from 'next'
 
 const BASE_URL = 'https://msgko.net'
-const NOW = new Date()
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: BASE_URL,
-      lastModified: NOW,
+      lastModified: new Date('2026-06-19'),
       changeFrequency: 'daily',
       priority: 1.0,
     },
     {
+      url: `${BASE_URL}/wallpaper`,
+      lastModified: new Date('2026-06-19'),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
       url: `${BASE_URL}/destek`,
-      lastModified: NOW,
+      lastModified: new Date('2026-06-01'),
       changeFrequency: 'monthly',
       priority: 0.5,
     },

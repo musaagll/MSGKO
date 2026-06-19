@@ -33,36 +33,51 @@ export const metadata: Metadata = {
     'Knight Online Türkçe rehber sitesi. Asas build, asas combo, asas skill dizilimi, asas PK taktikleri, okçu eğitim, okçu build, farm rehberi, warrior, mage, priest rehberi. 2025-2026 güncel meta. musaagll — msgko.net',
   keywords: [
     // Marka
-    'msgko', 'msgko.net', 'MSG Knight Online', 'musaagll', 'msg ko',
+    'msgko', 'msgko.net', 'MSG Knight Online', 'musaagll', 'msg ko', 'msg knight online',
+    'msgko rehber', 'msgko asas', 'msgko okçu',
     // Ana oyun
     'Knight Online', 'Knight Online Türkçe', 'Knight Online rehber',
     'Knight Online eğitim', 'Knight Online 2025', 'Knight Online 2026',
     'KO rehber', 'KO eğitim', 'knight online karakter rehberi',
     'knight online pvp', 'knight online skill', 'knight online build',
     'knight online stat dağılımı', 'knight online combo', 'knight online 2026 rehber',
+    'knight online türkçe rehber sitesi', 'knight online nasıl oynanır',
+    'knight online başlangıç rehberi', 'knight online strateji',
+    'knight online gelişim rehberi', 'knight online güncel meta',
     // Asas / Rogue
     'knight online asas', 'asas rehber', 'asas build', 'asas combo',
     'asas skill dizilimi', 'asas pk', 'asas nasıl oynanır', 'asas taktikleri',
     'asas teknikleri', 'asas eğitim', 'knight online rogue', 'rogue build',
-    'asas item rehberi', 'asas stat', 'asas pvp',
+    'asas item rehberi', 'asas stat', 'asas pvp', 'asas karakter',
+    'rogue rehber', 'rogue combo', 'rogue pk', 'asas warrior pk',
+    'asas stat dağılımı', 'asas skill tree', 'en iyi asas build',
     // Okçu / Archer
     'knight online okçu', 'okçu rehber', 'okçu build', 'okçu combo',
     'okçu skill dizilimi', 'okçu pk', 'okçu eğitim', 'knight online archer',
-    'okçu item', 'okçu stat',
+    'okçu item', 'okçu stat', 'archer rehber', 'archer build', 'archer pk',
+    'okçu nasıl oynanır', 'okçu karakter', 'en iyi okçu build',
+    'okçu stat dağılımı', 'okçu skill tree',
     // Warrior
     'knight online warrior', 'warrior rehber', 'warrior build',
+    'warrior stat', 'warrior pk', 'warrior combo', 'tank warrior',
+    'warrior nasıl oynanır', 'warrior eğitim', 'warrior skill dizilimi',
     // Mage
     'knight online mage', 'mage rehber', 'mage build',
+    'mage stat', 'mage pk', 'mage combo', 'aoe mage', 'mage eğitim',
+    'mage nasıl oynanır', 'mage skill dizilimi', 'int mage build',
     // Priest
     'knight online priest', 'priest rehber', 'priest build',
+    'priest stat', 'heal priest', 'attack priest', 'priest eğitim',
+    'priest nasıl oynanır', 'priest skill dizilimi', 'priest hp build',
     // Farm & genel
     'knight online farm', 'knight online farm rotası', 'knight online exp farm',
     'knight online pk taktikleri', 'knight online ws', 'knight online skill kombo',
     'knight online item rehberi', 'knight online guardian of 7 keys',
-    'anahtar görevi human', 'knight online görev',
+    'anahtar görevi human', 'knight online görev', 'knight online noah farm',
+    'knight online exp rotası', 'knight online lvl alma', 'knight online boss',
     // Video
     'knight online video', 'knight online youtube', 'knight online türkçe video',
-    'knight online eğitim videosu',
+    'knight online eğitim videosu', 'knight online gameplay',
   ],
   icons: {
     icon: [
@@ -248,6 +263,38 @@ const jsonLd = [
         acceptedAnswer: {
           '@type': 'Answer',
           text: 'MSGKO (msgko.net), musaagll tarafından yönetilen Knight Online Türkçe rehber ve eğitim platformudur. Asas, okçu, warrior, mage ve priest için build, combo, farm ve PK rehberleri içermektedir.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'MSG nedir, musaagll kimdir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'musaagll, msgko.net\'in kurucusu ve Knight Online içerik üreticisidir. Asas ve okçu karakterlerinde uzman olan musaagll, YouTube kanalında güncel eğitim videoları yayınlamaktadır.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Knight Online warrior nasıl oynanır?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Knight Online warrior, yüksek sağlık ve fiziksel güç odaklı bir sınıftır. Tank ve DPS olmak üzere iki farklı warrior oynanışı mevcuttur. Güncel warrior build ve taktikleri için msgko.net\'i takip edin.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Knight Online mage nasıl oynanır?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Knight Online mage, INT bazlı büyü hasarı veren bir sınıftır. AOE mage ve single target mage olmak üzere iki oynanış stili vardır. Güncel mage build ve skill dizilimi için msgko.net rehberlerini inceleyebilirsiniz.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Knight Online priest nasıl oynanır?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Knight Online priest, heal ve destek odaklı bir sınıftır. Heal priest ve attack priest olmak üzere iki farklı build mevcuttur. Güncel priest build ve taktikleri için msgko.net\'i ziyaret edebilirsiniz.',
         },
       },
     ],

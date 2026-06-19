@@ -178,7 +178,8 @@ export function HeroSection() {
             </motion.div>
 
             {/* H1 */}
-            <div className="mb-6">
+            <h1 className="mb-6 sr-only">Knight Online Gelişim ve Strateji Rehberi - MSGKO</h1>
+            <div className="mb-6" aria-hidden="true">
               {/* Satır 1: KNIGHT ONLINE — yan yana */}
               <motion.div
                 initial={{ opacity: 0, y: 40 }}
