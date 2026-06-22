@@ -10,7 +10,7 @@ export const revalidate = 3600
 export const metadata: Metadata = {
   title: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
   description:
-    'Knight Online Türkçe rehber. Asas build, asas combo, asas skill dizilimi, okçu eğitim, warrior, mage, priest, farm rotası ve PK taktikleri. 2025-2026 güncel meta. musaagll — msgko.net',
+    'Karakter gelişiminden farm, WS, PK stratejilerine; meta analizlerinden profesyonel eğitimlere kadar kapsamlı içerik deneyimi burada seni bekliyor. Knight Online\'a dair her şey burada.',
   alternates: {
     canonical: 'https://msgko.net',
   },

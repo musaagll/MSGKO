@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     template: '%s | MSGKO Knight Online Rehberi',
   },
   description:
-    'Knight Online Türkçe rehber sitesi. Asas build, asas combo, asas skill dizilimi, asas PK taktikleri, okçu eğitim, okçu build, farm rehberi, warrior, mage, priest rehberi. 2025-2026 güncel meta. musaagll — msgko.net',
+    'Karakter gelişiminden farm, WS, PK stratejilerine; meta analizlerinden profesyonel eğitimlere kadar kapsamlı içerik deneyimi burada seni bekliyor. Knight Online\'a dair her şey burada.',
   keywords: [
     // Marka
     'msgko', 'msgko.net', 'MSG Knight Online', 'musaagll', 'msg ko', 'msg knight online',
@@ -96,7 +96,7 @@ export const metadata: Metadata = {
     siteName: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
     title: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
     description:
-      'Türkiye\'nin en kapsamlı Knight Online rehber sitesi. Asas build, combo, okçu eğitim, warrior, mage, priest, farm rehberi ve PK taktikleri. 2025-2026 güncel meta.',
+      'Karakter gelişiminden farm, WS, PK stratejilerine; meta analizlerinden profesyonel eğitimlere kadar kapsamlı içerik deneyimi burada seni bekliyor. Knight Online\'a dair her şey burada.',
     images: [
       {
         url: '/opengraph-image',
