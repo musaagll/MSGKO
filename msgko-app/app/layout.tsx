@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 import { ChatWidget } from '@/components/ui/ChatWidget'
 import { ParticleBackground } from '@/components/ui/ParticleBackground'
 import { Analytics } from '@vercel/analytics/next'
+import { PageViewTracker } from '@/components/ui/PageViewTracker'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -339,6 +340,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <ChatWidget />
+        <PageViewTracker />
         <Analytics />
       </body>
     </html>
