@@ -11,12 +11,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${BASE_URL}/hesaplayici`,
-      lastModified: new Date('2026-06-24'),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    {
       url: `${BASE_URL}/wallpaper`,
       lastModified: new Date('2026-06-19'),
       changeFrequency: 'weekly',

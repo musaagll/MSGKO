@@ -160,22 +160,6 @@ export function Navbar() {
               </span>
             </button>
 
-            {/* Hesaplayıcı nav button */}
-            <Link href="/hesaplayici" className={NAV_BUTTON_CLASS}>
-              <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-purple-500/[0.06]" />
-              <span className="relative z-10 flex items-center gap-2">
-                <span className="flex items-center justify-center w-5 h-5 rounded-sm transition-all duration-300 group-hover:scale-110"
-                  style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)' }}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                    className="text-purple-400">
-                    <rect x="2" y="2" width="20" height="20" rx="2"/>
-                    <path d="M8 12h8M12 8v8"/>
-                  </svg>
-                </span>
-                <span className="text-[#C8C8D8]/50 group-hover:text-purple-300 transition-colors duration-200">Hesaplayıcı</span>
-              </span>
-            </Link>
-
             {/* Destek nav button */}
             <Link href="/destek" className={NAV_BUTTON_CLASS}>
               <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-pink-500/[0.06]" />
