@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Megaphone, ExternalLink, Sparkles } from 'lucide-react'
+import { Megaphone } from 'lucide-react'
 
 const SPONSOR_CARDS = [
   {
@@ -113,39 +113,7 @@ export function ReklamSection() {
               ))}
             </div>
 
-            {/* Butonlar */}
-            <div className="flex flex-wrap gap-3">
-              <motion.a
-                href="mailto:imusaagll@gmail.com?subject=Reklam%20Talebi"
-                whileHover={{ y: -2, scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-[0.8rem] font-bold tracking-[0.08em] uppercase text-white"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(109,40,217,0.9), rgba(139,92,246,0.85))',
-                  border: '1px solid rgba(139,92,246,0.4)',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 20px rgba(109,40,217,0.3)',
-                }}
-              >
-                <Sparkles size={13} />
-                Reklam Ver
-              </motion.a>
-              <motion.a
-                href="mailto:imusaagll@gmail.com?subject=Reklam%20Fiyat%20Bilgisi"
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-[0.8rem] font-bold tracking-[0.08em] uppercase"
-                style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '8px',
-                  color: 'rgba(200,200,216,0.65)',
-                }}
-              >
-                <ExternalLink size={13} />
-                Fiyatları İncele
-              </motion.a>
-            </div>
+            {/* Butonlar kaldırıldı */}
           </div>
 
           {/* ── Sağ: Sponsor Kartları ── */}
