@@ -326,6 +326,11 @@ export default function RootLayout({
   return (
     <html lang="tr" className={`${inter.variable} ${rajdhani.variable}`}>
       <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4962952498469276"
+          crossOrigin="anonymous"
+        />
         {jsonLd.map((schema, i) => (
           <script
             key={i}
