@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Megaphone } from 'lucide-react'
+import { Megaphone, ExternalLink } from 'lucide-react'
 
 const SPONSOR_CARDS = [
   {
