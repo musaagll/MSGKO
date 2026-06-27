@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { YoutubeVideoSection } from '@/components/sections/YoutubeVideoSection'
 import { FeaturesSection } from '@/components/sections/FeaturesSection'
+import { ReklamSection } from '@/components/sections/ReklamSection'
 import { getYoutubeVideos } from '@/lib/youtube'
 import type { YTVideo } from '@/lib/youtube'
 
@@ -29,6 +30,7 @@ export default async function HomePage() {
       <HeroSection />
       <YoutubeVideoSection videos={videos} />
       <FeaturesSection />
+      <ReklamSection />
 
       {/* ── SEO İçerik Bölümü ── */}
       <section
