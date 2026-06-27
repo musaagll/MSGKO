@@ -11,6 +11,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
+      url: `${BASE_URL}/asas`,
+      lastModified: new Date('2026-06-27'),
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
       url: `${BASE_URL}/wallpaper`,
       lastModified: new Date('2026-06-19'),
       changeFrequency: 'weekly',

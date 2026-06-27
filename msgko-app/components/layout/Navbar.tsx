@@ -160,6 +160,29 @@ export function Navbar() {
               </span>
             </button>
 
+            {/* AP Hesaplayıcı dropdown */}
+            <div className="relative group/calc flex items-center h-16">
+              <button type="button" className={NAV_BUTTON_CLASS + ' h-full'}>
+                <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-purple-500/[0.06]" />
+                <span className="relative z-10 flex items-center gap-1.5">
+                  <span className="text-[#C8C8D8]/50 group-hover:text-purple-300 transition-colors duration-200">AP Hesaplayıcı</span>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                    className="text-[#C8C8D8]/30 group-hover:text-purple-400 transition-colors duration-200">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </span>
+              </button>
+              {/* Dropdown */}
+              <div className="absolute top-full left-0 w-44 opacity-0 invisible group-hover/calc:opacity-100 group-hover/calc:visible transition-all duration-200 z-50"
+                style={{ background: 'rgba(7,7,11,0.97)', border: '1px solid rgba(139,92,246,0.2)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', marginTop: -1 }}>
+                <Link href="/asas"
+                  className="flex items-center gap-2.5 px-4 py-3 text-[0.78rem] text-white/50 hover:text-white hover:bg-purple-500/[0.08] transition-all duration-150">
+                  <img src="/assassian-icon.png" alt="" className="w-4 h-4 object-contain" style={{ mixBlendMode: 'screen', filter: 'brightness(1.3)' }} />
+                  <span>Asas</span>
+                </Link>
+              </div>
+            </div>
+
             {/* Destek nav button */}
             <Link href="/destek" className={NAV_BUTTON_CLASS}>
               <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-pink-500/[0.06]" />
