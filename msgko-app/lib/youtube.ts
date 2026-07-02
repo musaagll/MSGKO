@@ -65,7 +65,7 @@ async function fetchVideoDetails(ids: string[]): Promise<YTVideo[]> {
       if (!m) return 999
       return (parseInt(m[1] ?? '0') * 3600) + (parseInt(m[2] ?? '0') * 60) + parseInt(m[3] ?? '0')
     })()
-    const isShort = totalSeconds <= 60
+    const isShort = totalSeconds <= 60 || item.snippet.title.toLowerCase().includes('#short')
 
     const thumbnail =
       item.snippet.thumbnails.maxres?.url ??
@@ -92,19 +92,16 @@ async function fetchVideoDetails(ids: string[]): Promise<YTVideo[]> {
 // ─── Public API ───────────────────────────────────────────────────
 
 /**
- * Ana sayfa: son N video (short olmayanlar önce)
+ * Ana sayfa: son N video — shorts kesinlikle dahil değil
  */
 export async function getYoutubeVideos(limit = 4): Promise<YTVideo[]> {
   try {
-    const ids = await fetchVideoIds(20)
+    const ids = await fetchVideoIds(50)
     if (!ids.length) return []
     const videos = await fetchVideoDetails(ids)
-    // Short olmayanları öne al
-    const sorted = [
-      ...videos.filter(v => !v.isShort),
-      ...videos.filter(v => v.isShort),
-    ]
-    return sorted.slice(0, limit)
+    // Sadece normal videolar (short olmayanlar)
+    const onlyVideos = videos.filter(v => !v.isShort)
+    return onlyVideos.slice(0, limit)
   } catch {
     return []
   }
