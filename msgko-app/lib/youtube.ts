@@ -1,14 +1,11 @@
 /**
- * YouTube video fetcher — API key gerektirmez, RSS kullanır.
- *
- * - Shorts: Kanalın RSS feed'inden otomatik çekilir, süre ≤60sn olanlar short sayılır.
- * - Normal videolar: MANUAL_VIDEOS dizisinden alınır (elle eklenir).
- *
- * Channel: @Musaagll (UCGWeKVw_Yiw2a_oul5QkFbA)
+ * YouTube Data API v3 — gerçek izlenme, tarih, süre
+ * Channel: @musaagll (UCGWeKVw_Yiw2a_oul5QkFbA)
  */
 
-const CHANNEL_ID = 'UCGWeKVw_Yiw2a_oul5QkFbA'
-const RSS_URL    = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`
+const API_KEY          = process.env.YOUTUBE_API_KEY!
+const CHANNEL_ID       = process.env.YOUTUBE_CHANNEL_ID ?? 'UCGWeKVw_Yiw2a_oul5QkFbA'
+const UPLOADS_PLAYLIST = process.env.YOUTUBE_UPLOADS_PLAYLIST_ID ?? 'UUGWeKVw_Yiw2a_oul5QkFbA'
 
 export interface YTVideo {
   id: string
@@ -22,107 +19,113 @@ export interface YTVideo {
   isShort?: boolean
 }
 
-// ─────────────────────────────────────────────────────────────────
-// Manuel video listesi — buraya YouTube linklerini ekle
-// Örnek format:
-// { id: 'VIDEO_ID', title: 'Video Başlığı', publishedAt: '2025-01-01' }
-// ─────────────────────────────────────────────────────────────────
-const MANUAL_VIDEOS: Array<{ id: string; title: string; publishedAt: string }> = [
-  { id: '61-BoM0df3E', title: 'ZERO - NooaaH Culluk Asas WS İtemli Asas Movie 2026 | Knight online', publishedAt: '2025-06-01' },
-  { id: '2N4zMIvjHSg', title: 'Knight online - Güncel Rehber Guardian of 7 Keys | Anahtar Görevi Human', publishedAt: '2025-06-01' },
-]
-
-// ─── RSS'ten Shorts çek ───────────────────────────────────────────
-async function fetchShortsFromRSS(limit = 30): Promise<YTVideo[]> {
-  try {
-    const res = await fetch(RSS_URL, {
-      next: { revalidate: 3600 },
-      headers: { 'Accept': 'application/xml, text/xml' },
-    })
-
-    if (!res.ok) return []
-
-    const xml = await res.text()
-
-    // XML'i parse et — basit regex tabanlı
-    const entries: YTVideo[] = []
-    const entryRegex = /<entry>([\s\S]*?)<\/entry>/g
-    let match
-
-    while ((match = entryRegex.exec(xml)) !== null) {
-      const entry = match[1]
-
-      const idMatch        = entry.match(/<yt:videoId>(.*?)<\/yt:videoId>/)
-      const titleMatch     = entry.match(/<title>(.*?)<\/title>/)
-      const publishedMatch = entry.match(/<published>(.*?)<\/published>/)
-      const viewMatch      = entry.match(/<media:statistics views="(\d+)"/)
-
-      if (!idMatch || !titleMatch) continue
-
-      const videoId    = idMatch[1].trim()
-      const title      = titleMatch[1].trim()
-      const published  = publishedMatch?.[1]?.trim() ?? new Date().toISOString()
-      const views      = parseInt(viewMatch?.[1] ?? '0')
-      const thumbnail  = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
-
-      entries.push({
-        id: videoId,
-        title,
-        thumbnail,
-        duration: '',
-        durationFormatted: '',
-        publishedAt: published,
-        views,
-        youtubeUrl: `https://www.youtube.com/shorts/${videoId}`,
-        isShort: true,
-      })
-
-      if (entries.length >= limit) break
-    }
-
-    return entries
-  } catch {
-    return []
+// ISO 8601 süreyi "3:45" formatına çevir
+function parseDuration(iso: string): { raw: string; formatted: string } {
+  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
+  if (!match) return { raw: iso, formatted: '' }
+  const h = parseInt(match[1] ?? '0')
+  const m = parseInt(match[2] ?? '0')
+  const s = parseInt(match[3] ?? '0')
+  if (h > 0) {
+    return { raw: iso, formatted: `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` }
   }
+  return { raw: iso, formatted: `${m}:${String(s).padStart(2, '0')}` }
 }
 
-// ─── Manuel videoları YTVideo formatına çevir ────────────────────
-function buildManualVideos(): YTVideo[] {
-  return MANUAL_VIDEOS.map((v) => ({
-    id: v.id,
-    title: v.title,
-    thumbnail: `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,
-    duration: '',
-    durationFormatted: '',
-    publishedAt: v.publishedAt,
-    views: 0,
-    youtubeUrl: `https://www.youtube.com/watch?v=${v.id}`,
-    isShort: false,
-  }))
+// Playlist'ten video ID'lerini çek
+async function fetchVideoIds(limit: number): Promise<string[]> {
+  const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=${limit}&playlistId=${UPLOADS_PLAYLIST}&key=${API_KEY}`
+  const res = await fetch(url, { next: { revalidate: 3600 } })
+  if (!res.ok) return []
+  const data = await res.json() as {
+    items?: Array<{ contentDetails: { videoId: string } }>
+  }
+  return (data.items ?? []).map(item => item.contentDetails.videoId)
+}
+
+// Video detaylarını çek (izlenme, süre, tarih)
+async function fetchVideoDetails(ids: string[]): Promise<YTVideo[]> {
+  if (!ids.length) return []
+  const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${ids.join(',')}&key=${API_KEY}`
+  const res = await fetch(url, { next: { revalidate: 3600 } })
+  if (!res.ok) return []
+  const data = await res.json() as {
+    items?: Array<{
+      id: string
+      snippet: { title: string; publishedAt: string; thumbnails: { maxres?: { url: string }; high?: { url: string }; medium?: { url: string } } }
+      statistics: { viewCount?: string }
+      contentDetails: { duration: string }
+    }>
+  }
+
+  return (data.items ?? []).map(item => {
+    const { raw, formatted } = parseDuration(item.contentDetails.duration)
+    const totalSeconds = (() => {
+      const m = raw.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
+      if (!m) return 999
+      return (parseInt(m[1] ?? '0') * 3600) + (parseInt(m[2] ?? '0') * 60) + parseInt(m[3] ?? '0')
+    })()
+    const isShort = totalSeconds <= 60
+
+    const thumbnail =
+      item.snippet.thumbnails.maxres?.url ??
+      item.snippet.thumbnails.high?.url ??
+      item.snippet.thumbnails.medium?.url ??
+      `https://i.ytimg.com/vi/${item.id}/hqdefault.jpg`
+
+    return {
+      id: item.id,
+      title: item.snippet.title,
+      thumbnail,
+      duration: raw,
+      durationFormatted: formatted,
+      publishedAt: item.snippet.publishedAt,
+      views: parseInt(item.statistics.viewCount ?? '0'),
+      youtubeUrl: isShort
+        ? `https://www.youtube.com/shorts/${item.id}`
+        : `https://www.youtube.com/watch?v=${item.id}`,
+      isShort,
+    }
+  })
 }
 
 // ─── Public API ───────────────────────────────────────────────────
 
 /**
- * Ana sayfa için: manuel videolar listesi.
+ * Ana sayfa: son N video (short olmayanlar önce)
  */
 export async function getYoutubeVideos(limit = 4): Promise<YTVideo[]> {
-  return buildManualVideos().slice(0, limit)
+  try {
+    const ids = await fetchVideoIds(20)
+    if (!ids.length) return []
+    const videos = await fetchVideoDetails(ids)
+    // Short olmayanları öne al
+    const sorted = [
+      ...videos.filter(v => !v.isShort),
+      ...videos.filter(v => v.isShort),
+    ]
+    return sorted.slice(0, limit)
+  } catch {
+    return []
+  }
 }
 
 /**
- * YouTube panel/modal için: manuel videolar + RSS'ten shorts.
+ * YouTube panel/modal: videolar ve shorts ayrı
  */
 export async function getYoutubeVideosAndShorts(maxEach = 30): Promise<{
   videos: YTVideo[]
   shorts: YTVideo[]
 }> {
-  const [shorts] = await Promise.all([
-    fetchShortsFromRSS(maxEach),
-  ])
-
-  return {
-    videos: buildManualVideos(),
-    shorts,
+  try {
+    const ids = await fetchVideoIds(50)
+    if (!ids.length) return { videos: [], shorts: [] }
+    const all = await fetchVideoDetails(ids)
+    return {
+      videos: all.filter(v => !v.isShort).slice(0, maxEach),
+      shorts: all.filter(v => v.isShort).slice(0, maxEach),
+    }
+  } catch {
+    return { videos: [], shorts: [] }
   }
 }
