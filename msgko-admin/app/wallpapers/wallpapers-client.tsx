@@ -23,7 +23,7 @@ export default function WallpapersClient() {
   const [uploading, setUploading] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [label, setLabel] = useState('')
-  const [category, setCategory] = useState('genel')
+  const [category, setCategory] = useState<'pc' | 'phone'>('pc')
   const [preview, setPreview] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [msg, setMsg] = useState('')
@@ -52,7 +52,7 @@ export default function WallpapersClient() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ label, src: upData.url, category }),
     })
-    if (res.ok) { setMsg('✓ Eklendi'); setShowForm(false); setFile(null); setPreview(null); setLabel(''); setCategory('genel'); load() }
+    if (res.ok) { setMsg('✓ Eklendi'); setShowForm(false); setFile(null); setPreview(null); setLabel(''); setCategory('pc'); load() }
     else { const d = await res.json(); setMsg(d.error ?? 'Hata') }
     setUploading(false)
   }
@@ -112,7 +112,20 @@ export default function WallpapersClient() {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Kategori</label>
-              <input type="text" value={category} onChange={e => setCategory(e.target.value)} style={inp} />
+              <div style={{ display: 'flex', gap: 8 }}>
+                {(['pc', 'phone'] as const).map(cat => (
+                  <button key={cat} type="button" onClick={() => setCategory(cat)}
+                    style={{
+                      flex: 1, padding: '10px 12px', fontSize: 13, fontWeight: 700,
+                      cursor: 'pointer', border: `1px solid ${category === cat ? '#7c3aed' : 'rgba(255,255,255,0.1)'}`,
+                      background: category === cat ? 'rgba(124,58,237,0.25)' : 'rgba(255,255,255,0.04)',
+                      color: category === cat ? '#a78bfa' : 'rgba(255,255,255,0.4)',
+                      textTransform: 'uppercase', letterSpacing: '0.12em', transition: 'all 0.15s',
+                    }}>
+                    {cat === 'pc' ? '🖥 PC' : '📱 Phone'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
