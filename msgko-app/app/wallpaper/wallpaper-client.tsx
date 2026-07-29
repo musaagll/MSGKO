@@ -146,7 +146,7 @@ export function WallpaperClient() {
                 {filtered.map((wp, i) => (
                   <motion.div key={wp.id}
                     initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 + i * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ delay: 0.05 + i * 0.04, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                     className="group relative overflow-hidden cursor-pointer"
                     style={{
                       aspectRatio: currentTab.aspect,

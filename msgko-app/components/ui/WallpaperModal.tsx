@@ -197,7 +197,7 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
                   key={wp.id}
                   initial={{ opacity: 0, y: 28 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.12 + i * 0.08, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ delay: 0.05 + i * 0.04, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                   className="group relative overflow-hidden cursor-pointer"
                   style={{
                     aspectRatio: '16/9',

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, Rajdhani } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -12,14 +13,14 @@ const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['400', '500', '600', '700'],
 })
 
 const rajdhani = Rajdhani({
   subsets: ['latin'],
   variable: '--font-rajdhani',
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
+  weight: ['600', '700'],
 })
 
 const BASE_URL = 'https://msgko.net'
@@ -318,6 +319,9 @@ const jsonLd = [
   },
 ]
 
+// JSON-LD string'leri build-time'da hesapla — her request'te stringify yapma
+const jsonLdStrings = jsonLd.map(schema => JSON.stringify(schema))
+
 export default function RootLayout({
   children,
 }: {
@@ -326,16 +330,11 @@ export default function RootLayout({
   return (
     <html lang="tr" className={`${inter.variable} ${rajdhani.variable}`}>
       <head>
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4962952498469276"
-          crossOrigin="anonymous"
-        />
-        {jsonLd.map((schema, i) => (
+        {jsonLdStrings.map((str, i) => (
           <script
             key={i}
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+            dangerouslySetInnerHTML={{ __html: str }}
           />
         ))}
       </head>
@@ -347,6 +346,12 @@ export default function RootLayout({
         <ChatWidget />
         <PageViewTracker />
         <Analytics />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4962952498469276"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   )

@@ -40,13 +40,21 @@ export function HeroSection() {
   const [okcuOpen, setOkcuOpen] = useState(false)
   const [asasOpen, setAsasOpen] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+  const mousePosRef = useRef({ x: 0, y: 0 })
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const rafRef = useRef<number | null>(null)
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
-    setMousePos({ x, y })
+    mousePosRef.current = {
+      x: (e.clientX - rect.left) / rect.width - 0.5,
+      y: (e.clientY - rect.top) / rect.height - 0.5,
+    }
+    if (rafRef.current) return
+    rafRef.current = requestAnimationFrame(() => {
+      setMousePos({ ...mousePosRef.current })
+      rafRef.current = null
+    })
   }, [])
 
   // Scroll parallax
@@ -71,7 +79,9 @@ export function HeroSection() {
           <video
             className="w-full h-full object-cover opacity-25"
             src="/bg-video.mp4"
-            autoPlay loop muted playsInline aria-hidden="true"
+            autoPlay loop muted playsInline
+            preload="metadata"
+            aria-hidden="true"
           />
         </motion.div>
 
