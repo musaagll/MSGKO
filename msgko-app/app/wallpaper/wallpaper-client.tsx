@@ -27,15 +27,21 @@ export function WallpaperClient() {
 
   useEffect(() => {
     setLoading(true)
-    const supabase = createClient()
-    void (async () => {
-      try {
-        const { data, error } = await supabase
-          .from('wallpapers').select('*').order('id', { ascending: true })
-        setWallpapers(!error && data && data.length > 0 ? data : [])
-      } catch { setWallpapers([]) }
-      finally { setLoading(false) }
-    })()
+    fetch('/api/wallpapers')
+      .then(r => r.json())
+      .then((data: Wallpaper[]) => {
+        if (Array.isArray(data) && data.length > 0) {
+          // category 'genel' olanları 'pc' say (eski veriler için)
+          setWallpapers(data.map(w => ({
+            ...w,
+            category: (w.category === 'pc' || w.category === 'phone') ? w.category : 'pc'
+          })))
+        } else {
+          setWallpapers([])
+        }
+      })
+      .catch(() => setWallpapers([]))
+      .finally(() => setLoading(false))
   }, [])
 
   useEffect(() => {
