@@ -98,6 +98,11 @@ function RoomInside({ roomName, roomIcon, username, onLeave }: {
   const connState = useConnectionState()
   const [muted, setMuted] = useState(false)
   const [deafened, setDeafened] = useState(false)
+  const [pttMode, setPttMode] = useState(false)
+  const [pttKey, setPttKey] = useState('F10')
+  const [pttActive, setPttActive] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [listeningKey, setListeningKey] = useState(false)
   const [localMutes, setLocalMutes] = useState<Set<string>>(new Set())
   const gainNodes = useRef<Map<string, GainNode>>(new Map())
   const audioCtx = useRef<AudioContext | null>(null)
@@ -175,6 +180,25 @@ function RoomInside({ roomName, roomIcon, username, onLeave }: {
     }, 2000)
     return () => { if (statsInterval.current) clearInterval(statsInterval.current) }
   }, [localParticipant])
+
+  // PTT keyboard listener
+  useEffect(() => {
+    if (!pttMode) return
+    const onDown = (e: KeyboardEvent) => {
+      if (e.key !== pttKey || pttActive) return
+      e.preventDefault()
+      setPttActive(true)
+      localParticipant.setMicrophoneEnabled(true).catch(() => {})
+    }
+    const onUp = (e: KeyboardEvent) => {
+      if (e.key !== pttKey) return
+      setPttActive(false)
+      localParticipant.setMicrophoneEnabled(false).catch(() => {})
+    }
+    window.addEventListener('keydown', onDown)
+    window.addEventListener('keyup', onUp)
+    return () => { window.removeEventListener('keydown', onDown); window.removeEventListener('keyup', onUp) }
+  }, [pttMode, pttKey, pttActive, localParticipant])
 
   const connColor = connState === ConnectionState.Connected ? '#22c55e' : connState === ConnectionState.Reconnecting ? '#fbbf24' : '#ef4444'
 
@@ -255,7 +279,69 @@ function RoomInside({ roomName, roomIcon, username, onLeave }: {
           </div>
           <span className="text-[0.58rem] text-red-400/70">Ayrıl</span>
         </motion.button>
+
+        {/* Settings */}
+        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.92 }} onClick={() => setShowSettings(v => !v)}
+          className="flex flex-col items-center gap-1">
+          <div className="w-12 h-12 flex items-center justify-center transition-all duration-200"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%' }}>
+            <Settings size={18} style={{ color: 'rgba(255,255,255,0.5)' }} />
+          </div>
+          <span className="text-[0.58rem] text-white/30">Ayarlar</span>
+        </motion.button>
       </div>
+
+      {/* PTT Settings Panel */}
+      <AnimatePresence>
+        {showSettings && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+            className="px-5 pb-4"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+            <div className="pt-4 flex flex-col gap-3">
+              <p className="text-[0.65rem] font-bold tracking-[0.18em] uppercase" style={{ color: 'rgba(139,92,246,0.7)' }}>Ses Ayarları</p>
+
+              {/* PTT toggle */}
+              <label className="flex items-center justify-between cursor-pointer">
+                <span className="text-[0.78rem] text-white/60">Bas-Konuş (PTT)</span>
+                <button type="button" onClick={() => { setPttMode(v => !v); if (!pttMode) setMuted(true); localParticipant.setMicrophoneEnabled(pttMode).catch(() => {}) }}
+                  className="w-11 h-6 relative transition-all duration-200"
+                  style={{ background: pttMode ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)', borderRadius: 12 }}>
+                  <span className="absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all duration-200"
+                    style={{ left: pttMode ? 22 : 2 }} />
+                </button>
+              </label>
+
+              {/* PTT key */}
+              {pttMode && (
+                <div className="flex items-center justify-between">
+                  <span className="text-[0.78rem] text-white/60">PTT Tuşu</span>
+                  <button type="button"
+                    onClick={() => setListeningKey(true)}
+                    className="px-3 py-1.5 text-[0.72rem] font-bold transition-all"
+                    style={{
+                      background: listeningKey ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.06)',
+                      border: `1px solid ${listeningKey ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.15)'}`,
+                      borderRadius: 6, color: listeningKey ? '#a78bfa' : 'rgba(255,255,255,0.7)',
+                    }}
+                    onKeyDown={e => { if (listeningKey) { e.preventDefault(); setPttKey(e.key); setListeningKey(false) } }}>
+                    {listeningKey ? 'Tuşa bas...' : pttKey}
+                  </button>
+                </div>
+              )}
+
+              {/* PTT active indicator */}
+              {pttMode && (
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full" style={{ background: pttActive ? '#22c55e' : '#ef4444', boxShadow: pttActive ? '0 0 6px rgba(34,197,94,0.8)' : 'none' }} />
+                  <span className="text-[0.72rem]" style={{ color: pttActive ? '#4ade80' : 'rgba(255,255,255,0.3)' }}>
+                    {pttActive ? 'Konuşuyor...' : `${pttKey} tuşuna bas`}
+                  </span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -316,7 +402,14 @@ export function SesliClient() {
     if (!newRoom.name.trim()) return
     const slug = newRoom.name.trim().toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 40)
     const fakeRoom: VoiceRoom = { id: slug, name: newRoom.name.trim(), description: 'Özel oda', icon: '🎙️', isLocked: newRoom.locked, maxUsers: 20, participants: 0 }
-    const meta = JSON.stringify({ name: newRoom.name.trim(), icon: '🎙️', description: 'Özel oda', isLocked: String(newRoom.locked), maxUsers: '20' })
+    const meta = JSON.stringify({
+      name: newRoom.name.trim(),
+      icon: '🎙️',
+      description: 'Özel oda',
+      isLocked: String(newRoom.locked),
+      maxUsers: '20',
+      passwordHash: newRoom.locked && newRoom.password ? btoa(newRoom.password) : '',
+    })
     setShowCreate(false)
     setNewRoom({ name: '', locked: false, password: '' })
     joinRoom(fakeRoom, newRoom.locked ? newRoom.password : '', meta)

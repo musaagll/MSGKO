@@ -54,17 +54,31 @@ export async function POST(req: NextRequest) {
       .eq('id', cleanRoom)
       .maybeSingle()
 
-    // Şifre kontrolü — sadece DB'deki kalıcı odalar için
+    // Şifre kontrolü
     if (voiceRoom?.password_hash) {
       if (!password) {
         return NextResponse.json({ error: 'Bu oda şifreli' }, { status: 403 })
       }
-      // Basit şifre kontrolü (production'da bcrypt kullanılabilir)
-      // Şimdilik hash = btoa(password) ile saklanıyor
       const inputHash = Buffer.from(password).toString('base64')
       if (inputHash !== voiceRoom.password_hash) {
         return NextResponse.json({ error: 'Şifre yanlış' }, { status: 403 })
       }
+    }
+
+    // Geçici odalar için — roomMeta içindeki şifreyi kontrol et
+    if (!voiceRoom && roomMeta) {
+      try {
+        const meta = JSON.parse(roomMeta)
+        if (meta.isLocked === 'true' && meta.passwordHash) {
+          if (!password) {
+            return NextResponse.json({ error: 'Bu oda şifreli' }, { status: 403 })
+          }
+          const inputHash = Buffer.from(password).toString('base64')
+          if (inputHash !== meta.passwordHash) {
+            return NextResponse.json({ error: 'Şifre yanlış' }, { status: 403 })
+          }
+        }
+      } catch {}
     }
 
     // Ban kontrolü
@@ -106,11 +120,6 @@ export async function POST(req: NextRequest) {
       canPublishData: true,
       roomCreate: true,
     })
-
-    // Oda metadata'sını set et (ilk kişi girerken oda oluşur)
-    if (roomMeta) {
-      token.addGrant({ roomAdmin: true })
-    }
 
     const jwt = await token.toJwt()
     return NextResponse.json({ token: jwt, url: LIVEKIT_URL, room: cleanRoom })

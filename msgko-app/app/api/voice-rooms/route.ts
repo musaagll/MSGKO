@@ -25,6 +25,7 @@ export async function GET() {
         isLocked: meta.isLocked === 'true',
         maxUsers: parseInt(meta.maxUsers ?? '20'),
         participants: r.numParticipants,
+        // passwordHash asla client'a gönderilmez — sadece isLocked bilgisi
       }
     })
 
