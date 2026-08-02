@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { room, username, password } = await req.json()
+    const { room, username, password, roomMeta } = await req.json()
 
     // Input validation
     if (!room || typeof room !== 'string' || room.length > 64) {
@@ -104,7 +104,13 @@ export async function POST(req: NextRequest) {
       canPublish: true,
       canSubscribe: true,
       canPublishData: true,
+      roomCreate: true,
     })
+
+    // Oda metadata'sını set et (ilk kişi girerken oda oluşur)
+    if (roomMeta) {
+      token.addGrant({ roomAdmin: true })
+    }
 
     const jwt = await token.toJwt()
     return NextResponse.json({ token: jwt, url: LIVEKIT_URL, room: cleanRoom })

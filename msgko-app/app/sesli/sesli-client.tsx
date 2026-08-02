@@ -287,13 +287,13 @@ export function SesliClient() {
     return () => clearInterval(t)
   }, [])
 
-  const joinRoom = useCallback(async (room: VoiceRoom, pw = '') => {
+  const joinRoom = useCallback(async (room: VoiceRoom, pw = '', roomMeta?: string) => {
     if (!username.trim()) { setError('Önce kullanıcı adın gir'); return }
     setLoading(room.id); setError('')
     try {
       const res = await fetch('/api/livekit-token', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ room: room.id, username: username.trim(), password: pw }),
+        body: JSON.stringify({ room: room.id, username: username.trim(), password: pw, roomMeta }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error ?? 'Bağlantı hatası'); return }
@@ -316,9 +316,10 @@ export function SesliClient() {
     if (!newRoom.name.trim()) return
     const slug = newRoom.name.trim().toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 40)
     const fakeRoom: VoiceRoom = { id: slug, name: newRoom.name.trim(), description: 'Özel oda', icon: '🎙️', isLocked: newRoom.locked, maxUsers: 20, participants: 0 }
+    const meta = JSON.stringify({ name: newRoom.name.trim(), icon: '🎙️', description: 'Özel oda', isLocked: String(newRoom.locked), maxUsers: '20' })
     setShowCreate(false)
     setNewRoom({ name: '', locked: false, password: '' })
-    joinRoom(fakeRoom, newRoom.locked ? newRoom.password : '')
+    joinRoom(fakeRoom, newRoom.locked ? newRoom.password : '', meta)
   }, [newRoom, joinRoom])
 
   return (
