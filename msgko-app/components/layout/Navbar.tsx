@@ -144,24 +144,6 @@ export function Navbar() {
               </span>
             </button>
 
-            {/* Sesli Odalar nav button */}
-            <Link href="/sesli" className={NAV_BUTTON_CLASS}>
-              <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-green-500/[0.06]" />
-              <span className="relative z-10 flex items-center gap-2">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 group-hover:scale-110"
-                  style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.25)' }}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                    className="text-green-400">
-                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                    <line x1="12" y1="19" x2="12" y2="23"/>
-                    <line x1="8" y1="23" x2="16" y2="23"/>
-                  </svg>
-                </span>
-                <span className="text-[#C8C8D8]/50 group-hover:text-green-300 transition-colors duration-200">Sesli</span>
-              </span>
-            </Link>
-
             {/* Instagram nav button */}
             <button type="button" onClick={() => setWsMovieOpen(true)} className={NAV_BUTTON_CLASS}>
               <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-pink-500/[0.06]" />

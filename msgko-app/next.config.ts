@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https://*.ytimg.com https://*.cdninstagram.com https://image.nttgame.com https://*.supabase.co https://pagead2.googlesyndication.com https://*.googleusercontent.com https://*.googlesyndication.com",
               "media-src 'self' blob:",
               "frame-src https://www.youtube.com https://www.instagram.com https://googleads.g.doubleclick.net",
-              "connect-src 'self' https://*.supabase.co https://www.googleapis.com https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net wss://*.livekit.cloud https://*.livekit.cloud",
+              "connect-src 'self' https://*.supabase.co https://www.googleapis.com https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
