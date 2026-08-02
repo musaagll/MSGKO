@@ -263,7 +263,7 @@ function RoomInside({ roomName, roomIcon, username, onLeave }: {
 // ─── Ana Sayfa Bileşeni ───────────────────────────────────────────────────────
 export function SesliClient() {
   const [username, setUsername] = useState('')
-  const [rooms, setRooms] = useState<VoiceRoom[]>(DEFAULT_ROOMS)
+  const [rooms, setRooms] = useState<VoiceRoom[]>([])
   const [token, setToken] = useState<string | null>(null)
   const [lkUrl, setLkUrl] = useState<string | null>(null)
   const [activeRoom, setActiveRoom] = useState<VoiceRoom | null>(null)
