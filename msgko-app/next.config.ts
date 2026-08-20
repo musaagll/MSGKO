@@ -4,19 +4,9 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   compress: true,
   poweredByHeader: false,
-  trailingSlash: false,
 
   async redirects() {
-    return [
-      // www → non-www (kalıcı 301)
-      // NOT: http→https Vercel tarafından otomatik yapılır, burada sadece www redirect
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'www.msgko.net' }],
-        destination: 'https://msgko.net/:path*',
-        permanent: true,
-      },
-    ]
+    return []
   },
 
   async headers() {
