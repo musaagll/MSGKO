@@ -11,7 +11,6 @@ import { useMobileMenu } from '@/hooks/useMobileMenu'
 import { MobileMenu } from './MobileMenu'
 import { IletisimModal } from '@/components/ui/IletisimModal'
 import { AsasModal } from '@/components/ui/AsasModal'
-import { KarakterlerDropdown } from '@/components/ui/KarakterlerDropdown'
 import { SearchBar } from '@/components/ui/SearchBar'
 import { SidePanel } from '@/components/ui/SidePanel'
 import { YoutubePanel } from '@/components/ui/YoutubePanel'
@@ -128,8 +127,6 @@ export function Navbar() {
               )
             })}
 
-            <div className="w-px h-5 mx-1 bg-white/[0.08]" />
-            <div className="flex items-center h-16 px-1"><KarakterlerDropdown /></div>
             <div className="w-px h-5 mx-1 bg-white/[0.08]" />
 
             {/* YouTube nav button */}

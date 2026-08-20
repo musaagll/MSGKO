@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-  <rect width="64" height="64" fill="#1a1a2e"/>
-  <path d="M32 12 C20 12 14 22 14 32 L14 42 L50 42 L50 32 C50 22 44 12 32 12 Z" fill="#4C1D95" stroke="#8B5CF6" stroke-width="1.5"/>
-  <rect x="18" y="42" width="28" height="6" rx="2" fill="#3B1585" stroke="#8B5CF6" stroke-width="1"/>
-  <text x="32" y="58" text-anchor="middle" fill="#8B5CF6" font-size="7" font-family="sans-serif">HELMET</text>
-</svg>

@@ -4,7 +4,6 @@ import type { NavItem, FooterColumn, SocialLink, Feature } from './types'
 
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Ana Sayfa', href: '/' },
-  { label: 'Karakter Bul', href: '/karakter-bul' },
 ]
 
 // ─── Features ────────────────────────────────────────────────────────────────
