@@ -9,16 +9,10 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       // www → non-www (kalıcı 301)
+      // NOT: http→https Vercel tarafından otomatik yapılır, burada sadece www redirect
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'www.msgko.net' }],
-        destination: 'https://msgko.net/:path*',
-        permanent: true,
-      },
-      // http → https (hosting seviyesinde yapılıyorsa gerekmez ama yine de ekle)
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'msgko.net' }],
         destination: 'https://msgko.net/:path*',
         permanent: true,
       },

@@ -45,7 +45,7 @@ function rawToItem(raw: RawItem): Item {
     item_name: raw.item_name,
     item_name_en: raw.item_name_en,
     item_type: raw.item_type as Item['item_type'],
-    equipment_slot: SLOT_KEY_MAP[raw.equipment_slot_key] ?? 0,
+    equipment_slot: (SLOT_KEY_MAP[raw.equipment_slot_key] ?? 0) as Item['equipment_slot'],
     class_restriction: raw.class_restriction as Item['class_restriction'],
     nation_restriction: raw.nation_restriction as Item['nation_restriction'],
     icon_url: raw.icon_url ?? undefined,
