@@ -24,6 +24,8 @@
   },
   "include": [
     "next-env.d.ts",
+    "three-fiber.d.ts",
+    "global.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",

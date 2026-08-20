@@ -8,15 +8,8 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: [
           '/api/',
-          '/_next/',
           '/admin/',
         ],
-      },
-      // Googlebot için özel izinler
-      {
-        userAgent: 'Googlebot',
-        allow: '/',
-        disallow: ['/api/', '/_next/'],
       },
     ],
     sitemap: 'https://msgko.net/sitemap.xml',
