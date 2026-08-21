@@ -8,6 +8,7 @@ import { ChatWidget } from '@/components/ui/ChatWidget'
 import { ParticleBackground } from '@/components/ui/ParticleBackground'
 import { Analytics } from '@vercel/analytics/next'
 import { PageViewTracker } from '@/components/ui/PageViewTracker'
+import { AdSense } from '@/components/ui/AdSense'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -342,6 +343,10 @@ export default function RootLayout({
         <ParticleBackground />
         <Navbar />
         {children}
+        {/* Footer öncesi reklam — her sayfada görünür, içerikle çakışmaz */}
+        <div className="w-full max-w-[1280px] mx-auto px-6 sm:px-8 py-6">
+          <AdSense slot="8727584512" />
+        </div>
         <Footer />
         <ChatWidget />
         <PageViewTracker />

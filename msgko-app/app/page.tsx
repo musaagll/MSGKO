@@ -3,6 +3,7 @@ import { HeroSection } from '@/components/sections/HeroSection'
 import { YoutubeVideoSection } from '@/components/sections/YoutubeVideoSection'
 import { FeaturesSection } from '@/components/sections/FeaturesSection'
 import { ReklamSection } from '@/components/sections/ReklamSection'
+import { AdSense } from '@/components/ui/AdSense'
 import { getYoutubeVideos } from '@/lib/youtube'
 import type { YTVideo } from '@/lib/youtube'
 
@@ -29,6 +30,10 @@ export default async function HomePage() {
     <main>
       <HeroSection />
       <YoutubeVideoSection videos={videos} />
+      {/* Video bölümü ile features arasında reklam */}
+      <div className="w-full max-w-[1280px] mx-auto px-6 sm:px-8 py-4">
+        <AdSense slot="8727584512" />
+      </div>
       <FeaturesSection />
       <ReklamSection />
 
