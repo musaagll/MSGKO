@@ -1,6 +1,3 @@
-// ─── Character Types (re-export) ──────────────────────────────────────────────
-export * from './types/character'
-
 // ─── Database Types ───────────────────────────────────────────────────────────
 
 export interface Category {
