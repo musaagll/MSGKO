@@ -29,11 +29,11 @@ const BASE_URL = 'https://msgko.net'
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
-    template: '%s | MSGKO Knight Online Rehberi',
+    default: 'MSGKO.net — Knight Online Rehber ve Eğitim Sitesi',
+    template: '%s | MSGKO — Knight Online Rehber',
   },
   description:
-    'Karakter gelişiminden farm, WS, PK stratejilerine; meta analizlerinden profesyonel eğitimlere kadar kapsamlı içerik deneyimi burada seni bekliyor. Knight Online\'a dair her şey burada.',
+    'MSGKO.net — Türkiye\'nin Knight Online rehber ve eğitim sitesi. Asas, okçu, warrior, mage, priest build rehberleri, farm rotaları, PK taktikleri ve güncel meta analizleri burada.',
   keywords: [
     // Marka
     'msgko', 'msgko.net', 'MSG Knight Online', 'musaagll', 'msg ko', 'msg knight online',
@@ -96,16 +96,16 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'tr_TR',
     url: BASE_URL,
-    siteName: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
-    title: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
+    siteName: 'MSGKO — Knight Online Rehber ve Eğitim Sitesi',
+    title: 'MSGKO.net — Knight Online Rehber ve Eğitim Sitesi',
     description:
-      'Karakter gelişiminden farm, WS, PK stratejilerine; meta analizlerinden profesyonel eğitimlere kadar kapsamlı içerik deneyimi burada seni bekliyor. Knight Online\'a dair her şey burada.',
+      'MSGKO.net — Türkiye\'nin Knight Online rehber sitesi. Asas, okçu, warrior, mage, priest build, farm, PK ve eğitim videoları burada.',
     images: [
       {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
+        alt: 'MSGKO — Knight Online Rehber ve Eğitim Sitesi',
       },
     ],
   },
@@ -113,9 +113,9 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@musaagll',
     creator: '@musaagll',
-    title: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
+    title: 'MSGKO.net — Knight Online Rehber ve Eğitim Sitesi',
     description:
-      'Knight Online asas build, combo, okçu eğitim, farm rehberi ve PK taktikleri. musaagll — msgko.net',
+      'Knight Online asas, okçu, warrior rehberleri, farm rotaları ve PK taktikleri. musaagll — msgko.net',
     images: ['/opengraph-image'],
   },
   robots: {
@@ -145,20 +145,20 @@ const jsonLd = [
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'MSGKO',
-    alternateName: ['MSG Knight Online', 'msgko.net', 'musaagll'],
+    alternateName: ['MSG Knight Online', 'msgko.net', 'musaagll', 'MSGKO Knight Online Rehberi'],
     url: BASE_URL,
     logo: {
       '@type': 'ImageObject',
       url: `${BASE_URL}/logo.png`,
       width: 512,
       height: 512,
-      caption: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
+      caption: 'MSGKO — Knight Online Rehber ve Eğitim Sitesi',
     },
     sameAs: [
       'https://www.youtube.com/@musaagll',
       'https://www.instagram.com/msgclip/',
     ],
-    description: 'Knight Online Türkçe rehber ve eğitim platformu. Asas, okçu, warrior, mage, priest build ve taktik videoları.',
+    description: 'MSGKO.net — Knight Online Türkçe rehber ve eğitim platformu. Asas, okçu, warrior, mage, priest build rehberleri, farm rotaları, PK taktikleri ve güncel meta analizleri.',
     foundingDate: '2025',
     inLanguage: 'tr',
   },
@@ -166,10 +166,10 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'MSGKO - Knight Online Gelişim & Strateji Rehberi',
-    alternateName: ['msgko.net', 'MSG Knight Online'],
+    name: 'MSGKO — Knight Online Rehber ve Eğitim Sitesi',
+    alternateName: ['msgko.net', 'MSG Knight Online', 'MSGKO Knight Online Rehberi'],
     url: BASE_URL,
-    description: 'Knight Online Türkçe rehber sitesi. Asas, okçu, warrior, mage, priest build, combo, farm ve PK taktikleri.',
+    description: 'Türkiye\'nin Knight Online rehber sitesi. Asas, okçu, warrior, mage, priest build, combo, farm, PK ve level rehberleri.',
     inLanguage: 'tr',
     potentialAction: {
       '@type': 'SearchAction',

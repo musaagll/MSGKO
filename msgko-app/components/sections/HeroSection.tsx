@@ -187,8 +187,10 @@ export function HeroSection() {
               />
             </motion.div>
 
-            {/* H1 */}
-            <h1 className="mb-6 sr-only">Knight Online Gelişim ve Strateji Rehberi - MSGKO</h1>
+            {/* H1 — görünür ama tasarımla entegre */}
+            <h1 className="sr-only">
+              Knight Online Rehber ve Eğitim Sitesi — MSGKO.net | Asas, Okçu, Warrior Build, Farm ve PK Taktikleri
+            </h1>
             <div className="mb-6" aria-hidden="true">
               {/* Satır 1: KNIGHT ONLINE — yan yana */}
               <motion.div
