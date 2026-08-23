@@ -130,7 +130,7 @@ export function Navbar() {
             <div className="w-px h-5 mx-1 bg-white/[0.08]" />
 
             {/* YouTube nav button */}
-            <button type="button" onClick={() => setYoutubeOpen(true)} className={NAV_BUTTON_CLASS}>
+            <Link href="/youtube" className={NAV_BUTTON_CLASS}>
               <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-red-500/[0.06]" />
               <span className="relative z-10 flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
@@ -139,10 +139,10 @@ export function Navbar() {
                 </svg>
                 <span className="text-[#C8C8D8]/50 group-hover:text-red-300 transition-colors duration-200">Youtube</span>
               </span>
-            </button>
+            </Link>
 
             {/* Instagram nav button */}
-            <button type="button" onClick={() => setWsMovieOpen(true)} className={NAV_BUTTON_CLASS}>
+            <Link href="/instagram" className={NAV_BUTTON_CLASS}>
               <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-pink-500/[0.06]" />
               <span className="relative z-10 flex items-center gap-2">
                 <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 group-hover:scale-110"
@@ -156,7 +156,7 @@ export function Navbar() {
                 </span>
                 <span className="text-[#C8C8D8]/50 group-hover:text-pink-300 transition-colors duration-200">Instagram</span>
               </span>
-            </button>
+            </Link>
 
             {/* Destek nav button */}
             <Link href="/destek" className={NAV_BUTTON_CLASS}>
@@ -183,13 +183,12 @@ export function Navbar() {
               Wallpaper
             </Link>
 
-            <button
-              type="button"
-              onClick={() => setIletisimOpen(true)}
+            <Link
+              href="/iletisim"
               className="relative flex items-center h-9 px-5 ml-2 text-[0.78rem] font-semibold tracking-[0.08em] uppercase transition-all duration-300 border text-purple-300/80 border-purple-500/30 bg-purple-500/[0.06] hover:border-purple-500/70 hover:bg-purple-500/[0.18] hover:text-white hover:shadow-[0_0_20px_rgba(139,92,246,0.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
             >
               İletişim
-            </button>
+            </Link>
           </nav>
 
           {/* Right */}

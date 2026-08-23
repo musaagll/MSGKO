@@ -216,9 +216,9 @@ export function MobileMenu({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <button
-                    type="button"
-                    onClick={handleYoutube}
+                  <Link
+                    href="/youtube"
+                    onClick={onClose}
                     className="w-full flex items-center justify-between px-3 py-3 mb-1 border-l-2 border-transparent text-white/50 hover:border-red-500/40 hover:bg-red-500/[0.05] hover:text-white/85 transition-all duration-200 group"
                   >
                     <span className="flex items-center gap-2.5 text-[0.85rem] font-medium tracking-[0.04em]">
@@ -230,8 +230,8 @@ export function MobileMenu({
                       </span>
                       <span className="group-hover:text-red-300 transition-colors duration-200">Youtube</span>
                     </span>
-                    <ExternalLink size={11} className="text-white/15 group-hover:text-red-400/50 transition-colors" />
-                  </button>
+                    <ChevronRight size={13} className="text-white/20" />
+                  </Link>
                 </motion.div>
 
                 {/* Instagram butonu */}
@@ -240,9 +240,9 @@ export function MobileMenu({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.25, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <button
-                    type="button"
-                    onClick={handleInstagram}
+                  <Link
+                    href="/instagram"
+                    onClick={onClose}
                     className="w-full flex items-center justify-between px-3 py-3 mb-1 border-l-2 border-transparent text-white/50 hover:border-pink-500/40 hover:bg-pink-500/[0.05] hover:text-white/85 transition-all duration-200 group"
                   >
                     <span className="flex items-center gap-2.5 text-[0.85rem] font-medium tracking-[0.04em]">
@@ -257,8 +257,8 @@ export function MobileMenu({
                       </span>
                       <span className="group-hover:text-pink-300 transition-colors duration-200">Instagram</span>
                     </span>
-                    <ExternalLink size={11} className="text-white/15 group-hover:text-pink-400/50 transition-colors" />
-                  </button>
+                    <ChevronRight size={13} className="text-white/20" />
+                  </Link>
                 </motion.div>
 
                 {/* Wallpaper butonu */}
@@ -300,13 +300,13 @@ export function MobileMenu({
                 <Heart size={13} />
                 Destek
               </Link>
-              <button
-                type="button"
-                onClick={handleIletisim}
+              <Link
+                href="/iletisim"
+                onClick={onClose}
                 className="flex items-center justify-center gap-2 w-full py-3 text-[0.75rem] font-bold tracking-[0.1em] uppercase border border-purple-500/25 bg-purple-500/[0.07] text-purple-300/80 hover:border-purple-500/60 hover:bg-purple-500/[0.15] hover:text-white transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
               >
                 İletişim
-              </button>
+              </Link>
 
               <a
                 href="https://www.youtube.com/@musaagll"
