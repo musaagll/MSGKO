@@ -150,7 +150,7 @@ export function InstagramPage() {
 
       {/* Reels Grid */}
       <div className="relative z-10 flex-1 px-6 md:px-12 py-8 pb-16">
-        <div className="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {REELS.map((reel, i) => (
             <motion.div
               key={reel.id}
@@ -193,7 +193,7 @@ export function InstagramPage() {
         </div>
 
         {/* CTA */}
-        <div className="max-w-[1200px] mx-auto mt-10">
+        <div className="max-w-[1400px] mx-auto mt-10">
           <a href="https://www.instagram.com/msgclip" target="_blank" rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 w-full py-4 text-[0.78rem] font-bold tracking-[0.1em] uppercase text-white hover:opacity-85 transition-opacity"
             style={{ background: 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 60%, #fcb045 100%)', borderRadius: '8px', boxShadow: '0 4px 24px rgba(131,58,180,0.3)' }}>
