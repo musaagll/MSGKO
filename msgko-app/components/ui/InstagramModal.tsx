@@ -7,11 +7,26 @@ import Image from 'next/image'
 import { useModal } from '@/hooks/useModal'
 
 const REELS = [
-  { id: 'DZFCMQMNr5C', title: 'Video 1' },
-  { id: 'DZCa-y9to-h', title: 'Video 2' },
-  { id: 'DYtiLyONbys', title: 'Video 3' },
-  { id: 'DYNgnvAt07I', title: 'Video 4' },
-  { id: 'DXv-iDcNL0a', title: 'Video 5' },
+  { id: 'DZFCMQMNr5C', title: 'Reel 1' },
+  { id: 'DZCa-y9to-h', title: 'Reel 2' },
+  { id: 'DYtiLyONbys', title: 'Reel 3' },
+  { id: 'DYUHlKYNNQr', title: 'Reel 4' },
+  { id: 'DYNgnvAt07I', title: 'Reel 5' },
+  { id: 'DYKPanwNpfi', title: 'Reel 6' },
+  { id: 'DYE_Tu9N4uv', title: 'Reel 7' },
+  { id: 'DX_pfd_t1xP', title: 'Reel 8' },
+  { id: 'DX6KPEytyCX', title: 'Reel 9' },
+  { id: 'DXzjOZ5Nxa8', title: 'Reel 10' },
+  { id: 'DXv-iDcNL0a', title: 'Reel 11' },
+  { id: 'DXq0Km1DfQ6', title: 'Reel 12' },
+  { id: 'DXoEMJUDSBA', title: 'Reel 13' },
+  { id: 'DXl1vUejZSl', title: 'Reel 14' },
+  { id: 'DXgdvWNDWyh', title: 'Reel 15' },
+  { id: 'DXbMcCqjbXr', title: 'Reel 16' },
+  { id: 'DXWoetPjX15', title: 'Reel 17' },
+  { id: 'DXUDn4JjRYl', title: 'Reel 18' },
+  { id: 'DXSSWESjaGs', title: 'Reel 19' },
+  { id: 'DXOzYExjXJv', title: 'Reel 20' },
 ]
 
 interface InstagramModalProps {
