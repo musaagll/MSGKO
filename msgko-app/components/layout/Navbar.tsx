@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useScrollDetect } from '@/hooks/useScrollDetect'
 import { useMobileMenu } from '@/hooks/useMobileMenu'
@@ -18,8 +18,113 @@ import { InstagramModal } from '@/components/ui/InstagramModal'
 import { WallpaperModal } from '@/components/ui/WallpaperModal'
 import { NAV_ITEMS } from '@/lib/data'
 
+// ── Dropdown menü verisi ──────────────────────────────────────────────────────
+const REHBER_ITEMS = [
+  { label: 'Asas Rehberi',        href: '/rehber/asas',         desc: 'STR/DEX, combo ve PK' },
+  { label: 'Okçu Rehberi',        href: '/rehber/okcu',         desc: 'DEX build ve taktikler' },
+  { label: 'Warrior Rehberi',     href: '/rehber/warrior',      desc: 'Tank ve DPS build' },
+  { label: 'Mage Rehberi',        href: '/rehber/mage',         desc: 'INT ve AOE taktikler' },
+  { label: 'Priest Rehberi',      href: '/rehber/priest',       desc: 'Heal ve buff stratejisi' },
+  { label: 'Battle Priest',       href: '/rehber/battle-priest',desc: 'Hibrit STR/INT build' },
+  { label: 'Tüm Rehberler →',     href: '/rehber',              desc: '' },
+]
+
+const CONTENT_ITEMS = [
+  { label: 'Boss Rehberleri',  href: '/boss',   desc: 'Felankor, Isiloon ve diğerleri' },
+  { label: 'Harita Rehberleri', href: '/harita', desc: 'CZ, FT, Ardream ve daha fazlası' },
+  { label: 'Item Veritabanı',  href: '/item',   desc: 'Silah, zırh ve aksesuar bilgisi' },
+  { label: 'Build Rehberleri', href: '/build',  desc: 'PvP, PvE ve farm build\'leri' },
+  { label: 'Farm Rehberleri',  href: '/farm',   desc: 'Exp ve item farm rotaları' },
+  { label: 'Haberler',         href: '/haber',  desc: 'Güncel KO güncellemeleri' },
+]
+
+// ── Dropdown bileşeni ─────────────────────────────────────────────────────────
+function NavDropdown({
+  label,
+  items,
+  accentColor = 'purple',
+}: {
+  label: string
+  items: { label: string; href: string; desc: string }[]
+  accentColor?: 'purple' | 'red' | 'amber'
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const ACCENT = {
+    purple: { text: 'rgba(139,92,246,0.9)', border: 'rgba(139,92,246,0.3)', bg: 'rgba(139,92,246,0.06)' },
+    red:    { text: 'rgba(239,68,68,0.9)',  border: 'rgba(239,68,68,0.3)',  bg: 'rgba(239,68,68,0.06)' },
+    amber:  { text: 'rgba(245,158,11,0.9)', border: 'rgba(245,158,11,0.3)', bg: 'rgba(245,158,11,0.06)' },
+  }[accentColor]
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className="relative flex items-center h-16 px-4 gap-1.5 text-[0.82rem] font-medium tracking-[0.04em]
+          transition-colors duration-200 text-[#C8C8D8]/50 hover:text-white"
+      >
+        <span className="relative z-10">{label}</span>
+        <svg
+          width="11"
+          height="11"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          aria-hidden="true"
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+
+      {open && (
+        <div
+          className="absolute top-full left-0 mt-1 min-w-[220px] z-50 overflow-hidden"
+          style={{
+            background: 'rgba(7,7,11,0.98)',
+            border: `1px solid ${ACCENT.border}`,
+            boxShadow: '0 20px 48px rgba(0,0,0,0.7)',
+          }}
+          role="menu"
+        >
+          <div className="h-px w-full mb-1"
+            style={{ background: `linear-gradient(90deg, transparent, ${ACCENT.text}, transparent)` }} />
+          {items.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="flex flex-col px-4 py-3 hover:bg-white/[0.04] transition-colors duration-150"
+            >
+              <span className="text-[0.8rem] font-semibold text-white/85">
+                {item.label}
+              </span>
+              {item.desc && (
+                <span className="text-[0.67rem] text-white/35 mt-0.5">{item.desc}</span>
+              )}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 const NAV_BUTTON_CLASS =
-  // build-bust-2026
   'relative flex items-center h-[60px] px-4 text-[0.82rem] font-medium tracking-[0.04em] transition-colors duration-200 group text-[#C8C8D8]/50 hover:text-white'
 
 export function Navbar() {
@@ -126,6 +231,14 @@ export function Navbar() {
                 </Link>
               )
             })}
+
+            <div className="w-px h-5 mx-1 bg-white/[0.08]" />
+
+            {/* Rehber dropdown */}
+            <NavDropdown label="Rehber" items={REHBER_ITEMS} accentColor="purple" />
+
+            {/* İçerik dropdown */}
+            <NavDropdown label="Veritabanı" items={CONTENT_ITEMS} accentColor="amber" />
 
             <div className="w-px h-5 mx-1 bg-white/[0.08]" />
 

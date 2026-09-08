@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Image, Video, BookOpen, Settings,
-  LogOut, Menu, X, ExternalLink, Shield
+  LogOut, Menu, X, ExternalLink, Shield, Search
 } from 'lucide-react'
 
 const NAV = [
@@ -13,6 +13,7 @@ const NAV = [
   { href: '/wallpapers', icon: Image,            label: 'Wallpaper' },
   { href: '/videos',     icon: Video,            label: 'Videolar' },
   { href: '/rehberler',  icon: BookOpen,          label: 'Rehberler' },
+  { href: '/seo',        icon: Search,            label: 'SEO Dashboard' },
   { href: '/ayarlar',    icon: Settings,          label: 'Ayarlar' },
 ]
 

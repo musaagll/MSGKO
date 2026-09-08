@@ -5,10 +5,86 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
 
+  // ── 301 Redirect Sistemi ─────────────────────────────────────────────────
+  // Eski URL'leri yeni yapıya yönlendir. SEO değeri korunur.
   async redirects() {
-    return []
+    return [
+      // /kategoriler/* → /rehber/* (footer ve data.ts'deki eski linkler)
+      {
+        source: '/kategoriler/asas',
+        destination: '/rehber/asas',
+        permanent: true,
+      },
+      {
+        source: '/kategoriler/okcu',
+        destination: '/rehber/okcu',
+        permanent: true,
+      },
+      {
+        source: '/kategoriler/:slug',
+        destination: '/rehber/:slug',
+        permanent: true,
+      },
+      {
+        source: '/kategoriler',
+        destination: '/rehber',
+        permanent: true,
+      },
+      // Potansiyel alternatif URL'ler
+      {
+        source: '/guide/:slug',
+        destination: '/rehber/:slug',
+        permanent: true,
+      },
+      {
+        source: '/guides',
+        destination: '/rehber',
+        permanent: true,
+      },
+      {
+        source: '/maps',
+        destination: '/harita',
+        permanent: true,
+      },
+      {
+        source: '/maps/:slug',
+        destination: '/harita/:slug',
+        permanent: true,
+      },
+      {
+        source: '/bosses',
+        destination: '/boss',
+        permanent: true,
+      },
+      {
+        source: '/bosses/:slug',
+        destination: '/boss/:slug',
+        permanent: true,
+      },
+      {
+        source: '/items',
+        destination: '/item',
+        permanent: true,
+      },
+      {
+        source: '/items/:slug',
+        destination: '/item/:slug',
+        permanent: true,
+      },
+      {
+        source: '/news',
+        destination: '/haber',
+        permanent: true,
+      },
+      {
+        source: '/news/:slug',
+        destination: '/haber/:slug',
+        permanent: true,
+      },
+    ]
   },
 
+  // ── HTTP Headers ─────────────────────────────────────────────────────────
   async headers() {
     return [
       {
@@ -16,6 +92,13 @@ const nextConfig: NextConfig = {
         source: '/assets/models/:path*',
         headers: [
           { key: 'Content-Type', value: 'model/gltf-binary' },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        // Statik asset'ler için agresif önbellekleme
+        source: '/_next/static/:path*',
+        headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
@@ -49,6 +132,7 @@ const nextConfig: NextConfig = {
     ]
   },
 
+  // ── Image Optimization ───────────────────────────────────────────────────
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
@@ -58,7 +142,7 @@ const nextConfig: NextConfig = {
         hostname: '*.supabase.co',
         pathname: '/storage/v1/object/public/**',
       },
-      // YouTube thumbnails — tüm subdomain'ler
+      // YouTube thumbnails
       {
         protocol: 'https',
         hostname: '*.ytimg.com',
@@ -72,11 +156,13 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '*.cdninstagram.com',
       },
+      // Knight Online resmi oyun görselleri
+      {
+        protocol: 'https',
+        hostname: 'image.nttgame.com',
+      },
     ],
   },
-
-  // Bundle analyzer için (opsiyonel)
-  // webpack: (config) => config,
 }
 
 export default nextConfig

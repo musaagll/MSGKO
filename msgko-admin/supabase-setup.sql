@@ -74,3 +74,12 @@ CREATE POLICY "service_role_write" ON storage.objects
 -- ============================================================
 -- Kurulum tamamlandı!
 -- ============================================================
+
+-- ============================================================
+-- Migration v2 Referansı
+-- Yeni tablolar için: supabase-migration-v2.sql dosyasını çalıştırın.
+-- Eklenen tablolar: guides, builds, items, bosses, mobs, maps,
+--   quests, skills, news, errors, farm_spots, seo_redirects,
+--   content_tags, entity_relations
+-- Güncellenen tablolar: admin_settings (6 yeni kolon)
+-- ============================================================

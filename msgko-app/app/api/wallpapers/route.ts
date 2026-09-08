@@ -1,17 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 
 // Public: wallpaper listesi
 export async function GET() {
-  const supabase = createServiceClient()
+  // Wallpaper bucket public olduğu için anon client yeterli
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('wallpapers')
     .select('*')
     .order('id', { ascending: true })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data, {
-    headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' },
+  if (error) {
+    console.error('Wallpaper fetch error:', error.message)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+  return NextResponse.json(data ?? [], {
+    headers: {
+      // Supabase pause/resume sonrası stale cache sorunu yaşamamak için
+      // kısa TTL kullan
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+    },
   })
 }
 
@@ -23,10 +31,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 })
     }
 
-    const supabase = createServiceClient()
+    // Service key varsa kullan, yoksa anon client ile dene
+    let supabase
+    try {
+      supabase = createServiceClient()
+    } catch {
+      supabase = await createClient()
+    }
+
     const col = type === 'click' ? 'click_count' : 'download_count'
 
-    // Önce RPC dene
+    // RPC dene
     const { error: rpcError } = await supabase.rpc('increment_wallpaper_stat', {
       wallpaper_id: id,
       col_name: col,

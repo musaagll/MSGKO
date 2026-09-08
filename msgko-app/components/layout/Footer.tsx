@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { SOCIAL_LINKS } from '@/lib/data'
-import { CokYakindaModal } from '@/components/ui/CokYakindaModal'
 
 function SocialIcon({ platform }: { platform: string }) {
   switch (platform) {
@@ -26,23 +24,23 @@ function SocialIcon({ platform }: { platform: string }) {
   }
 }
 
-const CATEGORY_LINKS = [
-  'Asas PK Taktikleri',
-  'Asas Farm Rotaları',
-  'Okçu PK Taktikleri',
-  'Okçu Skill Rehberleri',
-  'Okçu Farm Rotaları',
+const REHBER_LINKS = [
+  { label: 'Asas Rehberi',    href: '/rehber/asas' },
+  { label: 'Okçu Rehberi',    href: '/rehber/okcu' },
+  { label: 'Warrior Rehberi', href: '/rehber/warrior' },
+  { label: 'Mage Rehberi',    href: '/rehber/mage' },
+  { label: 'Priest Rehberi',  href: '/rehber/priest' },
+]
+
+const DB_LINKS = [
+  { label: 'Boss Rehberleri',  href: '/boss' },
+  { label: 'Harita Rehberleri',href: '/harita' },
+  { label: 'Item Veritabanı',  href: '/item' },
+  { label: 'Build Rehberleri', href: '/build' },
+  { label: 'Farm Rehberleri',  href: '/farm' },
 ]
 
 export function Footer() {
-  const [yakindaOpen, setYakindaOpen] = useState(false)
-  const [yakindaTitle, setYakindaTitle] = useState('')
-
-  const openYakinda = (title: string) => {
-    setYakindaTitle(title)
-    setYakindaOpen(true)
-  }
-
   return (
     <>
       <footer className="relative overflow-hidden" aria-label="Site footer">
@@ -74,7 +72,8 @@ export function Footer() {
                 </a>
               </div>
               <p className="text-[0.78rem] leading-[1.8] mb-6 max-w-[220px] text-white/40">
-                Knight Online için asas ve okçu karakterlerine özel en kapsamlı eğitim videoları burada.
+                Knight Online için asas, okçu, warrior, mage ve priest karakterlerine özel
+                kapsamlı rehberler, item veritabanı ve güncel içerikler.
               </p>
               <div className="flex gap-2.5">
                 {SOCIAL_LINKS.map((social) => (
@@ -88,47 +87,38 @@ export function Footer() {
               </div>
             </div>
 
-            {/* Col 2 — Hızlı Erişim */}
+            {/* Col 2 — Rehberler */}
             <div>
               <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase mb-6 text-white/90">
-                HIZLI ERİŞİM
+                REHBERLER
               </h3>
               <nav className="flex flex-col gap-3">
-                <Link href="/"
-                  className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1">
-                  <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Ana Sayfa
-                </Link>
-                <button type="button" onClick={() => openYakinda('Asas Eğitimleri')}
-                  className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1 text-left">
-                  <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Asas Eğitimleri
-                </button>
-                <button type="button" onClick={() => openYakinda('Okçu Eğitimleri')}
-                  className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1 text-left">
-                  <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Okçu Eğitimleri
-                </button>
-                <Link href="/destek"
-                  className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1">
-                  <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Destek
+                {REHBER_LINKS.map(({ label, href }) => (
+                  <Link key={href} href={href}
+                    className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1">
+                    <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {label}
+                  </Link>
+                ))}
+                <Link href="/rehber"
+                  className="text-[0.72rem] tracking-[0.1em] uppercase text-purple-400/40 hover:text-purple-400/70 transition-colors mt-1">
+                  Tüm Rehberler →
                 </Link>
               </nav>
             </div>
 
-            {/* Col 3 — Kategoriler */}
+            {/* Col 3 — Veritabanı */}
             <div>
               <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase mb-6 text-white/90">
-                KATEGORİLER
+                VERİTABANI
               </h3>
               <nav className="flex flex-col gap-3">
-                {CATEGORY_LINKS.map((label) => (
-                  <button key={label} type="button" onClick={() => openYakinda(label)}
-                    className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1 text-left">
+                {DB_LINKS.map(({ label, href }) => (
+                  <Link key={href} href={href}
+                    className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1">
                     <span className="w-1 h-1 rounded-full flex-shrink-0 bg-purple-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
                     {label}
-                  </button>
+                  </Link>
                 ))}
               </nav>
             </div>
@@ -184,12 +174,6 @@ export function Footer() {
           </div>
         </div>
       </footer>
-
-      <CokYakindaModal
-        isOpen={yakindaOpen}
-        onClose={() => setYakindaOpen(false)}
-        title={yakindaTitle}
-      />
     </>
   )
 }
