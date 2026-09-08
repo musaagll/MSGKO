@@ -96,7 +96,7 @@ export function buildGuideTitle(classData: ClassData): string {
 }
 
 export function buildGuideDescription(classData: ClassData): string {
-  return `Knight Online ${classData.name} rehberi — ${classData.excerpt} Skill ağaçları, stat dağılımı, build önerileri ve Master açma için tam rehber.`
+  return `Knight Online ${classData.name} rehberi — ${classData.description.substring(0, 120)}... Skill ağaçları, stat dağılımı ve Master açma için tam rehber.`
 }
 
 /**
@@ -480,30 +480,27 @@ export function buildNewsMetadata(news: { title: string; slug: string; excerpt: 
 /** Bir sınıf için standart FAQ listesi üretir */
 export function buildClassFAQs(classData: ClassData): { question: string; answer: string }[] {
   const cls = classData.name
-
   return [
     {
       question: `Knight Online ${cls} nasıl oynanır?`,
-      answer: classData.description.substring(0, 300) + '...',
-    },
-    {
-      question: `Knight Online ${cls} stat dağılımı nasıl olmalı?`,
-      answer: classData.statBuilds.length > 0
-        ? `${cls} için önerilen build'ler: ${classData.statBuilds.map((b) => `${b.name} (${b.distribution})`).join('; ')}. Detaylar için MSGKO rehberini incele.`
-        : `${cls} için birincil stat ${classData.primaryStat}'dir. Tam rehber için msgko.net/rehber/${classData.guideSlug} adresini ziyaret et.`,
+      answer: classData.description,
     },
     {
       question: `Knight Online ${cls} Master nasıl açılır?`,
-      answer: `${cls} Master açmak için: ${classData.masterRequirements.items.join(', ')}. NPC: ${classData.masterRequirements.npcLocation}.`,
+      answer: `${cls} Master açmak için: ${classData.masterRequirements.items.join(' / ')}. ${classData.masterRequirements.npcLocation} NPC\'sine giderek 2nd Job Change görevini tamamlayın.`,
     },
     {
-      question: `Knight Online ${cls} 70-80 skill'leri nasıl açılır?`,
-      answer: `${cls} için 70. seviye skill'i ${classData.highSkillRequirements.level70}x Spell Stone Powder, 80. seviye skill'i ${classData.highSkillRequirements.level80}x Spell Stone Powder gerektirir.`,
+      question: `Knight Online ${cls} ileri seviye skill\'leri nasıl açılır?`,
+      answer: `${cls} sınıfı, 70. seviye skill için ${classData.highSkillRequirements.level70}x, 80. seviye skill için ${classData.highSkillRequirements.level80}x Spell Stone Powder\'a ihtiyaç duymaktadır. Bu gereksinimler 21 Şubat 2019 güncellemesiyle basitleştirildi.`,
     },
-    ...classData.keyQuestions.slice(0, 3).map((q) => ({
-      question: q,
-      answer: `${q} hakkında detaylı bilgi için MSGKO'daki ${cls} rehberini inceleyin: msgko.net/rehber/${classData.guideSlug}`,
-    })),
+    ...(classData.statBuilds.length > 0 ? [{
+      question: `Knight Online ${cls} için önerilen build nedir?`,
+      answer: classData.statBuilds.map((b) => `${b.name}: ${b.distribution}`).join(' / '),
+    }] : []),
+    {
+      question: `Knight Online ${cls} ırk seçeneği nasıl olmalı?`,
+      answer: `${cls} için seçilebilecek ırklar: ${classData.races.join(', ')}.`,
+    },
   ]
 }
 

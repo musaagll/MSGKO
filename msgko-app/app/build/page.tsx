@@ -38,7 +38,7 @@ const schemas = [
     items: KO_CLASSES.map((c) => ({
       name: `Knight Online ${c.name} Build Rehberi`,
       url: `/rehber/${c.guideSlug}`,
-      description: `${c.name} için ${c.role.join(', ')} build seçenekleri.`,
+      description: `${c.name} sınıfı için build rehberleri.`,
     })),
   }),
 ]
@@ -103,21 +103,13 @@ export default function BuildIndexPage() {
                       {cls.name} Build
                     </h3>
                     <p className="text-[0.62rem] tracking-[0.1em] uppercase" style={{ color: cls.color }}>
-                      {cls.role.slice(0, 2).join(' · ')}
+                      {cls.nameEn}
                     </p>
                   </div>
                 </div>
                 <p className="text-[0.74rem] leading-[1.7] text-white/35 line-clamp-2 mb-3">
-                  {cls.excerpt}
+                  {cls.description.substring(0, 100)}...
                 </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {cls.relatedBuilds.map((b) => (
-                    <span key={b} className="text-[0.6rem] px-2 py-0.5 uppercase tracking-[0.08em]"
-                      style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.35)' }}>
-                      {b.split('-').slice(-2).join(' ')}
-                    </span>
-                  ))}
-                </div>
               </Link>
             ))}
           </div>

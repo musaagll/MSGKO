@@ -10,7 +10,6 @@ import {
   buildArticleSchema,
   buildFAQSchema,
   buildClassFAQs,
-  BASE_URL,
 } from '@/lib/seo'
 
 export async function generateStaticParams() {
@@ -44,7 +43,7 @@ export default async function RehberDetailPage({
     buildBreadcrumbSchema(breadcrumbs),
     buildArticleSchema({
       title: `Knight Online ${cls.name} Rehberi`,
-      description: cls.excerpt,
+      description: cls.description,
       url: `/rehber/${cls.guideSlug}`,
       updatedAt: new Date().toISOString(),
     }),
@@ -52,13 +51,6 @@ export default async function RehberDetailPage({
   ]
 
   const relatedClasses = KO_CLASSES.filter((c) => c.slug !== cls.slug)
-
-  const DIFF_LABEL: Record<string, { label: string; color: string }> = {
-    basit: { label: 'Başlangıç',  color: '#10b981' },
-    orta:  { label: 'Orta',       color: '#f59e0b' },
-    ileri: { label: 'İleri',      color: '#ef4444' },
-  }
-  const diff = DIFF_LABEL[cls.difficulty]
 
   return (
     <>
@@ -93,15 +85,9 @@ export default async function RehberDetailPage({
               <span aria-hidden="true">{cls.icon}</span>
             </div>
             <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-3 mb-2">
-                <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase text-purple-400/60">
-                  KARAKTERİ REHBERİ
-                </p>
-                <span className="text-[0.6rem] font-bold tracking-[0.15em] uppercase px-2 py-0.5 border border-white/10"
-                  style={{ color: diff.color }}>
-                  {diff.label}
-                </span>
-              </div>
+              <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase text-purple-400/60 mb-2">
+                KARAKTERİ REHBERİ
+              </p>
               <h1 className="text-3xl md:text-4xl font-black tracking-[0.04em] uppercase text-white mb-3"
                 style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
                 Knight Online {cls.name} Rehberi
@@ -126,11 +112,10 @@ export default async function RehberDetailPage({
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {[
-                    { label: 'Ana Stat',    value: cls.primaryStat },
-                    { label: 'İkincil Stat',value: cls.secondaryStat },
-                    { label: 'Master NPC',  value: cls.masterNPC.split(' — ')[0] },
-                    { label: 'Human Unvanı',value: cls.masterTitle.human },
-                    { label: 'Karus Unvanı',value: cls.masterTitle.karus },
+                    { label: 'Birincil Stat',  value: cls.primaryStat },
+                    { label: 'Master NPC',     value: cls.masterNPC.split(' — ')[0] },
+                    { label: 'Human Unvanı',   value: cls.masterTitle.human },
+                    { label: 'Karus Unvanı',   value: cls.masterTitle.karus },
                   ].map((item) => (
                     <div key={item.label} className="p-3 border border-white/[0.06]"
                       style={{ background: 'rgba(255,255,255,0.02)' }}>
@@ -140,7 +125,7 @@ export default async function RehberDetailPage({
                   ))}
                 </div>
 
-                <div className="mt-4 p-4 border border-white/[0.06]"
+                <div className="mt-3 p-4 border border-white/[0.06]"
                   style={{ background: 'rgba(255,255,255,0.02)' }}>
                   <p className="text-[0.65rem] tracking-[0.2em] uppercase text-white/30 mb-2">Irk Seçenekleri</p>
                   <div className="flex flex-wrap gap-2">
@@ -154,37 +139,26 @@ export default async function RehberDetailPage({
                 </div>
               </section>
 
-              {/* Oynanış Stili */}
-              <section aria-labelledby="oynanis">
-                <h2 id="oynanis" className="section-title">
-                  {cls.name} Nasıl Oynanır?
-                </h2>
-                <p className="text-[0.84rem] leading-[1.9] text-white/55 whitespace-pre-line">
-                  {cls.playstyle}
-                </p>
-              </section>
-
-              {/* Stat / Build Dağılımları */}
+              {/* Stat Dağılımı — sadece korehberi.com'dan gelen verisi olan sınıflar */}
               {cls.statBuilds.length > 0 && (
                 <section aria-labelledby="stat-dagilimi">
                   <h2 id="stat-dagilimi" className="section-title">
                     {cls.name} Stat ve Build Dağılımı
                   </h2>
                   <p className="text-[0.78rem] text-white/35 mb-4">
-                    Aşağıdaki dağılımlar öneri niteliği taşımaktadır — farklı build&#39;lere göre farklı dağılımlar tercih edilebilir.
+                    Aşağıdaki dağılımlar yalnızca öneri niteliği taşımaktadır. Farklı build&#39;lere göre farklı dağılımlar gerçekleştirilebilir.
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {cls.statBuilds.map((build) => (
                       <div key={build.name} className="p-5 border border-white/[0.07]"
                         style={{ background: 'rgba(255,255,255,0.02)' }}>
-                        <h3 className="text-[0.88rem] font-black tracking-[0.05em] uppercase text-white mb-2"
+                        <h3 className="text-[0.9rem] font-black tracking-[0.05em] uppercase text-white mb-2"
                           style={{ fontFamily: 'var(--font-rajdhani)' }}>
                           {build.name}
                         </h3>
-                        <p className="text-[0.8rem] font-semibold mb-2" style={{ color: cls.color }}>
+                        <p className="text-[0.82rem] font-semibold" style={{ color: cls.color }}>
                           {build.distribution}
                         </p>
-                        <p className="text-[0.74rem] leading-[1.7] text-white/40">{build.notes}</p>
                       </div>
                     ))}
                   </div>
@@ -197,14 +171,17 @@ export default async function RehberDetailPage({
                   <h2 id="skill-agaclari" className="section-title">
                     {cls.name} Skill&#39;leri
                   </h2>
-                  <div className="flex flex-col gap-5">
+                  <div className="flex flex-col gap-4">
                     {cls.skillTrees.map((tree) => (
                       <details key={tree.name} className="group border border-white/[0.06]"
                         style={{ background: 'rgba(255,255,255,0.015)' }}>
                         <summary className="flex items-center justify-between px-5 py-4 cursor-pointer list-none">
                           <h3 className="text-[0.84rem] font-black tracking-[0.1em] uppercase text-white/80"
                             style={{ fontFamily: 'var(--font-rajdhani)' }}>
-                            {tree.name} <span className="text-white/30 font-normal text-[0.72rem] ml-2">({tree.skills.length} skill)</span>
+                            {tree.name}
+                            <span className="text-white/30 font-normal text-[0.72rem] ml-2 normal-case">
+                              ({tree.skills.length} skill)
+                            </span>
                           </h3>
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             strokeWidth="2" className="flex-shrink-0 transition-transform duration-200 group-open:rotate-180 text-white/30" aria-hidden="true">
@@ -216,18 +193,18 @@ export default async function RehberDetailPage({
                             <thead>
                               <tr className="border-t border-white/[0.05]">
                                 <th className="text-left py-2 px-4 text-[0.62rem] tracking-[0.15em] uppercase text-white/30 font-semibold w-20">Seviye</th>
-                                <th className="text-left py-2 px-4 text-[0.62rem] tracking-[0.15em] uppercase text-white/30 font-semibold w-40">Skill Adı</th>
+                                <th className="text-left py-2 px-4 text-[0.62rem] tracking-[0.15em] uppercase text-white/30 font-semibold w-44">Skill Adı</th>
                                 <th className="text-left py-2 px-4 text-[0.62rem] tracking-[0.15em] uppercase text-white/30 font-semibold">Açıklama</th>
                               </tr>
                             </thead>
                             <tbody>
                               {tree.skills.map((skill, i) => (
                                 <tr key={i} className="border-t border-white/[0.04] hover:bg-white/[0.02] transition-colors">
-                                  <td className="py-2 px-4 text-white/40 font-mono">
+                                  <td className="py-2.5 px-4 text-white/40 font-mono text-center">
                                     {skill.level === 0 ? '—' : `${skill.level}`}
                                   </td>
-                                  <td className="py-2 px-4 font-semibold text-white/75">{skill.name}</td>
-                                  <td className="py-2 px-4 text-white/45 leading-relaxed">{skill.description}</td>
+                                  <td className="py-2.5 px-4 font-semibold text-white/80">{skill.name}</td>
+                                  <td className="py-2.5 px-4 text-white/45 leading-relaxed">{skill.description}</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -248,33 +225,31 @@ export default async function RehberDetailPage({
                   <p className="text-[0.8rem] font-semibold text-white/70 mb-4">
                     Gerekli eşyalar (3 adet):
                   </p>
-                  <ul className="flex flex-col gap-2.5 mb-5">
+                  <ul className="flex flex-col gap-3 mb-5">
                     {cls.masterRequirements.items.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 text-[0.78rem] text-white/55">
+                      <li key={i} className="flex items-start gap-3 text-[0.8rem] text-white/55">
                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: cls.color }} aria-hidden="true"/>
                         {item}
                       </li>
                     ))}
                   </ul>
-                  <div className="pt-4 border-t border-white/[0.06]">
+                  <div className="pt-4 border-t border-white/[0.06] flex flex-col gap-1.5">
                     <p className="text-[0.78rem] text-white/55">
                       <span className="text-white/70 font-semibold">NPC:</span> {cls.masterRequirements.npcLocation}
                     </p>
-                    {cls.masterRequirements.notes && (
-                      <p className="text-[0.74rem] text-white/35 mt-2">{cls.masterRequirements.notes}</p>
-                    )}
+                    <p className="text-[0.74rem] text-white/35">{cls.masterRequirements.notes}</p>
                   </div>
                 </div>
               </section>
 
-              {/* İleri Seviye Skill Açma */}
+              {/* Spell Stone Powder Tablosu */}
               <section aria-labelledby="ileri-skill">
                 <h2 id="ileri-skill" className="section-title">
-                  {cls.name} 70–80 Skill&#39;lerini Açma
+                  {cls.name} İleri Seviye Skill&#39;lerini Açma
                 </h2>
                 <p className="text-[0.78rem] text-white/40 mb-4">
                   21 Şubat 2019 güncellemesiyle birlikte tüm sınıflar için skill açma gereksinimleri basitleştirildi.
-                  Yüksek seviye skill&#39;ler için <strong className="text-white/60">Spell Stone Powder</strong> kullanılır.
+                  Yüksek seviye skill&#39;ler için <strong className="text-white/60">Spell Stone Powder</strong> gerekmektedir.
                 </p>
                 <div className="overflow-x-auto">
                   <table className="w-full text-[0.78rem] border border-white/[0.06]">
@@ -313,13 +288,13 @@ export default async function RehberDetailPage({
               {cls.tips.length > 0 && (
                 <section aria-labelledby="ipuclari">
                   <h2 id="ipuclari" className="section-title">
-                    {cls.name} İpuçları ve Taktikler
+                    {cls.name} İpuçları
                   </h2>
                   <ul className="flex flex-col gap-3">
                     {cls.tips.map((tip, i) => (
                       <li key={i} className="flex items-start gap-3 p-4 border border-white/[0.05]"
                         style={{ background: 'rgba(255,255,255,0.01)' }}>
-                        <span className="mt-0.5 text-[0.72rem] font-bold text-white/20 flex-shrink-0 w-5">{i + 1}.</span>
+                        <span className="mt-0.5 text-[0.72rem] font-bold text-white/20 flex-shrink-0 w-5 text-right">{i + 1}.</span>
                         <p className="text-[0.8rem] leading-[1.8] text-white/55">{tip}</p>
                       </li>
                     ))}
@@ -329,9 +304,7 @@ export default async function RehberDetailPage({
 
               {/* SSS */}
               <section aria-labelledby="sss">
-                <h2 id="sss" className="section-title">
-                  Sık Sorulan Sorular
-                </h2>
+                <h2 id="sss" className="section-title">Sık Sorulan Sorular</h2>
                 <div className="flex flex-col gap-3">
                   {faqs.map((faq, i) => (
                     <details key={i} className="group border border-white/[0.06] p-4"
@@ -366,10 +339,6 @@ export default async function RehberDetailPage({
                       <dd className="text-[0.82rem] font-semibold text-white">{cls.primaryStat}</dd>
                     </div>
                     <div>
-                      <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Zorluk</dt>
-                      <dd className="text-[0.82rem] font-semibold" style={{ color: diff.color }}>{diff.label}</dd>
-                    </div>
-                    <div>
                       <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Master (Human)</dt>
                       <dd className="text-[0.82rem] font-semibold text-white">{cls.masterTitle.human}</dd>
                     </div>
@@ -377,18 +346,19 @@ export default async function RehberDetailPage({
                       <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Master (Karus)</dt>
                       <dd className="text-[0.82rem] font-semibold text-white">{cls.masterTitle.karus}</dd>
                     </div>
+                    <div>
+                      <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Master NPC</dt>
+                      <dd className="text-[0.78rem] text-white/70">{cls.masterNPC}</dd>
+                    </div>
                   </dl>
                 </div>
 
-                {/* Roller */}
+                {/* Irklar */}
                 <div className="p-5 border border-white/[0.07]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase text-white/60 mb-4">ROLLER</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {cls.role.map((r) => (
-                      <span key={r} className="text-[0.68rem] font-medium px-2.5 py-1"
-                        style={{ background: `${cls.color}18`, color: cls.color, border: `1px solid ${cls.color}30` }}>
-                        {r}
-                      </span>
+                  <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase text-white/60 mb-3">IRKLAR</h3>
+                  <div className="flex flex-col gap-1.5">
+                    {cls.races.map((r) => (
+                      <span key={r} className="text-[0.74rem] text-white/50">{r}</span>
                     ))}
                   </div>
                 </div>
@@ -417,14 +387,12 @@ export default async function RehberDetailPage({
                     </li>
                   </ul>
                 </div>
-
               </div>
             </aside>
           </div>
         </div>
       </main>
 
-      {/* Inline styles (section-title yardımcı sınıfı) */}
       <style>{`
         .section-title {
           font-family: var(--font-rajdhani), sans-serif;

@@ -99,7 +99,7 @@ export default async function HomePage() {
                     </h4>
                   </div>
                   <p className="text-[0.74rem] leading-[1.7] text-white/35 line-clamp-2">
-                    {cls.excerpt}
+                    {cls.description.substring(0, 100)}...
                   </p>
                 </Link>
               ))}
