@@ -89,12 +89,14 @@ export function buildMetadata(cfg: SeoConfig): Metadata {
 
 /**
  * Rehber sayfası başlığı
- * Örn: "Knight Online Asas Rehberi | Stat, Skill, Build ve Combo | MSGKO"
  */
 export function buildGuideTitle(classData: ClassData): string {
   const cls = classData.name
-  const roles = classData.role.slice(0, 2).join(', ')
-  return `Knight Online ${cls} Rehberi | ${roles} Build ve Taktikler | ${SUFFIX}`
+  return `Knight Online ${cls} Rehberi | Skill, Stat, Build ve Master Açma | ${SUFFIX}`
+}
+
+export function buildGuideDescription(classData: ClassData): string {
+  return `Knight Online ${classData.name} rehberi — ${classData.excerpt} Skill ağaçları, stat dağılımı, build önerileri ve Master açma için tam rehber.`
 }
 
 /**
@@ -151,10 +153,6 @@ export function buildQuestTitle(quest: { name: string }): string {
 
 // ─── Description Oluşturucular ────────────────────────────────────────────────
 
-export function buildGuideDescription(classData: ClassData): string {
-  return `Knight Online ${classData.name} rehberi — ${classData.excerpt} Build, stat dağılımı, skill dizilimi ve PK taktikleri için tam rehber.`
-}
-
 export function buildItemDescription(item: ItemSeedData): string {
   const classNames = item.character_class.length
     ? ` ${item.character_class.join('/')} için.`
@@ -187,7 +185,6 @@ export function buildGuideBreadcrumbs(classData: ClassData): BreadcrumbItem[] {
     { label: `${classData.name} Rehberi`, href: `/rehber/${classData.guideSlug}` },
   ])
 }
-
 export function buildItemBreadcrumbs(item: ItemSeedData): BreadcrumbItem[] {
   return buildBreadcrumbs([
     { label: 'Item Veritabanı', href: '/item' },
@@ -391,9 +388,8 @@ export function buildGuideMetadata(classData: ClassData): Metadata {
       `knight online ${classData.name.toLowerCase()} rehberi`,
       `${classData.name.toLowerCase()} build`,
       `${classData.name.toLowerCase()} stat dağılımı`,
-      `${classData.name.toLowerCase()} skill dizilimi`,
-      `${classData.name.toLowerCase()} combo`,
-      `${classData.name.toLowerCase()} pk taktikleri`,
+      `${classData.name.toLowerCase()} skill`,
+      `${classData.name.toLowerCase()} master açma`,
       `knight online ${classData.name.toLowerCase()}`,
       ...classData.aliases.slice(0, 5),
     ],
@@ -484,30 +480,30 @@ export function buildNewsMetadata(news: { title: string; slug: string; excerpt: 
 /** Bir sınıf için standart FAQ listesi üretir */
 export function buildClassFAQs(classData: ClassData): { question: string; answer: string }[] {
   const cls = classData.name
-  const clsLower = cls.toLowerCase()
-  const guide = `${BASE_URL}/rehber/${classData.guideSlug}`
 
   return [
     {
       question: `Knight Online ${cls} nasıl oynanır?`,
-      answer: `${classData.description} Detaylı rehber için ${guide} sayfasını ziyaret edin.`,
+      answer: classData.description.substring(0, 300) + '...',
     },
     {
       question: `Knight Online ${cls} stat dağılımı nasıl olmalı?`,
-      answer: `${cls} için ${classData.primaryStat} ana stat, ${classData.secondaryStat} ikincil stattır. Tam stat rehberi için msgko.net/rehber/${classData.guideSlug} adresini inceleyin.`,
+      answer: classData.statBuilds.length > 0
+        ? `${cls} için önerilen build'ler: ${classData.statBuilds.map((b) => `${b.name} (${b.distribution})`).join('; ')}. Detaylar için MSGKO rehberini incele.`
+        : `${cls} için birincil stat ${classData.primaryStat}'dir. Tam rehber için msgko.net/rehber/${classData.guideSlug} adresini ziyaret et.`,
     },
     {
-      question: `En iyi Knight Online ${cls} build nedir?`,
-      answer: `${cls} için en iyi build oynanış stilinize bağlıdır. PvP, PvE ve Farm için farklı build seçenekleri mevcuttur. MSGKO'da tüm build seçenekleri detaylıca anlatılmaktadır.`,
+      question: `Knight Online ${cls} Master nasıl açılır?`,
+      answer: `${cls} Master açmak için: ${classData.masterRequirements.items.join(', ')}. NPC: ${classData.masterRequirements.npcLocation}.`,
     },
     {
-      question: `Knight Online ${cls} combo sırası nedir?`,
-      answer: `${cls} combo sırası deneyim gerektiren kritik bir mekanik. MSGKO'da ${clsLower} combo rehberi video ve metin formatında sunulmaktadır.`,
+      question: `Knight Online ${cls} 70-80 skill'leri nasıl açılır?`,
+      answer: `${cls} için 70. seviye skill'i ${classData.highSkillRequirements.level70}x Spell Stone Powder, 80. seviye skill'i ${classData.highSkillRequirements.level80}x Spell Stone Powder gerektirir.`,
     },
-    {
-      question: `Knight Online ${cls} hangi itemleri kullanmalı?`,
-      answer: `${cls} için item seçimi level ve oynanış stiline göre değişir. MSGKO ${clsLower} rehberinde güncel item önerileri mevcuttur.`,
-    },
+    ...classData.keyQuestions.slice(0, 3).map((q) => ({
+      question: q,
+      answer: `${q} hakkında detaylı bilgi için MSGKO'daki ${cls} rehberini inceleyin: msgko.net/rehber/${classData.guideSlug}`,
+    })),
   ]
 }
 
