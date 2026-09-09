@@ -29,14 +29,6 @@ const REHBER_ITEMS = [
   { label: 'Tüm Rehberler →',     href: '/rehber',              desc: '' },
 ]
 
-const CONTENT_ITEMS = [
-  { label: 'Boss Rehberleri',  href: '/boss',   desc: 'Felankor, Isiloon ve diğerleri' },
-  { label: 'Harita Rehberleri', href: '/harita', desc: 'CZ, FT, Ardream ve daha fazlası' },
-  { label: 'Item Veritabanı',  href: '/item',   desc: 'Silah, zırh ve aksesuar bilgisi' },
-  { label: 'Build Rehberleri', href: '/build',  desc: 'PvP, PvE ve farm build\'leri' },
-  { label: 'Farm Rehberleri',  href: '/farm',   desc: 'Exp ve item farm rotaları' },
-  { label: 'Haberler',         href: '/haber',  desc: 'Güncel KO güncellemeleri' },
-]
 
 // ── Dropdown bileşeni ─────────────────────────────────────────────────────────
 function NavDropdown({
@@ -237,8 +229,6 @@ export function Navbar() {
             {/* Rehber dropdown */}
             <NavDropdown label="Rehber" items={REHBER_ITEMS} accentColor="purple" />
 
-            {/* İçerik dropdown */}
-            <NavDropdown label="Veritabanı" items={CONTENT_ITEMS} accentColor="amber" />
 
             <div className="w-px h-5 mx-1 bg-white/[0.08]" />
 
