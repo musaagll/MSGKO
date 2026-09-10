@@ -232,6 +232,21 @@ export function Navbar() {
 
             <div className="w-px h-5 mx-1 bg-white/[0.08]" />
 
+            {/* Pazar nav button */}
+            <Link href="/pazar" className={NAV_BUTTON_CLASS}>
+              <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-amber-500/[0.06]" />
+              <span className="relative z-10 flex items-center gap-2">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 group-hover:scale-110"
+                  style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.25)' }}>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                    className="text-amber-400 transition-colors duration-200">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                  </svg>
+                </span>
+                <span className="text-[#C8C8D8]/50 group-hover:text-amber-300 transition-colors duration-200">Pazar</span>
+              </span>
+            </Link>
+
             {/* YouTube nav button */}
             <Link href="/youtube" className={NAV_BUTTON_CLASS}>
               <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-red-500/[0.06]" />

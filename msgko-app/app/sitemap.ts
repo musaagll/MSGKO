@@ -115,6 +115,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
+  // ── Pazar sayfası — her zaman değişir ─────────────────────────────────────
+  const pazarPages: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/pazar`,
+      lastModified: now,
+      changeFrequency: 'always',
+      priority: 0.85,
+    },
+  ]
+
   // ── Farm sayfaları ────────────────────────────────────────────────────────
   const farmPages: MetadataRoute.Sitemap = [
     {
@@ -148,6 +158,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...haritaPages,
     ...itemPages,
     ...buildPages,
+    ...pazarPages,
     ...farmPages,
     ...haberPages,
   ]

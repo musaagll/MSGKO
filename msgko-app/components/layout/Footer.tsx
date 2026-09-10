@@ -33,11 +33,10 @@ const REHBER_LINKS = [
 ]
 
 const DB_LINKS = [
-  { label: 'Boss Rehberleri',  href: '/boss' },
-  { label: 'Harita Rehberleri',href: '/harita' },
-  { label: 'Item Veritabanı',  href: '/item' },
-  { label: 'Build Rehberleri', href: '/build' },
-  { label: 'Farm Rehberleri',  href: '/farm' },
+  { label: 'USKO Pazar',        href: '/pazar' },
+  { label: 'Boss Rehberleri',   href: '/boss' },
+  { label: 'Harita Rehberleri', href: '/harita' },
+  { label: 'Item Veritabanı',   href: '/item' },
 ]
 
 export function Footer() {
