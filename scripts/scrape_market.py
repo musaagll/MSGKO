@@ -1,62 +1,39 @@
 """
-MSGKO — USKO Pazar Scraper
-==========================
-Kaynak: uskopazar.com (Selenium tabanlı)
-Hedef:  Supabase market_listings tablosu
-
-Yöntem:
-  - uskopazar.com sitesini headless Chrome ile açar
-  - Her sunucu için tüm ilanları çeker
-  - Fiyatlardan -1 yaparak "en ucuz rakip altı" fiyatı hesaplar
-  - Sonuçları Supabase'e yazar
+MSGKO — USKO Pazar Scraper (Playwright)
+========================================
+Kaynak: uskopazar.com
 
 Kurulum:
-    pip install -r scripts/requirements.txt
+    pip install playwright requests python-dotenv
+    playwright install chromium
 
 Çalıştırma:
     python scripts/scrape_market.py
 
-Cron (Linux/Mac) — her 5 dakika:
-    */5 * * * * cd /path/to/MSGKO && python scripts/scrape_market.py >> /tmp/msgko_scraper.log 2>&1
-
-Windows Task Scheduler:
-    Program: python
-    Argüman: C:\\...\\MSGKO\\scripts\\scrape_market.py
+Windows Task Scheduler (her 5 dk):
+    Program : C:\\...\\Python312\\python.exe
+    Argüman : C:\\...\\MSGKO\\scripts\\scrape_market.py
     Başlangıç: C:\\...\\MSGKO
-    Tetikleyici: Her 5 dakikada bir
 """
 
-import os
-import re
-import sys
-import time
-import json
-import logging
-import requests
+import os, re, sys, json, time, logging, asyncio, requests
 from datetime import datetime, timezone
 from typing import Optional
-
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait, Select
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import (
-    TimeoutException, NoSuchElementException, WebDriverException
-)
-from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
+from playwright.async_api import async_playwright, Page, TimeoutError as PWTimeout
+
+# Windows terminal encoding sorunu için
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 # ── Ortam değişkenleri ─────────────────────────────────────────────────────────
 _base = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(_base, '.env'))
 load_dotenv(os.path.join(_base, '..', 'msgko-admin', '.env.local'))
-load_dotenv(os.path.join(_base, '..', 'msgko-app', '.env.local'))
-
 SUPABASE_URL = os.environ.get('SUPABASE_URL') or os.environ.get('NEXT_PUBLIC_SUPABASE_URL', '')
 SUPABASE_KEY = os.environ.get('SUPABASE_SERVICE_KEY') or os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
 
-# ── Logging ────────────────────────────────────────────────────────────────────
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
@@ -65,390 +42,327 @@ logging.basicConfig(
 log = logging.getLogger('msgko_scraper')
 
 # ── Sunucu tanımları ───────────────────────────────────────────────────────────
-# uskopazar.com'daki button ID'leri: btn_zero3, btn_zero4, btn_agartha3 ...
-# Biz 4 ana sunucuyu destekliyoruz: Zero, Destan, Pandora, Agartha
-# Her sunucunun birden fazla kanalı olabilir (Zero 3, Zero 4, Zero 5...)
-# Önce Zero 3'ü dene, sonra diğerlerine geç
-
+# Screenshot'tan görülen tab'lar:
+#   ZERO 3 / ZERO 4 / ZERO 5 / ZERO 8 (direkt tab)
+#   AGARTHA ▾  → dropdown → AGARTHA 3 / AGARTHA 4
+#   PANDORA ▾  → dropdown → PANDORA 3 / PANDORA 4
+#   DESTAN ▾   → dropdown → DESTAN 2
+#
+# Format: (db_key, parent_text_veya_None, tab_text)
+# parent_text varsa önce parent'a tıkla (dropdown aç), sonra tab_text'e tıkla
 SERVERS = [
-    # (db_key, uskopazar_btn_id, display_label)
-    ('zero',    'zero3',    'Zero 3'),
-    ('zero',    'zero4',    'Zero 4'),
-    ('zero',    'zero5',    'Zero 5'),
-    ('destan',  'destan2',  'Destan 2'),
-    ('pandora', 'pandora3', 'Pandora 3'),
-    ('pandora', 'pandora4', 'Pandora 4'),
-    ('agartha', 'agartha3', 'Agartha 3'),
-    ('agartha', 'agartha4', 'Agartha 4'),
+    ('zero',    None,      'ZERO 3'),
+    ('destan',  'DESTAN',  'DESTAN 2'),
+    ('pandora', 'PANDORA', 'PANDORA 3'),
+    ('agartha', 'AGARTHA', 'AGARTHA 3'),
 ]
 
-# Scraper ayarları
-SITE_URL     = 'https://www.uskopazar.com/'
-PAGE_WAIT    = 15    # sayfa yükleme timeout (sn)
-ELEM_WAIT    = 10    # element bekleme (sn)
-RESULT_WAIT  = 20    # sonuç satırları bekleme (sn)
-BATCH_SIZE   = 200   # Supabase insert batch boyutu
-DELAY_SERVER = 3.0   # sunucular arası bekleme (sn)
+SITE_URL   = 'https://www.uskopazar.com/'
+BATCH_SIZE = 200
 
 
-# ── Fiyat yardımcıları ─────────────────────────────────────────────────────────
+# ── Yardımcılar ────────────────────────────────────────────────────────────────
 def parse_price(raw: str) -> Optional[int]:
-    """'1.234.567' veya '1,234,567' → integer"""
     cleaned = re.sub(r'[^\d]', '', str(raw))
     return int(cleaned) if cleaned else None
 
-
-def minus_one(price: Optional[int]) -> Optional[int]:
-    """En ucuz rakibin 1 altı fiyatı"""
-    if price and price > 1:
-        return price - 1
-    return price
-
+def minus_one(p: Optional[int]) -> Optional[int]:
+    return (p - 1) if p and p > 1 else p
 
 def parse_upgrade(text: str) -> tuple[str, Optional[int]]:
-    """
-    'Raptor (+9)' veya 'Raptor +9' → ('Raptor', 9)
-    'Chitin Shell Helmet' → ('Chitin Shell Helmet', None)
-    """
-    match = re.search(r'\(\+(\d+)\)|(?<!\w)\+(\d+)', text)
-    if match:
-        lvl = int(match.group(1) or match.group(2))
+    m = re.search(r'\(\+(\d+)\)|(?<!\w)\+(\d+)', text)
+    if m:
+        lvl  = int(m.group(1) or m.group(2))
         name = re.sub(r'\s*\(\+\d+\)|\s*\+\d+\s*$', '', text).strip()
         return name, lvl
     return text.strip(), None
 
 
-# ── Selenium driver ────────────────────────────────────────────────────────────
-def make_driver() -> webdriver.Chrome:
-    """Headless Chrome driver oluştur."""
-    options = webdriver.ChromeOptions()
-    options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--window-size=1920,1080')
-    options.add_argument(
-        'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
-    )
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    service = Service(ChromeDriverManager().install())
-    return webdriver.Chrome(service=service, options=options)
+# ── Playwright scraper ────────────────────────────────────────────────────────
+async def scrape() -> dict[str, list[dict]]:
+    results: dict[str, list[dict]] = {}
+
+    async with async_playwright() as pw:
+        browser = await pw.chromium.launch(
+            headless=True,
+            args=['--no-sandbox', '--disable-dev-shm-usage'],
+        )
+        ctx = await browser.new_context(
+            viewport={'width': 1920, 'height': 1080},
+            user_agent=(
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                'Chrome/152.0.0.0 Safari/537.36'
+            ),
+            locale='tr-TR',
+            timezone_id='Europe/Istanbul',
+        )
+        await ctx.add_init_script(
+            "Object.defineProperty(navigator,'webdriver',{get:()=>undefined});"
+        )
+        page: Page = await ctx.new_page()
+
+        log.info('uskopazar.com açılıyor...')
+        await page.goto(SITE_URL, wait_until='domcontentloaded', timeout=30_000)
+        await page.wait_for_timeout(5000)
+
+        await close_modal(page)
+
+        # Sayfa hazır?
+        search_el = page.locator('input[placeholder="Search Text"]')
+        if await search_el.count() == 0:
+            log.error('Sayfa yüklenemedi — screenshot kaydedildi')
+            await page.screenshot(path=os.path.join(_base, 'debug_main.png'))
+            await browser.close()
+            return results
+
+        log.info(f'Sayfa hazir OK - {await page.title()}')
+        log.info('')
+
+        for db_key, parent_text, tab_text in SERVERS:
+            log.info(f'>> [{tab_text}] scraping...')
+            t0 = time.time()
+            try:
+                listings = await scrape_tab(page, db_key, parent_text, tab_text)
+                existing = results.get(db_key, [])
+                if len(listings) > len(existing):
+                    results[db_key] = listings
+                    log.info(f'  [{tab_text}] -> {len(listings)} ilan (en iyi)')
+                else:
+                    log.info(f'  [{tab_text}] -> mevcut daha iyi ({len(existing)}), atland')
+            except Exception as e:
+                log.error(f'  [{tab_text}] Hata: {e}')
+            log.info(f'  Süre: {int((time.time()-t0)*1000)}ms')
+            log.info('')
+            await asyncio.sleep(2)
+
+        await browser.close()
+    return results
 
 
-# ── uskopazar.com scraper ──────────────────────────────────────────────────────
-def scrape_server_channel(
-    driver: webdriver.Chrome,
-    db_key: str,
-    btn_id: str,
-    label: str,
-    wait: WebDriverWait,
+async def close_modal(page: Page):
+    """Popup/modal kapat."""
+    for sel in [
+        'text=Bugünlük kapat',
+        'button:has-text("Bugünlük kapat")',
+        'text=Kapat',
+        '[aria-label="Close"]',
+        'button.close',
+    ]:
+        try:
+            el = page.locator(sel)
+            if await el.count() > 0:
+                await el.first.click()
+                log.info(f'Modal kapatıldı ({sel})')
+                await page.wait_for_timeout(800)
+                return
+        except Exception:
+            pass
+    await page.keyboard.press('Escape')
+    await page.wait_for_timeout(300)
+
+
+async def scrape_tab(
+    page: Page, db_key: str,
+    parent_text: Optional[str], tab_text: str
 ) -> list[dict]:
-    """
-    Bir sunucu kanalının tüm ilanlarını çeker.
-    """
+    """Bir sekmedeki tüm ilanları çek."""
     listings: list[dict] = []
     now = datetime.now(timezone.utc).isoformat()
 
-    log.info(f'  [{label}] Sunucu seçiliyor (btn_id={btn_id})...')
+    # Dropdown parent'ı aç
+    if parent_text:
+        parent_el = page.locator(f'#btn_grp_{parent_text.lower()}, button:has-text("{parent_text}"), span:has-text("{parent_text}")')
+        if await parent_el.count() > 0:
+            # AdSense iframe engelini aşmak için JavaScript ile tıkla
+            try:
+                await parent_el.first.click(timeout=5000)
+            except Exception:
+                # JS ile zorla tıkla
+                await parent_el.first.evaluate('el => el.click()')
+            await page.wait_for_timeout(1500)
+        else:
+            log.warning(f'  [{tab_text}] Parent bulunamadi: {parent_text}')
 
-    # ── Sunucu butonuna tıkla ─────────────────────────────────────────────────
-    try:
-        btn = wait.until(EC.element_to_be_clickable((By.ID, f'btn_{btn_id}')))
-        btn.click()
-        time.sleep(2)
-    except TimeoutException:
-        log.warning(f'  [{label}] Sunucu butonu bulunamadı — atlanıyor')
+    # Sekmeye tıkla
+    tab_el = page.locator(f'button:has-text("{tab_text}"), a:has-text("{tab_text}"), span:has-text("{tab_text}"), li:has-text("{tab_text}")')
+    if await tab_el.count() == 0:
+        tab_el = page.locator(f'*:has-text("{tab_text}")').first
+    if await tab_el.count() == 0:
+        log.warning(f'  [{tab_text}] Sekme bulunamadi')
         return listings
 
-    # ── Arama kutusunu temizle (önceki aramayı sıfırla) ───────────────────────
     try:
-        search = driver.find_element(By.ID, 'xsearchInput')
-        search.clear()
-        time.sleep(0.5)
-    except NoSuchElementException:
-        log.warning(f'  [{label}] Arama kutusu bulunamadı')
+        await tab_el.first.click(timeout=5000)
+    except Exception:
+        await tab_el.first.evaluate('el => el.click()')
+    await page.wait_for_timeout(4000)
+    await close_modal(page)
+
+    # İlan satırlarını bekle
+    rows = []
+    for sel in ['tbody tr', "div[role='row']", "span[role='row']", 'tr.item-row']:
+        try:
+            await page.wait_for_selector(sel, timeout=10_000)
+            rows = await page.query_selector_all(sel)
+            if rows:
+                log.info(f'  [{tab_text}] {len(rows)} satır ({sel})')
+                break
+        except PWTimeout:
+            continue
+
+    if not rows:
+        await page.screenshot(path=os.path.join(_base, f'debug_{db_key}_{tab_text.replace(" ","_")}.png'))
+        log.warning(f'  [{tab_text}] Satır yok — screenshot kaydedildi')
         return listings
-
-    # ── Upgrade select'i 0'a al (tüm itemler) ───────────────────────────────
-    try:
-        upg_select = Select(driver.find_element(By.ID, 'itemarti_ust'))
-        upg_select.select_by_value('0')
-        time.sleep(1)
-    except (NoSuchElementException, Exception) as e:
-        log.debug(f'  [{label}] Upgrade select hatası: {e}')
-
-    # ── Sonuçları bekle ve çek ────────────────────────────────────────────────
-    try:
-        wait_result = WebDriverWait(driver, RESULT_WAIT)
-        wait_result.until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "span[role='row']"))
-        )
-    except TimeoutException:
-        log.warning(f'  [{label}] Sonuç satırları yüklenemedi')
-        return listings
-
-    rows = driver.find_elements(By.CSS_SELECTOR, "span[role='row']")
-    log.info(f'  [{label}] {len(rows)} satır bulundu')
 
     for row in rows:
         try:
-            listing = _parse_row(row, db_key, label, now)
-            if listing:
-                listings.append(listing)
+            lst = await parse_row(row, db_key, tab_text, now)
+            if lst:
+                listings.append(lst)
         except Exception as e:
-            log.debug(f'  Satır parse hatası: {e}')
-            continue
+            log.debug(f'Satır hatası: {e}')
 
-    log.info(f'  [{label}] {len(listings)} ilan parse edildi')
     return listings
 
 
-def _parse_row(row, db_key: str, label: str, now: str) -> Optional[dict]:
+async def parse_row(row, db_key: str, label: str, now: str) -> Optional[dict]:
     """
-    HTML satırından ilan bilgisini çıkar.
-
-    uskopazar.com satır yapısı:
-      <span role="row">
-        <div role="cell">
-          <span data-tippy-content="İtem Adı (+9) ...">...</span>
-        </div>
-        <div role="cell">
-          <span>SaticiAdi</span>         ← 2. cell
-        </div>
-        <div role="cell">
-          <span style="color: red;">1.234.567</span>  ← fiyat
-        </div>
-        <div role="cell">
-          <span>Adet</span>              ← opsiyonel
-        </div>
-      </span>
+    uskopazar.com tablo satırı parse.
+    Sütunlar: Item Adı | Kullanıcı Adı | Lokasyon | Ücret | Eklenme Tarihi
+    Fiyat: "820,561(Click)" formatı
     """
-    cells = row.find_elements(By.CSS_SELECTOR, "div[role='cell']")
-    if len(cells) < 2:
+    cells = await row.query_selector_all('td')
+    if len(cells) < 3:
         return None
 
-    # ── İtem adı — data-tippy-content attribute'undan ─────────────────────────
-    try:
-        tippy_el = row.find_element(By.CSS_SELECTOR, "span[data-tippy-content]")
-        raw_name  = tippy_el.get_attribute('data-tippy-content') or tippy_el.text
-    except NoSuchElementException:
-        # tippy yoksa ilk cell metnini kullan
-        raw_name = cells[0].text.strip()
+    texts = [(await c.inner_text()).strip() for c in cells]
 
+    # İtem adı — 1. sütun, img title veya a text
+    raw_name = ''
+    name_el = await cells[0].query_selector('a, span[title], img[alt]')
+    if name_el:
+        raw_name = (
+            await name_el.get_attribute('title') or
+            await name_el.get_attribute('alt') or
+            await name_el.inner_text()
+        )
     if not raw_name:
+        raw_name = texts[0]
+
+    raw_name = raw_name.strip()
+    if not raw_name or raw_name.lower() in ('item adı', 'item', ''):
         return None
 
     item_name, upgrade_level = parse_upgrade(raw_name)
     if not item_name:
         return None
 
-    # ── Fiyat — kırmızı span ──────────────────────────────────────────────────
-    price_raw = None
-    try:
-        price_el  = row.find_element(By.CSS_SELECTOR, "span[style='color: red;']")
-        price_raw = price_el.text.strip()
-    except NoSuchElementException:
-        # Fallback: tüm cell metinlerinden sayısal olanı bul
-        for cell in cells:
-            t = cell.text.strip()
-            if re.match(r'^[\d.,]+$', t.replace(' ', '')) and len(t) > 2:
-                price_raw = t
-                break
+    # Fiyat — 4. sütun (index 3), "(Click)" temizle
+    # Bazen 3. sütun, bazen 4. — sayısal içeren hücreyi bul
+    price_raw = ''
+    for t in texts[2:]:
+        cleaned = re.sub(r'\(.*?\)', '', t).strip()
+        if re.match(r'^[\d.,\s]+$', cleaned) and len(cleaned) > 1:
+            price_raw = cleaned
+            break
+    # Eğer bulamazsak link href içindeki fiyatı dene
+    if not price_raw:
+        link = await row.query_selector('a[href*="Click"], a.price-link')
+        if link:
+            price_raw = re.sub(r'\(.*?\)', '', await link.inner_text()).strip()
 
     price = parse_price(price_raw)
     if not price or price <= 0:
         return None
 
-    # ── Satıcı adı — 2. cell ─────────────────────────────────────────────────
-    seller = None
-    try:
-        if len(cells) >= 2:
-            seller_spans = cells[1].find_elements(By.TAG_NAME, 'span')
-            if seller_spans:
-                seller = seller_spans[0].text.strip() or None
-            else:
-                seller = cells[1].text.strip() or None
-    except Exception:
-        pass
+    # Satıcı — 2. sütun
+    seller = texts[1] if len(texts) > 1 else None
+    if seller and seller.lower() in ('kullanıcı adı', 'satıcı', 'seller', ''):
+        seller = None
 
-    # ── Adet — 4. cell (opsiyonel) ───────────────────────────────────────────
-    item_count = 1
-    try:
-        if len(cells) >= 4:
-            cnt_text = cells[3].text.strip()
-            cnt = parse_price(cnt_text)
-            if cnt and 1 <= cnt <= 100000:
-                item_count = cnt
-    except Exception:
-        pass
-
-    # ── -1 fiyat (en ucuz rakip altı) ────────────────────────────────────────
-    price_minus_one = minus_one(price)
+    pm = minus_one(price)
 
     return {
         'server':        db_key,
         'item_name':     item_name,
-        'item_count':    item_count,
+        'item_count':    1,
         'upgrade_level': upgrade_level,
-        'price':         price_minus_one,      # -1 uygulanmış fiyat
-        'price_per_unit': (price_minus_one // item_count) if item_count > 0 else price_minus_one,
+        'price':         pm,
+        'price_per_unit': pm,
         'seller_name':   seller,
         'scraped_at':    now,
         'raw_data':      json.dumps({
-            'original_price': price,
-            'minus_one_price': price_minus_one,
-            'source': 'uskopazar.com',
-            'server_label': label,
-            'raw_name': raw_name,
+            'original': price, 'minus_one': pm,
+            'source': 'uskopazar.com', 'label': label,
+            'raw_name': raw_name, 'cells': texts[:5],
         }, ensure_ascii=False),
     }
 
 
 # ── Supabase ───────────────────────────────────────────────────────────────────
-def _sb_headers() -> dict:
+def _h():
     return {
-        'apikey':        SUPABASE_KEY,
+        'apikey': SUPABASE_KEY,
         'Authorization': f'Bearer {SUPABASE_KEY}',
-        'Content-Type':  'application/json',
-        'Prefer':        'return=minimal',
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
     }
 
+def sb_delete(k: str):
+    requests.delete(f'{SUPABASE_URL}/rest/v1/market_listings?server=eq.{k}', headers=_h(), timeout=30)
 
-def supabase_delete(db_key: str) -> bool:
-    """Bir sunucunun eski ilanlarını sil."""
-    url  = f'{SUPABASE_URL}/rest/v1/market_listings?server=eq.{db_key}'
-    resp = requests.delete(url, headers=_sb_headers(), timeout=30)
-    ok   = resp.status_code in (200, 204)
-    if not ok:
-        log.error(f'  Supabase DELETE hatası: {resp.status_code} {resp.text[:100]}')
-    return ok
-
-
-def supabase_insert(listings: list[dict]) -> int:
-    """Toplu insert. Başarıyla yazılan kayıt sayısını döndür."""
-    if not listings:
-        return 0
-    written = 0
-    url     = f'{SUPABASE_URL}/rest/v1/market_listings'
+def sb_insert(listings: list[dict]) -> int:
+    n = 0
     for i in range(0, len(listings), BATCH_SIZE):
-        batch = listings[i:i + BATCH_SIZE]
-        resp  = requests.post(url, json=batch, headers=_sb_headers(), timeout=30)
-        if resp.status_code in (200, 201):
-            written += len(batch)
-            log.info(f'  Batch {i // BATCH_SIZE + 1}: {len(batch)} ilan yazıldı ✓')
+        b = listings[i:i+BATCH_SIZE]
+        r = requests.post(f'{SUPABASE_URL}/rest/v1/market_listings', json=b, headers=_h(), timeout=30)
+        if r.status_code in (200, 201):
+            n += len(b)
+            log.info(f'  Batch {i//BATCH_SIZE+1}: {len(b)} OK')
         else:
-            log.error(f'  Batch {i // BATCH_SIZE + 1} hatası: {resp.status_code} {resp.text[:150]}')
-    return written
+            log.error(f'  Batch hatası: {r.status_code} {r.text[:100]}')
+    return n
 
-
-def supabase_log(server: str, status: str, count: int,
-                 error: Optional[str], duration_ms: int) -> None:
-    url     = f'{SUPABASE_URL}/rest/v1/market_scrape_log'
-    payload = {
-        'server': server, 'status': status,
-        'items_count': count, 'error_msg': error,
-        'duration_ms': duration_ms,
-    }
+def sb_log(server: str, status: str, count: int, err: Optional[str], ms: int):
     try:
-        requests.post(url, json=payload, headers=_sb_headers(), timeout=10)
+        requests.post(f'{SUPABASE_URL}/rest/v1/market_scrape_log',
+            json={'server': server, 'status': status, 'items_count': count, 'error_msg': err, 'duration_ms': ms},
+            headers=_h(), timeout=10)
     except Exception:
         pass
 
 
-# ── Ana akış ───────────────────────────────────────────────────────────────────
-def run():
+# ── main ───────────────────────────────────────────────────────────────────────
+def main():
     log.info('=' * 60)
-    log.info(f'MSGKO Market Scraper — {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
-    log.info(f'Kaynak: uskopazar.com')
+    log.info(f'MSGKO Scraper — {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     log.info('=' * 60)
-
     if not SUPABASE_URL or not SUPABASE_KEY:
-        log.error('SUPABASE_URL veya SUPABASE_SERVICE_KEY eksik!')
-        log.error('scripts/.env dosyasını oluşturun:')
-        log.error('  SUPABASE_URL=https://xxx.supabase.co')
-        log.error('  SUPABASE_SERVICE_KEY=eyJ...')
+        log.error('scripts/.env eksik!')
         sys.exit(1)
 
-    # İşlenen db_key'leri takip et (Zero 3/4/5 hepsini 'zero' key'ine yazar)
-    # Her db_key için en çok ilan olan kanalı seç
-    db_key_listings: dict[str, list[dict]] = {}
-    total_start = time.time()
+    t_start  = time.time()
+    results  = asyncio.run(scrape())
 
-    driver = None
-    try:
-        log.info('Chrome driver başlatılıyor...')
-        driver = make_driver()
-        wait   = WebDriverWait(driver, PAGE_WAIT)
-
-        log.info(f'uskopazar.com yükleniyor...')
-        driver.get(SITE_URL)
-
-        # Sayfanın tam yüklenmesini bekle
-        wait.until(EC.presence_of_element_located((By.ID, 'xsearchInput')))
-        log.info('Sayfa yüklendi ✓')
-        log.info('')
-
-        for db_key, btn_id, label in SERVERS:
-            log.info(f'▶ [{label}] scraping...')
-            t0 = time.time()
-
-            try:
-                listings = scrape_server_channel(driver, db_key, btn_id, label, wait)
-
-                # Bu db_key için daha önce çekilenden fazlaysa güncelle
-                existing = db_key_listings.get(db_key, [])
-                if len(listings) > len(existing):
-                    db_key_listings[db_key] = listings
-                    log.info(f'  [{label}] → {db_key} için en iyi sonuç: {len(listings)} ilan')
-                else:
-                    log.info(f'  [{label}] → mevcut {len(existing)} ilan daha fazla, atlandı')
-
-            except Exception as e:
-                log.error(f'  [{label}] Beklenmeyen hata: {e}')
-
-            log.info(f'  Süre: {int((time.time()-t0)*1000)}ms')
-            log.info('')
-            time.sleep(DELAY_SERVER)
-
-    except WebDriverException as e:
-        log.error(f'Chrome driver hatası: {e}')
-    finally:
-        if driver:
-            driver.quit()
-            log.info('Driver kapatıldı.')
-
-    # ── Supabase'e yaz ────────────────────────────────────────────────────────
-    log.info('')
-    log.info('── Supabase yazma ──────────────────────────────────────')
-    grand_total = 0
-
-    for db_key, listings in db_key_listings.items():
+    log.info('--- Supabase yazma ---')
+    grand = 0
+    for db_key, listings in results.items():
         if not listings:
-            log.warning(f'[{db_key}] Hiç ilan yok, atlandı')
-            supabase_log(db_key, 'error', 0, 'No listings scraped', 0)
+            sb_log(db_key, 'error', 0, 'no listings', 0)
             continue
-
         t0 = time.time()
-        log.info(f'[{db_key}] Eski ilanlar siliniyor...')
-        supabase_delete(db_key)
+        sb_delete(db_key)
+        n   = sb_insert(listings)
+        grand += n
+        ms  = int((time.time()-t0)*1000)
+        sb_log(db_key, 'success' if n else 'error', n, None if n else 'insert failed', ms)
+        log.info(f'[{db_key}] OK {n} ilan ({ms}ms)')
 
-        log.info(f'[{db_key}] {len(listings)} ilan yazılıyor...')
-        written = supabase_insert(listings)
-        grand_total += written
-
-        duration_ms = int((time.time() - t0) * 1000)
-        status = 'success' if written > 0 else 'error'
-        supabase_log(db_key, status, written, None if written > 0 else 'Insert failed', duration_ms)
-        log.info(f'[{db_key}] ✓ {written} ilan yazıldı ({duration_ms}ms)')
-
-    # ── Özet ─────────────────────────────────────────────────────────────────
-    total_ms = int((time.time() - total_start) * 1000)
-    log.info('')
     log.info('=' * 60)
-    log.info(f'Toplam: {grand_total} ilan — {total_ms}ms')
+    log.info(f'Toplam: {grand} ilan - {int((time.time()-t_start)*1000)}ms')
     log.info('=' * 60)
-
 
 if __name__ == '__main__':
-    run()
+    main()
