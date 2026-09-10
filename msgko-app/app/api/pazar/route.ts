@@ -17,6 +17,8 @@ export interface MarketListing {
   price_per_unit: number | null
   seller_name: string | null
   scraped_at: string
+  // raw_data'dan parse edilen item görseli
+  img_url?: string | null
 }
 
 export interface ScrapeStatus {
@@ -124,7 +126,16 @@ export async function GET(req: NextRequest) {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   const response: PazarResponse = {
-    listings:      (data ?? []) as MarketListing[],
+    listings: ((data ?? []) as (MarketListing & { raw_data: string | null })[]).map((item) => {
+      let img_url: string | null = null
+      try {
+        if (item.raw_data) {
+          const raw = JSON.parse(item.raw_data)
+          img_url = raw.img_url ?? null
+        }
+      } catch { /* raw_data parse hatası — önemli değil */ }
+      return { ...item, img_url } as MarketListing
+    }),
     total,
     page,
     page_size:     PAGE_SIZE,

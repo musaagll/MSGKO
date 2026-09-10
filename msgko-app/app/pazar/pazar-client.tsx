@@ -312,17 +312,11 @@ export function PazarClient() {
                       <th className="text-center py-3 px-3 text-[0.65rem] tracking-[0.15em] uppercase text-white/40 font-semibold w-16">
                         +Lvl
                       </th>
-                      <th className="text-right py-3 px-4 text-[0.65rem] tracking-[0.15em] uppercase text-white/40 font-semibold w-32">
-                        Adet
-                      </th>
-                      <th className="text-right py-3 px-4 text-[0.65rem] tracking-[0.15em] uppercase text-white/40 font-semibold w-36">
-                        Birim Fiyat
-                      </th>
-                      <th className="text-right py-3 px-4 text-[0.65rem] tracking-[0.15em] uppercase text-white/40 font-semibold w-36">
-                        Toplam Fiyat
-                      </th>
-                      <th className="text-left py-3 px-4 text-[0.65rem] tracking-[0.15em] uppercase text-white/40 font-semibold w-32">
+                      <th className="text-left py-3 px-4 text-[0.65rem] tracking-[0.15em] uppercase text-white/40 font-semibold w-36">
                         Satıcı
+                      </th>
+                      <th className="text-right py-3 px-4 text-[0.65rem] tracking-[0.15em] uppercase text-white/40 font-semibold w-40">
+                        Ücret (-1)
                       </th>
                     </tr>
                   </thead>
@@ -407,18 +401,33 @@ function ListingRow({ item, i, serverColor }: {
   serverColor: string
 }) {
   const [tooltip, setTooltip] = useState(false)
+  // raw_data'dan img_url zaten API'den geliyor
+  const imgUrl = item.img_url ?? null
 
   return (
     <tr
       className="border-b hover:bg-white/[0.025] transition-colors duration-100"
       style={{ borderColor: 'rgba(255,255,255,0.04)' }}
     >
-      {/* İtem adı */}
-      <td className="py-3 px-4">
-        <div className="flex items-center gap-2">
-          {/* Renk çizgisi */}
-          <span className="w-0.5 h-5 flex-shrink-0 rounded-full opacity-60"
-            style={{ background: serverColor }} />
+      {/* Item adı + görsel */}
+      <td className="py-2.5 px-4">
+        <div className="flex items-center gap-3">
+          {/* Item ikonu */}
+          {imgUrl ? (
+            <img
+              src={imgUrl}
+              alt={item.item_name}
+              width={32}
+              height={32}
+              className="w-8 h-8 object-contain flex-shrink-0"
+              style={{ imageRendering: 'pixelated' }}
+              loading="lazy"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+            />
+          ) : (
+            <div className="w-8 h-8 flex-shrink-0 border border-white/[0.08]"
+              style={{ background: 'rgba(255,255,255,0.03)' }} />
+          )}
           <span className="font-semibold text-white/85 leading-tight">
             {item.item_name}
           </span>
@@ -426,16 +435,13 @@ function ListingRow({ item, i, serverColor }: {
       </td>
 
       {/* Upgrade seviyesi */}
-      <td className="py-3 px-3 text-center">
+      <td className="py-2.5 px-3 text-center">
         {item.upgrade_level !== null && item.upgrade_level > 0 ? (
           <span className="text-[0.75rem] font-bold px-1.5 py-0.5"
             style={{
               background: item.upgrade_level >= 8
-                ? 'rgba(245,158,11,0.15)'
-                : 'rgba(255,255,255,0.06)',
-              color: item.upgrade_level >= 8
-                ? '#f59e0b'
-                : 'rgba(255,255,255,0.5)',
+                ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.06)',
+              color: item.upgrade_level >= 8 ? '#f59e0b' : 'rgba(255,255,255,0.5)',
             }}>
             +{item.upgrade_level}
           </span>
@@ -444,31 +450,24 @@ function ListingRow({ item, i, serverColor }: {
         )}
       </td>
 
-      {/* Adet */}
-      <td className="py-3 px-4 text-right text-white/50">
-        {item.item_count > 1 ? item.item_count.toLocaleString('tr-TR') : '—'}
+      {/* Satıcı */}
+      <td className="py-2.5 px-4 text-white/45 text-[0.8rem]">
+        {item.seller_name ?? '—'}
       </td>
 
-      {/* Birim fiyat */}
-      <td className="py-3 px-4 text-right">
-        {item.item_count > 1 && item.price_per_unit ? (
-          <span className="text-white/50 text-[0.76rem]">
-            {formatPrice(item.price_per_unit)}
-          </span>
-        ) : (
-          <span className="text-white/15">—</span>
-        )}
-      </td>
-
-      {/* Toplam fiyat */}
-      <td className="py-3 px-4 text-right">
+      {/* Fiyat */}
+      <td className="py-2.5 px-4 text-right">
         <div className="relative inline-block"
           onMouseEnter={() => setTooltip(true)}
           onMouseLeave={() => setTooltip(false)}>
-          <span className="font-bold text-white/90 cursor-default">
-            {formatPrice(item.price)}
-          </span>
-          {/* Tam fiyat tooltip */}
+          <div className="flex flex-col items-end">
+            <span className="font-bold text-[0.95rem]" style={{ color: '#ef4444' }}>
+              {formatPrice(item.price)}
+            </span>
+            <span className="text-[0.65rem] text-white/25 mt-0.5">
+              {item.price.toLocaleString('tr-TR')} Noah
+            </span>
+          </div>
           {tooltip && (
             <div className="absolute bottom-full right-0 mb-1.5 px-2.5 py-1.5 text-[0.72rem]
               text-white/80 whitespace-nowrap z-10 pointer-events-none"
@@ -478,14 +477,12 @@ function ListingRow({ item, i, serverColor }: {
                 boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
               }}>
               {formatPriceExact(item.price)}
+              <div className="text-white/30 text-[0.65rem] mt-0.5">
+                Orijinal: {(item.price + 1).toLocaleString('tr-TR')} → -1
+              </div>
             </div>
           )}
         </div>
-      </td>
-
-      {/* Satıcı */}
-      <td className="py-3 px-4 text-white/35 text-[0.76rem]">
-        {item.seller_name ?? '—'}
       </td>
     </tr>
   )
@@ -495,12 +492,23 @@ function ListingCard({ item, serverColor }: {
   item: MarketListing
   serverColor: string
 }) {
+  const imgUrl = item.img_url ?? null
   return (
-    <div className="p-4 border border-white/[0.06] flex items-start justify-between gap-3"
+    <div className="p-4 border border-white/[0.06] flex items-start gap-3"
       style={{ background: 'rgba(255,255,255,0.015)' }}>
+      {imgUrl ? (
+        <img src={imgUrl} alt={item.item_name} width={40} height={40}
+          className="w-10 h-10 object-contain flex-shrink-0 mt-0.5"
+          style={{ imageRendering: 'pixelated' }}
+          loading="lazy"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+        />
+      ) : (
+        <div className="w-10 h-10 flex-shrink-0 border border-white/[0.08]"
+          style={{ background: 'rgba(255,255,255,0.03)' }} />
+      )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="w-0.5 h-4 rounded-full flex-shrink-0" style={{ background: serverColor }} />
           <span className="text-[0.85rem] font-semibold text-white/85 truncate">
             {item.item_name}
           </span>
@@ -514,20 +522,17 @@ function ListingCard({ item, serverColor }: {
             </span>
           )}
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[0.72rem] text-white/35">
-          {item.item_count > 1 && <span>Adet: {item.item_count}</span>}
-          {item.seller_name && <span>Satıcı: {item.seller_name}</span>}
-        </div>
+        {item.seller_name && (
+          <p className="text-[0.72rem] text-white/35">{item.seller_name}</p>
+        )}
       </div>
       <div className="text-right flex-shrink-0">
-        <p className="text-[0.95rem] font-bold text-white/90">
+        <p className="text-[0.95rem] font-bold" style={{ color: '#ef4444' }}>
           {formatPrice(item.price)}
         </p>
-        {item.item_count > 1 && item.price_per_unit && (
-          <p className="text-[0.68rem] text-white/30 mt-0.5">
-            {formatPrice(item.price_per_unit)}/adet
-          </p>
-        )}
+        <p className="text-[0.65rem] text-white/25 mt-0.5">
+          {item.price.toLocaleString('tr-TR')}
+        </p>
       </div>
     </div>
   )
