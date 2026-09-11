@@ -134,7 +134,7 @@ async def _pw_get_token() -> Optional[dict]:
 
             page.on('request', on_req)
             await page.goto(BASE_URL, wait_until='domcontentloaded', timeout=35_000)
-            await page.wait_for_timeout(4_000)
+            await page.wait_for_timeout(5_000)
 
             # Popup kapat
             for txt in ['Bugünlük kapat', 'Kapat', 'Close']:
@@ -144,9 +144,33 @@ async def _pw_get_token() -> Optional[dict]:
                     await page.wait_for_timeout(400)
                     break
 
-            # Zero3 butonuna tıkla → getItemList tetiklensin
-            await page.evaluate("document.getElementById('btn_zero3')?.click()")
-            await page.wait_for_timeout(4_000)
+            # Token alındı mı kontrol et (sayfa otomatik yükleyebilir)
+            if not captured.get('req_token'):
+                # btn_zero3 veya ilk buton
+                for btn_id in ['btn_zero3', 'btn_zero4', 'btn_agartha3']:
+                    try:
+                        count = await page.locator(f'#{btn_id}').count()
+                        if count > 0:
+                            await page.evaluate(f"document.getElementById('{btn_id}')?.click()")
+                            await page.wait_for_timeout(5_000)
+                            if captured.get('req_token'):
+                                break
+                    except Exception:
+                        pass
+
+            # Hâlâ yok — JS ile getItemList direkt çağır
+            if not captured.get('req_token'):
+                try:
+                    await page.evaluate("""
+                        fetch('/dashboard/getItemList', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest'},
+                            body: 'pageCount=1&merchantType=0&orderType=0&limitType=1&serverType=0&searchType=0&itemType=0&minVal=0&maxVal=0&Item_Arti=0&tarih='
+                        })
+                    """)
+                    await page.wait_for_timeout(3_000)
+                except Exception:
+                    pass
 
             cookies = {c['name']: c['value']
                        for c in await ctx.cookies()
@@ -181,7 +205,16 @@ class MarketSession:
         log.info('Token aliniyor (Playwright)...')
         data = asyncio.run(_pw_get_token())
         if not data:
-            log.error('Token alinamadi!')
+            log.warning('Playwright token alinamadi — cookies olmadan deneniyor...')
+            # Token olmadan da bazen çalışıyor — siteyi ziyaret edip cookie al
+            try:
+                r = self.sess.get(BASE_URL, timeout=15)
+                if r.status_code == 200:
+                    log.info('Cookies alindi (token olmadan)')
+                    self.req_token = 'no-token'
+                    return True
+            except Exception as e:
+                log.error(f'Fallback da basarisiz: {e}')
             return False
         self.fingerprint = data.get('fingerprint', '417c2f83')
         self.req_token   = data.get('req_token', '')
