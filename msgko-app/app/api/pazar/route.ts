@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
   const PAGE_SIZE = 50
 
   const sortRaw = searchParams.get('sort') ?? 'price_asc'
-  const sort    = ['price_asc', 'price_desc', 'name_asc', 'newest'].includes(sortRaw)
+  const sort    = ['price_asc', 'price_desc', 'name_asc', 'newest', 'upgrade_asc', 'upgrade_desc'].includes(sortRaw)
     ? sortRaw : 'price_asc'
 
   // Upgrade seviyesi filtresi: '' = hepsi, '0' = +0, '1'..='9' = ilgili seviye
@@ -56,10 +56,12 @@ export async function GET(req: NextRequest) {
   }
 
   switch (sort) {
-    case 'price_asc':  query = query.order('price', { ascending: true });  break
-    case 'price_desc': query = query.order('price', { ascending: false }); break
-    case 'name_asc':   query = query.order('item_name', { ascending: true }); break
-    case 'newest':     query = query.order('scraped_at', { ascending: false }); break
+    case 'price_asc':    query = query.order('price', { ascending: true });  break
+    case 'price_desc':   query = query.order('price', { ascending: false }); break
+    case 'name_asc':     query = query.order('item_name', { ascending: true }); break
+    case 'newest':       query = query.order('scraped_at', { ascending: false }); break
+    case 'upgrade_asc':  query = query.order('upgrade_level', { ascending: true, nullsFirst: false }); break
+    case 'upgrade_desc': query = query.order('upgrade_level', { ascending: false, nullsFirst: false }); break
   }
 
   query = query.range(offset, offset + PAGE_SIZE - 1)
@@ -82,17 +84,27 @@ export async function GET(req: NextRequest) {
   const total      = count ?? 0
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
-  // raw_data'dan img_url parse et
+  // raw_data'dan tüm alanları parse et
   const listings = ((data ?? []) as (MarketListing & { raw_data: string | null })[])
     .map((item) => {
       let img_url: string | null = null
+      let loc_x: number | null = null
+      let loc_z: number | null = null
+      let item_details: string | null = null
+      let listed_date: string | null = null
+      let original_price: number | null = null
       try {
         if (item.raw_data) {
           const raw = JSON.parse(item.raw_data)
-          img_url = raw.img_url ?? null
+          img_url        = raw.img_url        ?? null
+          loc_x          = raw.loc_x          ?? null
+          loc_z          = raw.loc_z          ?? null
+          item_details   = raw.item_details   ?? null
+          listed_date    = raw.listed_date    ?? null
+          original_price = raw.original_price ?? null
         }
       } catch { /* ignore */ }
-      return { ...item, img_url } as MarketListing
+      return { ...item, img_url, loc_x, loc_z, item_details, listed_date, original_price } as MarketListing
     })
 
   const response: PazarResponse = {

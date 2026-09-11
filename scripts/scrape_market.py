@@ -282,6 +282,23 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
         if not price or price <= 0:
             continue
 
+        # ── Lokasyon (td[2] → button data-x data-z) ──────────────────────────
+        loc_x: Optional[int] = None
+        loc_z: Optional[int] = None
+        if len(cells) > 2:
+            loc_btn = cells[2].find('button')
+            if loc_btn:
+                try:
+                    loc_x = int(loc_btn.get('data-x', ''))
+                    loc_z = int(loc_btn.get('data-z', ''))
+                except (ValueError, TypeError):
+                    pass
+
+        # ── Tippy item detayları (item_title, item_type, item_property) ───────
+        item_details: Optional[str] = None
+        if tippy:
+            item_details = tippy.get('data-tippy-content', '') or None
+
         # ── Tarih ─────────────────────────────────────────────────────────────
         date_val = cells[5].get_text(strip=True) if len(cells) > 5 else None
 
@@ -303,6 +320,9 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
                 'raw_name':       item_name,
                 'listed_date':    date_val,
                 'channel':        channel_key,
+                'loc_x':          loc_x,
+                'loc_z':          loc_z,
+                'item_details':   item_details,
             }, ensure_ascii=False),
         })
     return results

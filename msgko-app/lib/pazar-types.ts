@@ -1,6 +1,5 @@
 /**
  * Pazar sistemi paylaşılan tipler ve sabitler
- * Hem API route hem Client Component tarafından kullanılır
  */
 
 export const CHANNELS = [
@@ -28,7 +27,13 @@ export interface MarketListing {
   price_per_unit: number | null
   seller_name: string | null
   scraped_at: string
+  // raw_data'dan parse edilenler
   img_url?: string | null
+  loc_x?: number | null
+  loc_z?: number | null
+  item_details?: string | null   // HTML string: item_title, item_type, item_property
+  listed_date?: string | null
+  original_price?: number | null
 }
 
 export interface PazarResponse {
