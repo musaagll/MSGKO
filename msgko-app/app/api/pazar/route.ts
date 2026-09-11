@@ -30,6 +30,11 @@ export async function GET(req: NextRequest) {
   const sort    = ['price_asc', 'price_desc', 'name_asc', 'newest'].includes(sortRaw)
     ? sortRaw : 'price_asc'
 
+  // Upgrade seviyesi filtresi: '' = hepsi, '0' = +0, '1'..='9' = ilgili seviye
+  const upgradeRaw = searchParams.get('upgrade') ?? ''
+  const upgradeLevel = upgradeRaw === '' ? null
+    : (isNaN(parseInt(upgradeRaw, 10)) ? null : parseInt(upgradeRaw, 10))
+
   const supabase = await createClient()
   const offset   = (page - 1) * PAGE_SIZE
 
@@ -40,6 +45,14 @@ export async function GET(req: NextRequest) {
 
   if (q) {
     query = query.ilike('item_name', `%${q}%`)
+  }
+
+  if (upgradeLevel !== null) {
+    if (upgradeLevel === 0) {
+      query = query.is('upgrade_level', null)
+    } else {
+      query = query.eq('upgrade_level', upgradeLevel)
+    }
   }
 
   switch (sort) {
@@ -86,10 +99,11 @@ export async function GET(req: NextRequest) {
     listings,
     total,
     page,
-    page_size:   PAGE_SIZE,
-    total_pages: totalPages,
+    page_size:    PAGE_SIZE,
+    total_pages:  totalPages,
     server,
     last_scraped: logData?.scraped_at ?? null,
+    upgrade_filter: upgradeLevel,
   }
 
   return NextResponse.json(response, {

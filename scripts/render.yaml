@@ -1,0 +1,14 @@
+services:
+  - type: cron
+    name: msgko-market-scraper
+    runtime: python
+    buildCommand: pip install -r scripts/requirements.txt && python -m playwright install chromium --with-deps
+    schedule: "*/5 * * * *"
+    startCommand: python -X utf8 scripts/scrape_market.py
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: PYTHONUTF8
+        value: "1"

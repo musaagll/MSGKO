@@ -39,4 +39,5 @@ export interface PazarResponse {
   total_pages: number
   server: string
   last_scraped: string | null
+  upgrade_filter?: number | null
 }

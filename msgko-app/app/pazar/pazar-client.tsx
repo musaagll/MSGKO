@@ -40,6 +40,7 @@ export function PazarClient() {
   const [channel,  setChannel]  = useState<ChannelKey>('zero3')
   const [query,    setQuery]    = useState('')
   const [sort,     setSort]     = useState('price_asc')
+  const [upgrade,  setUpgrade]  = useState('')   // '' = hepsi, '0' = +0 yok, '1'..'9'
   const [page,     setPage]     = useState(1)
   const [data,     setData]     = useState<PazarResponse | null>(null)
   const [loading,  setLoading]  = useState(false)
@@ -68,6 +69,7 @@ export function PazarClient() {
         sort,
         page: String(page),
         ...(debouncedQ ? { q: debouncedQ } : {}),
+        ...(upgrade !== '' ? { upgrade } : {}),
       })
       const res = await fetch(`/api/pazar?${params}`, { cache: 'no-store' })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -77,7 +79,7 @@ export function PazarClient() {
     } finally {
       setLoading(false)
     }
-  }, [channel, sort, page, debouncedQ])
+  }, [channel, sort, page, debouncedQ, upgrade])
 
   useEffect(() => { fetchData() }, [fetchData])
 
@@ -212,6 +214,18 @@ export function PazarClient() {
             )}
           </div>
 
+          {/* Upgrade seviyesi */}
+          <select value={upgrade} onChange={e => { setUpgrade(e.target.value); setPage(1) }}
+            className="px-3 py-2.5 text-[0.78rem] bg-white/[0.04] border border-white/[0.08]
+              text-white/70 outline-none focus:border-purple-500/40 transition-all duration-200
+              appearance-none cursor-pointer min-w-[110px]">
+            <option value="" style={{ background: '#0e0e14' }}>Tüm +Lvl</option>
+            <option value="0" style={{ background: '#0e0e14' }}>+0 (yok)</option>
+            {[1,2,3,4,5,6,7,8,9].map(n => (
+              <option key={n} value={String(n)} style={{ background: '#0e0e14' }}>+{n}</option>
+            ))}
+          </select>
+
           {/* Sıralama */}
           <select value={sort} onChange={e => { setSort(e.target.value); setPage(1) }}
             className="px-3 py-2.5 text-[0.78rem] bg-white/[0.04] border border-white/[0.08]
@@ -272,14 +286,26 @@ export function PazarClient() {
               {debouncedQ && (
                 <span className="ml-1">— <span className="text-white/50">&quot;{debouncedQ}&quot;</span></span>
               )}
+              {upgrade !== '' && (
+                <span className="ml-1 text-yellow-400/60">· +{upgrade === '0' ? '0 (seviyesiz)' : upgrade}</span>
+              )}
               {' · '}
               <span style={{ color: currentGroup.color }}>{currentChannel.label}</span>
             </p>
-            {data.total_pages > 1 && (
-              <p className="text-[0.72rem] text-white/25">
-                Sayfa {data.page} / {data.total_pages}
-              </p>
-            )}
+            <div className="flex items-center gap-3">
+              {(debouncedQ || upgrade !== '') && (
+                <button
+                  onClick={() => { setQuery(''); setUpgrade(''); setPage(1) }}
+                  className="text-[0.72rem] tracking-[0.08em] uppercase text-white/30 hover:text-white/60 transition-colors">
+                  Filtreleri Temizle ×
+                </button>
+              )}
+              {data.total_pages > 1 && (
+                <p className="text-[0.72rem] text-white/25">
+                  Sayfa {data.page} / {data.total_pages}
+                </p>
+              )}
+            </div>
           </div>
         )}
 
@@ -341,18 +367,22 @@ export function PazarClient() {
             </div>
             <div>
               <p className="text-[0.88rem] font-semibold text-white/40">
-                {debouncedQ ? `"${debouncedQ}" bulunamadı` : 'Bu kanalda şu an ilan yok'}
+                {debouncedQ
+                  ? `"${debouncedQ}"${upgrade !== '' ? ` (+${upgrade})` : ''} bulunamadı`
+                  : upgrade !== ''
+                    ? `+${upgrade} seviyesinde ilan yok`
+                    : 'Bu kanalda şu an ilan yok'}
               </p>
               <p className="text-[0.74rem] text-white/20 mt-1">
-                {debouncedQ
-                  ? 'Farklı bir item adı deneyin veya başka kanal seçin'
+                {debouncedQ || upgrade !== ''
+                  ? 'Farklı filtreler deneyin veya başka kanal seçin'
                   : 'Veriler henüz çekilmemiş olabilir'}
               </p>
             </div>
-            {debouncedQ && (
-              <button onClick={() => setQuery('')}
+            {(debouncedQ || upgrade !== '') && (
+              <button onClick={() => { setQuery(''); setUpgrade(''); setPage(1) }}
                 className="text-[0.75rem] tracking-[0.1em] uppercase text-purple-400/50 hover:text-purple-400">
-                Aramayı Temizle
+                Filtreleri Temizle
               </button>
             )}
           </div>
