@@ -1,34 +1,31 @@
 """
-MSGKO Market Scraper — Tam Versiyon v2
-========================================
+MSGKO Market Scraper — Tam Versiyon v3 (Playwright YOK)
+=========================================================
 uskopazar.com /dashboard/getItemList API'si ile veri çeker.
 
 Nasıl çalışır:
-  1. Playwright ile req_token + cookie al (başta 1 kez, 429 sonrası yeniden)
+  1. Ana sayfaya GET → HTML içindeki REQ_TOKEN'ı regex ile al (Playwright YOK)
+     Ya da /dashboard/reqToken POST → yeni token al
   2. requests ile pageCount loop → tüm sayfaları çek (192/sayfa)
   3. HTML parse: span.white = item adı, span[style=color:red] = fiyat
-  4. Supabase'e DELETE + batch INSERT (upsert değil — tam taze veri)
+  4. Supabase'e DELETE + batch INSERT
 
-Parse yapısı (debug_parse.py + check_sample.py ile doğrulandı):
-  td[0] → span.white = item adı  |  img.src = görsel
-  td[1] → text = satıcı
-  td[2] → button.item-properties = lokasyon (atla)
-  td[3] → span[style=color:red] = fiyat
-  td[5] → text = eklenme tarihi
+Token: Her sayfa yüklemesinde HTML içinde var:
+  var REQ_TOKEN = "eyJ...";
+  Ayrıca POST /dashboard/reqToken → {"ok":true,"token":"eyJ..."}
 
-Kanallar ve serverType (check_servertypes.py ile doğrulandı):
+Kanallar ve serverType (doğrulandı):
   zero3=0, zero4=5, zero5=8, zero8=15
   agartha3=1, agartha4=12
   pandora3=2, pandora4=11
   destan2=4, destan3=13
 """
 
-import os, re, sys, json, time, logging, requests, asyncio
+import os, re, sys, json, time, logging, requests
 from datetime import datetime, timezone
 from typing import Optional
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
-from urllib.parse import unquote_plus
 import io
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
@@ -62,21 +59,16 @@ CHANNELS = [
     ('destan3',  13, 'Destan 3'),
 ]
 
-BASE_URL   = 'https://www.uskopazar.com'
-LIMIT      = 192    # sayfa başına max ilan
-MAX_PAGES  = 150    # kanal başına max sayfa güvenlik sınırı (~28800 ilan)
-BATCH_SIZE = 500    # Supabase insert batch boyutu
-# Kanallar arası bekleme — rate limit için kritik
-INTER_CHANNEL_SLEEP = 8   # saniye
-# Sayfalar arası bekleme
-INTER_PAGE_SLEEP    = 0.8  # saniye
-# 429 sonrası yeni token al eşiği (kaç üst üste 429)
-TOKEN_REFRESH_AFTER = 2
+BASE_URL            = 'https://www.uskopazar.com'
+LIMIT               = 192    # sayfa başına max ilan
+MAX_PAGES           = 150    # kanal başına max sayfa
+BATCH_SIZE          = 500    # Supabase insert batch
+INTER_CHANNEL_SLEEP = 90     # kanallar arası bekleme (sn) — rate limit için kritik
+INTER_PAGE_SLEEP    = 0.8    # sayfalar arası bekleme (sn)
 
 
 # ── Yardımcılar ────────────────────────────────────────────────────────────────
 def parse_price(raw: str) -> Optional[int]:
-    """'1.234.567' veya '1,234,567' → int"""
     c = re.sub(r'[^\d]', '', str(raw))
     return int(c) if c else None
 
@@ -84,7 +76,6 @@ def minus_one(p: Optional[int]) -> Optional[int]:
     return (p - 1) if p and p > 1 else p
 
 def parse_upgrade(text: str) -> tuple[str, Optional[int]]:
-    """'Iron Sword (+7)' → ('Iron Sword', 7)"""
     m = re.search(r'\(\+(\d+)\)', text)
     if m:
         return text[:m.start()].strip(), int(m.group(1))
@@ -94,141 +85,98 @@ def parse_upgrade(text: str) -> tuple[str, Optional[int]]:
     return text.strip(), None
 
 
-# ── Playwright token alıcı ─────────────────────────────────────────────────────
-async def _pw_get_token() -> Optional[dict]:
-    try:
-        from playwright.async_api import async_playwright
-    except ImportError:
-        log.error('playwright yuklu degil!')
-        return None
-
-    captured: dict = {}
-    try:
-        async with async_playwright() as pw:
-            browser = await pw.chromium.launch(
-                headless=True,
-                args=['--no-sandbox', '--disable-dev-shm-usage',
-                      '--disable-blink-features=AutomationControlled'])
-            ctx = await browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                           'AppleWebKit/537.36 (KHTML, like Gecko) '
-                           'Chrome/124.0.0.0 Safari/537.36',
-                locale='tr-TR',
-            )
-            await ctx.add_init_script(
-                "Object.defineProperty(navigator,'webdriver',{get:()=>undefined});")
-            page = await ctx.new_page()
-
-            async def on_req(req):
-                if 'getItemList' in req.url:
-                    body = req.post_data or ''
-                    params: dict = {}
-                    for p in body.split('&'):
-                        if '=' in p:
-                            k, _, v = p.partition('=')
-                            params[k] = unquote_plus(v)
-                    if params.get('req_token'):
-                        captured['req_token']   = params['req_token']
-                        captured['fingerprint'] = params.get('fingerprint', '417c2f83')
-                        log.info(f'Token yakalandi: {params["req_token"][:20]}...')
-
-            page.on('request', on_req)
-
-            log.info('Sayfa yukleniyor...')
-            try:
-                await page.goto(BASE_URL, wait_until='domcontentloaded', timeout=30_000)
-            except Exception as e:
-                log.error(f'Sayfa yuklenemedi: {e}')
-                await browser.close()
-                return None
-            await page.wait_for_timeout(5_000)
-
-            # Popup kapat
-            for txt in ['Bugünlük kapat', 'Kapat', 'Close']:
-                el = page.locator(f'text={txt}')
-                if await el.count() > 0:
-                    await el.first.click()
-                    await page.wait_for_timeout(500)
-                    break
-
-            log.info(f'Sayfa title: {await page.title()}')
-            log.info(f'Token durumu: {"var" if captured.get("req_token") else "yok"}')
-
-            # Token alındı mı kontrol et
-            if not captured.get('req_token'):
-                # Butonları dene
-                for btn_id in ['btn_zero3', 'btn_zero4', 'btn_agartha3', 'btn_pandora3']:
-                    try:
-                        count = await page.locator(f'#{btn_id}').count()
-                        log.info(f'  {btn_id} count={count}')
-                        if count > 0:
-                            await page.locator(f'#{btn_id}').click()
-                            await page.wait_for_timeout(5_000)
-                            if captured.get('req_token'):
-                                break
-                    except Exception as e:
-                        log.warning(f'  {btn_id} hata: {e}')
-
-            # Hâlâ yok — JS fetch dene
-            if not captured.get('req_token'):
-                log.info('JS fetch deneniyor...')
-                try:
-                    await page.evaluate("""
-                        window.__kiroFetch = fetch('/dashboard/getItemList', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/x-www-form-urlencoded',
-                                      'X-Requested-With': 'XMLHttpRequest'},
-                            body: 'pageCount=1&merchantType=0&orderType=0&limitType=1&serverType=0&searchType=0&itemType=0&minVal=0&maxVal=0&Item_Arti=0&tarih='
-                        });
-                    """)
-                    await page.wait_for_timeout(4_000)
-                except Exception as e:
-                    log.warning(f'JS fetch hata: {e}')
-
-            cookies = {c['name']: c['value']
-                       for c in await ctx.cookies()
-                       if 'uskopazar' in c.get('domain', '')}
-            captured['cookies'] = cookies
-            log.info(f'Cookies: {list(cookies.keys())}')
-            await browser.close()
-    except Exception as e:
-        log.error(f'Playwright hatasi: {e}')
-        return None
-
-    return captured if captured.get('req_token') else None
-
-
-# ── Session ────────────────────────────────────────────────────────────────────
+# ── Session (Playwright YOK — pure requests) ───────────────────────────────────
 class MarketSession:
     def __init__(self):
         self.sess        = requests.Session()
         self.fingerprint = '417c2f83'
         self.req_token   = ''
-        self._consecutive_429 = 0
         self.sess.headers.update({
-            'User-Agent':       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                                'AppleWebKit/537.36 (KHTML, like Gecko) '
-                                'Chrome/124.0.0.0 Safari/537.36',
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept':           'text/html, */*; q=0.01',
-            'Content-Type':     'application/x-www-form-urlencoded; charset=UTF-8',
-            'Referer':          f'{BASE_URL}/',
+            'User-Agent':      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                               'AppleWebKit/537.36 (KHTML, like Gecko) '
+                               'Chrome/124.0.0.0 Safari/537.36',
+            'Accept-Language': 'tr-TR,tr;q=0.9,en;q=0.8',
+            'Accept':          'text/html,application/xhtml+xml,*/*;q=0.8',
         })
 
     def init(self) -> bool:
-        log.info('Token aliniyor (Playwright)...')
-        data = asyncio.run(_pw_get_token())
-        if not data:
-            log.warning('Playwright token alinamadi — site erisilemez olabilir')
-            return False
-        self.fingerprint = data.get('fingerprint', '417c2f83')
-        self.req_token   = data.get('req_token', '')
-        self._consecutive_429 = 0
-        for k, v in data.get('cookies', {}).items():
-            self.sess.cookies.set(k, v, domain='www.uskopazar.com')
-        log.info(f'Token: {self.req_token[:28]}...')
-        return bool(self.req_token)
+        """Ana sayfayı ziyaret et, REQ_TOKEN'ı HTML'den al."""
+        log.info('Token aliniyor (requests — Playwright yok)...')
+
+        for attempt in range(3):
+            try:
+                r = self.sess.get(BASE_URL, timeout=20)
+                if r.status_code != 200:
+                    log.warning(f'Ana sayfa HTTP {r.status_code}')
+                    time.sleep(10)
+                    continue
+
+                # 1) HTML içindeki REQ_TOKEN
+                m = re.search(
+                    r'var\s+REQ_TOKEN\s*=\s*["\']([A-Za-z0-9\-_.=]+)["\']',
+                    r.text)
+                if m:
+                    self.req_token = m.group(1)
+                    log.info(f'Token HTML\'den alindi: {self.req_token[:28]}...')
+                    # getItemList için header ayarla
+                    self.sess.headers.update({
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept':           'text/html, */*; q=0.01',
+                        'Content-Type':     'application/x-www-form-urlencoded; charset=UTF-8',
+                        'Referer':          f'{BASE_URL}/',
+                    })
+                    return True
+
+                # 2) /dashboard/reqToken endpoint
+                log.info('HTML\'de token yok, /dashboard/reqToken deneniyor...')
+                r2 = self.sess.post(
+                    f'{BASE_URL}/dashboard/reqToken',
+                    headers={'X-Requested-With': 'XMLHttpRequest',
+                              'Referer': f'{BASE_URL}/'},
+                    timeout=15)
+                if r2.status_code == 200:
+                    try:
+                        d = r2.json()
+                        if d.get('ok') and d.get('token'):
+                            self.req_token = d['token']
+                            log.info(f'Token endpoint\'ten alindi: {self.req_token[:28]}...')
+                            self.sess.headers.update({
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept':           'text/html, */*; q=0.01',
+                                'Content-Type':     'application/x-www-form-urlencoded; charset=UTF-8',
+                                'Referer':          f'{BASE_URL}/',
+                            })
+                            return True
+                    except Exception:
+                        pass
+
+                log.warning(f'Token bulunamadi (deneme {attempt+1}/3)')
+                time.sleep(15)
+
+            except requests.RequestException as e:
+                log.error(f'Ana sayfa hatasi: {e}')
+                time.sleep(15)
+
+        log.error('Token alinamadi!')
+        return False
+
+    def refresh_token(self) -> bool:
+        """Mevcut session ile yeni token al."""
+        try:
+            r = self.sess.post(
+                f'{BASE_URL}/dashboard/reqToken',
+                headers={'X-Requested-With': 'XMLHttpRequest',
+                          'Referer': f'{BASE_URL}/'},
+                timeout=15)
+            if r.status_code == 200:
+                d = r.json()
+                if d.get('ok') and d.get('token'):
+                    self.req_token = d['token']
+                    log.info(f'Token yenilendi: {self.req_token[:28]}...')
+                    return True
+        except Exception as e:
+            log.warning(f'Token yenileme hatasi: {e}')
+        return False
 
     def _post(self, server_type: int, page_num: int) -> Optional[requests.Response]:
         return self.sess.post(
@@ -254,34 +202,28 @@ class MarketSession:
     def fetch_page(self, server_type: int, page_num: int, label: str) -> Optional[str]:
         """
         Bir sayfayı çek.
-        - 200 → veriyi döndür
-        - 429 → 1 kez 20sn bekle + token yenile, tekrar dene; hâlâ 429 → None döndür (kanal bitti say)
-        - Diğer hata → 2 retry
+        429 → 1) 60sn bekle + token yenile, 2) 120sn bekle + init,
+              3) None dön (kanal bitti).
         """
         for attempt in range(3):
             try:
                 r = self._post(server_type, page_num)
 
                 if r.status_code == 200:
-                    self._consecutive_429 = 0
                     return r.text
 
                 elif r.status_code == 429:
-                    self._consecutive_429 += 1
                     log.warning(f'  [{label}] p{page_num} → 429 (deneme {attempt+1}/3)')
-
                     if attempt == 0:
-                        # İlk 429: 20sn bekle, token yenile
-                        log.info('  20sn bekleniyor + token yenileniyor...')
-                        time.sleep(20)
-                        self.init()
+                        log.info('  60sn bekleniyor + token yenileniyor...')
+                        time.sleep(60)
+                        self.refresh_token() or self.init()
                     elif attempt == 1:
-                        # İkinci 429: 40sn daha bekle
-                        log.info('  40sn bekleniyor...')
-                        time.sleep(40)
+                        log.info('  120sn bekleniyor + tam init...')
+                        time.sleep(120)
+                        self.init()
                     else:
-                        # Üçüncü 429: bu kanal için sayfa çekimi bitti
-                        log.info(f'  [{label}] 3 kez 429 — kanal tamamlandı sayılıyor')
+                        log.info(f'  [{label}] 3 kez 429 — kanal sonlandiriliyor')
                         return None
 
                 else:
@@ -322,12 +264,11 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
                 raw_name = inner.get_text(strip=True) if inner else trunc.get_text(strip=True)
             else:
                 raw_name = cells[0].get_text(strip=True).split('\n')[0].strip()
-
         raw_name = raw_name.strip()
         if not raw_name:
             continue
 
-        # ── Görsel URL ────────────────────────────────────────────────────────
+        # ── Görsel ────────────────────────────────────────────────────────────
         img = cells[0].find('img')
         img_url = img.get('src') if img else None
 
@@ -335,15 +276,13 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
         tippy = cells[0].find(attrs={'data-tippy-content': True})
         upgrade_level: Optional[int] = None
         if tippy:
-            tippy_html = tippy.get('data-tippy-content', '')
-            m = re.search(r'\(\+(\d+)\)', tippy_html)
+            tc = tippy.get('data-tippy-content', '')
+            m = re.search(r'\(\+(\d+)\)', tc)
             if m:
                 upgrade_level = int(m.group(1))
                 raw_name = re.sub(r'\(\+\d+\)', '', raw_name).strip()
-
         if upgrade_level is None:
             raw_name, upgrade_level = parse_upgrade(raw_name)
-
         item_name = raw_name.strip()
         if not item_name:
             continue
@@ -351,10 +290,9 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
         # ── Satıcı ────────────────────────────────────────────────────────────
         seller = cells[1].get_text(strip=True) if len(cells) > 1 else None
 
-        # ── Fiyat: span[style*=color:red] ────────────────────────────────────
+        # ── Fiyat ─────────────────────────────────────────────────────────────
         price_el = None
         if len(cells) > 3:
-            # BeautifulSoup style= bazen dict, bazen string
             for sp in cells[3].find_all('span'):
                 st = sp.get('style', '')
                 if isinstance(st, str) and 'color' in st and 'red' in st:
@@ -369,7 +307,7 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
         if not price or price <= 0:
             continue
 
-        # ── Liste tarihi ──────────────────────────────────────────────────────
+        # ── Tarih ─────────────────────────────────────────────────────────────
         date_val = cells[5].get_text(strip=True) if len(cells) > 5 else None
 
         pm = minus_one(price)
@@ -392,7 +330,6 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
                 'channel':        channel_key,
             }, ensure_ascii=False),
         })
-
     return results
 
 
@@ -409,10 +346,9 @@ def scrape_all_channels(sess: MarketSession) -> dict[str, list[dict]]:
 
         for pg in range(1, MAX_PAGES + 1):
             html = sess.fetch_page(server_type, pg, label)
-
             if html is None:
-                log.warning(f'  [{label}] Sayfa {pg} alinamadi (429 veya hata) — kanal sonlandırılıyor')
-                break  # çekilen ilanlar results'a yazılacak
+                log.warning(f'  [{label}] Sayfa {pg} alinamadi — kanal sonlandiriliyor')
+                break
 
             listings = parse_html(html, db_key, now)
 
@@ -420,30 +356,26 @@ def scrape_all_channels(sess: MarketSession) -> dict[str, list[dict]]:
                 consecutive_empty += 1
                 log.info(f'  [{label}] Sayfa {pg}: 0 ilan (ard arda bos: {consecutive_empty})')
                 if consecutive_empty >= 2:
-                    log.info(f'  [{label}] 2 ard arda bos sayfa → bitti')
                     break
                 time.sleep(INTER_PAGE_SLEEP)
                 continue
 
             consecutive_empty = 0
             all_listings.extend(listings)
-            elapsed = int(time.time() - t0)
             log.info(f'  [{label}] Sayfa {pg}: {len(listings):3d} ilan  '
-                     f'(toplam={len(all_listings):5d}, {elapsed}s)')
+                     f'(toplam={len(all_listings):5d}, {int(time.time()-t0)}s)')
 
-            # Son sayfa kontrolü
             if len(listings) < LIMIT:
-                log.info(f'  [{label}] Son sayfa ({len(listings)} < {LIMIT}) — bitti')
+                log.info(f'  [{label}] Son sayfa — bitti')
                 break
 
             time.sleep(INTER_PAGE_SLEEP)
 
-        ms = int((time.time() - t0) * 1000)
-        log.info(f'  [{label}] TOPLAM: {len(all_listings)} ilan ({ms}ms)')
+        log.info(f'  [{label}] TOPLAM: {len(all_listings)} ilan ({int((time.time()-t0)*1000)}ms)')
         results[db_key] = all_listings
 
         if ch_idx < len(CHANNELS) - 1:
-            log.info(f'  Sonraki kanal icin {INTER_CHANNEL_SLEEP}sn bekleniyor...')
+            log.info(f'  Sonraki kanal icin {INTER_CHANNEL_SLEEP}sn...')
             time.sleep(INTER_CHANNEL_SLEEP)
 
     return results
@@ -461,8 +393,7 @@ def _sb_headers() -> dict:
 def sb_delete(server_key: str) -> None:
     r = requests.delete(
         f'{SUPABASE_URL}/rest/v1/market_listings?server=eq.{server_key}',
-        headers=_sb_headers(), timeout=30,
-    )
+        headers=_sb_headers(), timeout=30)
     if r.status_code not in (200, 204):
         log.warning(f'  DELETE hatasi [{server_key}]: {r.status_code}')
 
@@ -472,29 +403,20 @@ def sb_insert(listings: list[dict]) -> int:
         batch = listings[i:i + BATCH_SIZE]
         r = requests.post(
             f'{SUPABASE_URL}/rest/v1/market_listings',
-            json=batch, headers=_sb_headers(), timeout=60,
-        )
+            json=batch, headers=_sb_headers(), timeout=60)
         if r.status_code in (200, 201):
             inserted += len(batch)
         else:
-            log.error(f'  INSERT hatasi ({i}..{i+len(batch)}): '
-                      f'{r.status_code} {r.text[:200]}')
+            log.error(f'  INSERT hatasi: {r.status_code} {r.text[:200]}')
     return inserted
 
-def sb_log(server: str, status: str, count: int,
-           err: Optional[str], ms: int) -> None:
+def sb_log(server: str, status: str, count: int, err: Optional[str], ms: int) -> None:
     try:
         requests.post(
             f'{SUPABASE_URL}/rest/v1/market_scrape_log',
-            json={
-                'server':       server,
-                'status':       status,
-                'items_count':  count,
-                'error_msg':    err,
-                'duration_ms':  ms,
-            },
-            headers=_sb_headers(), timeout=10,
-        )
+            json={'server': server, 'status': status,
+                  'items_count': count, 'error_msg': err, 'duration_ms': ms},
+            headers=_sb_headers(), timeout=10)
     except Exception:
         pass
 
@@ -502,7 +424,7 @@ def sb_log(server: str, status: str, count: int,
 # ── main ───────────────────────────────────────────────────────────────────────
 def main() -> None:
     log.info('=' * 65)
-    log.info(f'MSGKO Scraper v2 — {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+    log.info(f'MSGKO Scraper v3 — {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     log.info(f'Kanallar: {", ".join(c[0] for c in CHANNELS)}')
     log.info('=' * 65)
 
@@ -512,34 +434,23 @@ def main() -> None:
 
     sess = MarketSession()
     if not sess.init():
-        log.error('Token alinamadi — site erisilemez. Scraper atlanıyor.')
-        sys.exit(0)  # GitHub Actions'da failure gösterme
+        log.warning('Token alinamadi — site erisilemez. Bu run atlaniyor.')
+        sys.exit(0)
 
-    # Bağlantı testi — hemen 429 geliyorsa bekle
-    log.info('Baglanti testi yapiliyor...')
+    # Bağlantı testi
+    log.info('Baglanti testi...')
     for wait_secs in [0, 30, 60, 120]:
         if wait_secs > 0:
-            log.info(f'Site engeli var, {wait_secs}sn bekleniyor...')
+            log.info(f'{wait_secs}sn bekleniyor...')
             time.sleep(wait_secs)
-            sess.init()
-        test_r = sess.sess.post(
-            f'{BASE_URL}/dashboard/getItemList',
-            data={
-                'fingerprint': sess.fingerprint,
-                'req_token':   sess.req_token,
-                'pageCount': 1, 'merchantType': 0, 'orderType': 0,
-                'limitType': 1, 'serverType': 0,
-                'searchType': 0, 'itemType': 0, 'minVal': 0, 'maxVal': 0,
-                'Item_Arti': 0, 'tarih': '',
-            },
-            timeout=15,
-        )
-        if test_r.status_code == 200:
+            sess.refresh_token() or sess.init()
+        test_r = sess._post(0, 1)
+        if test_r and test_r.status_code == 200:
             log.info('Baglanti OK!')
             break
-        log.warning(f'Test: HTTP {test_r.status_code}')
+        log.warning(f'Test: HTTP {test_r.status_code if test_r else "hata"}')
     else:
-        log.warning('Site hala engelliyor — bu run atlanıyor')
+        log.warning('Site engelliyor — bu run atlaniyor')
         sys.exit(0)
 
     t_start = time.time()
@@ -547,16 +458,16 @@ def main() -> None:
 
     log.info('')
     log.info('━━━ Supabase yazma ━━━')
-    grand_total = 0
+    grand = 0
     for db_key, listings in results.items():
         if not listings:
-            log.warning(f'[{db_key}] ilan yok — atlandı')
+            log.warning(f'[{db_key}] ilan yok')
             sb_log(db_key, 'error', 0, 'no listings', 0)
             continue
         t0 = time.time()
         sb_delete(db_key)
         n  = sb_insert(listings)
-        grand_total += n
+        grand += n
         ms = int((time.time() - t0) * 1000)
         sb_log(db_key, 'success' if n else 'error', n,
                None if n else 'insert failed', ms)
@@ -564,7 +475,7 @@ def main() -> None:
 
     total_ms = int((time.time() - t_start) * 1000)
     log.info('=' * 65)
-    log.info(f'TOPLAM: {grand_total} ilan — {total_ms // 1000}sn ({total_ms}ms)')
+    log.info(f'TOPLAM: {grand} ilan — {total_ms // 1000}sn')
     log.info('=' * 65)
 
 
