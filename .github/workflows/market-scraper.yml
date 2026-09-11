@@ -2,20 +2,17 @@ name: MSGKO Market Scraper
 
 on:
   schedule:
-    # Her 5 dakikada bir — UTC saat (Türkiye = UTC+3)
-    # GitHub Actions minimum 5 dakika destekliyor
+    # Her 5 dakikada bir (GitHub Actions min. 5 dk)
     - cron: '*/5 * * * *'
-  
-  # Manuel tetikleme (test için)
   workflow_dispatch:
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10  # 10 kanal x ~65sn = ~11 dk, biraz marj
 
     steps:
-      - name: Kodu çek
+      - name: Kodu cek
         uses: actions/checkout@v4
 
       - name: Python kur
@@ -25,23 +22,24 @@ jobs:
           cache: 'pip'
           cache-dependency-path: 'scripts/requirements.txt'
 
-      - name: Bağımlılıkları yükle
+      - name: Bagimliliklar
         run: pip install -r scripts/requirements.txt
 
-      - name: Playwright Chromium yükle
+      - name: Playwright Chromium
         run: python -m playwright install chromium --with-deps
 
-      - name: Scraper çalıştır
+      - name: Scraper calistir
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           PYTHONUTF8: "1"
         run: python -X utf8 scripts/scrape_market.py
 
-      - name: Log kaydet (hata durumunda)
+      - name: Debug screenshotlari yukle (hata durumunda)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: scraper-debug
-          path: scripts/*.png
+          name: debug-screenshots
+          path: scripts/debug_*.png
           retention-days: 1
+          if-no-files-found: ignore
