@@ -131,51 +131,61 @@ async def _pw_get_token() -> Optional[dict]:
                     if params.get('req_token'):
                         captured['req_token']   = params['req_token']
                         captured['fingerprint'] = params.get('fingerprint', '417c2f83')
+                        log.info(f'Token yakalandi: {params["req_token"][:20]}...')
 
             page.on('request', on_req)
-            await page.goto(BASE_URL, wait_until='domcontentloaded', timeout=35_000)
-            await page.wait_for_timeout(5_000)
+
+            log.info('Sayfa yukleniyor...')
+            await page.goto(BASE_URL, wait_until='networkidle', timeout=45_000)
+            await page.wait_for_timeout(3_000)
 
             # Popup kapat
             for txt in ['Bugünlük kapat', 'Kapat', 'Close']:
                 el = page.locator(f'text={txt}')
                 if await el.count() > 0:
                     await el.first.click()
-                    await page.wait_for_timeout(400)
+                    await page.wait_for_timeout(500)
                     break
 
-            # Token alındı mı kontrol et (sayfa otomatik yükleyebilir)
+            log.info(f'Sayfa title: {await page.title()}')
+            log.info(f'Token durumu: {"var" if captured.get("req_token") else "yok"}')
+
+            # Token alındı mı kontrol et
             if not captured.get('req_token'):
-                # btn_zero3 veya ilk buton
-                for btn_id in ['btn_zero3', 'btn_zero4', 'btn_agartha3']:
+                # Butonları dene
+                for btn_id in ['btn_zero3', 'btn_zero4', 'btn_agartha3', 'btn_pandora3']:
                     try:
                         count = await page.locator(f'#{btn_id}').count()
+                        log.info(f'  {btn_id} count={count}')
                         if count > 0:
-                            await page.evaluate(f"document.getElementById('{btn_id}')?.click()")
+                            await page.locator(f'#{btn_id}').click()
                             await page.wait_for_timeout(5_000)
                             if captured.get('req_token'):
                                 break
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        log.warning(f'  {btn_id} hata: {e}')
 
-            # Hâlâ yok — JS ile getItemList direkt çağır
+            # Hâlâ yok — JS fetch dene
             if not captured.get('req_token'):
+                log.info('JS fetch deneniyor...')
                 try:
                     await page.evaluate("""
-                        fetch('/dashboard/getItemList', {
+                        window.__kiroFetch = fetch('/dashboard/getItemList', {
                             method: 'POST',
-                            headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest'},
+                            headers: {'Content-Type': 'application/x-www-form-urlencoded',
+                                      'X-Requested-With': 'XMLHttpRequest'},
                             body: 'pageCount=1&merchantType=0&orderType=0&limitType=1&serverType=0&searchType=0&itemType=0&minVal=0&maxVal=0&Item_Arti=0&tarih='
-                        })
+                        });
                     """)
-                    await page.wait_for_timeout(3_000)
-                except Exception:
-                    pass
+                    await page.wait_for_timeout(4_000)
+                except Exception as e:
+                    log.warning(f'JS fetch hata: {e}')
 
             cookies = {c['name']: c['value']
                        for c in await ctx.cookies()
                        if 'uskopazar' in c.get('domain', '')}
             captured['cookies'] = cookies
+            log.info(f'Cookies: {list(cookies.keys())}')
             await browser.close()
     except Exception as e:
         log.error(f'Playwright hatasi: {e}')
