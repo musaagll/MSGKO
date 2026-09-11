@@ -15,17 +15,14 @@ function formatPrice(n: number): string {
 
 function timeAgo(iso: string): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
-  if (diff < 60)   return `${diff}sn önce`
-  if (diff < 3600) return `${Math.floor(diff / 60)}dk önce`
+  if (diff < 60)    return `${diff}sn önce`
+  if (diff < 3600)  return `${Math.floor(diff / 60)}dk önce`
   if (diff < 86400) return `${Math.floor(diff / 3600)}sa önce`
   return `${Math.floor(diff / 86400)}g önce`
 }
 
-// Tippy HTML'ini parse et — item özellikleri
-function parseItemDetails(html: string | null | undefined): {
-  title: string; type: string; kind: string; props: string[]
-} {
-  if (!html) return { title: '', type: '', kind: '', props: [] }
+function parseItemDetails(html: string | null | undefined) {
+  if (!html) return { title: '', type: '', kind: '', props: [] as string[] }
   const get = (cls: string) => {
     const escaped = cls.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const m = html.match(new RegExp(`<div class='${escaped}'[^>]*>([\\s\\S]*?)</div>`, 'i'))
@@ -34,7 +31,6 @@ function parseItemDetails(html: string | null | undefined): {
   const title = get('item_title white') || get('item_title')
   const type  = get('item_type white')  || get('item_type')
   const kind  = get('item_kind')
-  // item_property tüm occurrences
   const props: string[] = []
   const re = /<div class='item_property[^']*'>([\s\S]*?)<\/div>/gi
   let m: RegExpExecArray | null
@@ -46,8 +42,8 @@ function parseItemDetails(html: string | null | undefined): {
 }
 
 const SORT_OPTIONS = [
-  { value: 'price_asc',    label: 'Fiyat ↑' },
-  { value: 'price_desc',   label: 'Fiyat ↓' },
+  { value: 'price_asc',    label: 'En Ucuz' },
+  { value: 'price_desc',   label: 'En Pahalı' },
   { value: 'name_asc',     label: 'İsim A-Z' },
   { value: 'upgrade_desc', label: '+Lvl ↓' },
   { value: 'upgrade_asc',  label: '+Lvl ↑' },
@@ -55,390 +51,283 @@ const SORT_OPTIONS = [
 ]
 
 const GROUPS = [
-  { key: 'zero',    label: 'Zero',    color: '#60a5fa', glow: 'rgba(96,165,250,0.15)' },
-  { key: 'agartha', label: 'Agartha', color: '#fbbf24', glow: 'rgba(251,191,36,0.15)' },
-  { key: 'pandora', label: 'Pandora', color: '#34d399', glow: 'rgba(52,211,153,0.15)' },
-  { key: 'destan',  label: 'Destan',  color: '#a78bfa', glow: 'rgba(167,139,250,0.15)' },
+  { key: 'zero',    label: 'Zero',    color: '#60a5fa', bg: 'rgba(96,165,250,0.08)'  },
+  { key: 'agartha', label: 'Agartha', color: '#fbbf24', bg: 'rgba(251,191,36,0.08)'  },
+  { key: 'pandora', label: 'Pandora', color: '#34d399', bg: 'rgba(52,211,153,0.08)'  },
+  { key: 'destan',  label: 'Destan',  color: '#a78bfa', bg: 'rgba(167,139,250,0.08)' },
 ]
 
-// ── Ana Bileşen ────────────────────────────────────────────────────────────────
+// ── Ana bileşen ────────────────────────────────────────────────────────────────
 export function PazarClient() {
-  const [channel,    setChannel]    = useState<ChannelKey>('zero3')
-  const [query,      setQuery]      = useState('')
-  const [sort,       setSort]       = useState('price_asc')
-  const [upgrade,    setUpgrade]    = useState('')
-  const [page,       setPage]       = useState(1)
-  const [data,       setData]       = useState<PazarResponse | null>(null)
-  const [loading,    setLoading]    = useState(false)
-  const [error,      setError]      = useState<string | null>(null)
-  const [counts,     setCounts]     = useState<Record<string, number>>({})
-  const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
+  const [channel,  setChannel]  = useState<ChannelKey>('zero3')
+  const [query,    setQuery]    = useState('')
+  const [sort,     setSort]     = useState('price_asc')
+  const [upgrade,  setUpgrade]  = useState('')
+  const [data,     setData]     = useState<PazarResponse | null>(null)
+  const [loading,  setLoading]  = useState(false)
+  const [error,    setError]    = useState<string | null>(null)
+  const [counts,   setCounts]   = useState<Record<string, number>>({})
 
-  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [debouncedQ, setDebouncedQ] = useState('')
 
   useEffect(() => {
-    if (searchTimer.current) clearTimeout(searchTimer.current)
-    searchTimer.current = setTimeout(() => { setDebouncedQ(query); setPage(1) }, 350)
+    if (timer.current) clearTimeout(timer.current)
+    timer.current = setTimeout(() => setDebouncedQ(query), 350)
   }, [query])
 
   const fetchData = useCallback(async () => {
     setLoading(true); setError(null)
     try {
-      const params = new URLSearchParams({
-        server: channel, sort, page: String(page),
-        ...(debouncedQ ? { q: debouncedQ } : {}),
-        ...(upgrade !== '' ? { upgrade } : {}),
-      })
-      const res = await fetch(`/api/pazar?${params}`, { cache: 'no-store' })
+      const p = new URLSearchParams({ server: channel, sort })
+      if (debouncedQ) p.set('q', debouncedQ)
+      if (upgrade)    p.set('upgrade', upgrade)
+      const res = await fetch(`/api/pazar?${p}`, { cache: 'no-store' })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       setData(await res.json())
-      setLastUpdate(new Date())
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Bağlantı hatası')
     } finally {
       setLoading(false)
     }
-  }, [channel, sort, page, debouncedQ, upgrade])
+  }, [channel, sort, debouncedQ, upgrade])
 
   useEffect(() => { fetchData() }, [fetchData])
+
+  // 3 dk otomatik yenile
   useEffect(() => {
     const t = setInterval(fetchData, 3 * 60 * 1000)
     return () => clearInterval(t)
   }, [fetchData])
+
+  // Kanal sayıları
   useEffect(() => {
-    fetch('/api/pazar', { method: 'POST' }).then(r => r.json()).then(setCounts).catch(() => {})
+    fetch('/api/pazar', { method: 'POST' })
+      .then(r => r.json()).then(setCounts).catch(() => {})
   }, [])
 
-  const currentChannel = CHANNELS.find(c => c.key === channel)!
-  const currentGroup   = GROUPS.find(g => g.key === currentChannel.group)!
-  const hasFilter      = debouncedQ !== '' || upgrade !== ''
+  const curCh = CHANNELS.find(c => c.key === channel)!
+  const curGrp = GROUPS.find(g => g.key === curCh.group)!
 
   return (
-    <div className="min-h-screen" style={{ background: '#080810' }}>
+    <div className="min-h-screen" style={{ background: '#07070f' }}>
 
-      {/* ── Hero Header ─────────────────────────────────────────────────────── */}
-      <div style={{
-        background: 'linear-gradient(180deg, rgba(15,15,30,0.95) 0%, transparent 100%)',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
-      }}>
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-6">
-          <nav className="mb-5">
-            <ol className="flex items-center gap-2 text-[0.7rem] text-white/25">
-              <li><Link href="/" className="hover:text-white/50 transition-colors">Ana Sayfa</Link></li>
-              <li className="text-white/15">/</li>
-              <li className="text-white/40">Pazar</li>
-            </ol>
-          </nav>
+      {/* ── Header ── */}
+      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 pt-24 pb-6">
+        <nav className="mb-4">
+          <ol className="flex items-center gap-2 text-[0.68rem] text-white/20">
+            <li><Link href="/" className="hover:text-white/50 transition-colors">Ana Sayfa</Link></li>
+            <li>/</li>
+            <li className="text-white/40">Pazar</li>
+          </ol>
+        </nav>
 
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="w-2 h-2 rounded-full animate-pulse"
-                  style={{ background: currentGroup.color, boxShadow: `0 0 8px ${currentGroup.color}` }} />
-                <span className="text-[0.65rem] tracking-[0.3em] uppercase font-bold"
-                  style={{ color: currentGroup.color }}>Canlı Pazar Verileri</span>
-              </div>
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-1"
-                style={{ fontFamily: 'var(--font-rajdhani, sans-serif)', letterSpacing: '-0.01em' }}>
-                USKO <span style={{ color: currentGroup.color }}>Pazar</span>
-              </h1>
-              <p className="text-[0.78rem] text-white/30">
-                Tüm ilanlar · Gerçek zamanlı veriler · Fiyat karşılaştırması
-              </p>
+        <div className="flex items-end justify-between mb-5">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{ background: curGrp.color, boxShadow: `0 0 6px ${curGrp.color}` }} />
+              <span className="text-[0.62rem] tracking-[0.25em] uppercase font-bold" style={{ color: curGrp.color }}>
+                Canlı Pazar
+              </span>
             </div>
+            <h1 className="text-3xl font-black text-white tracking-tight">
+              USKO <span style={{ color: curGrp.color }}>Pazar</span>
+            </h1>
+          </div>
+          {data?.last_scraped && (
+            <span className="text-[0.7rem] text-white/25">{timeAgo(data.last_scraped)}</span>
+          )}
+        </div>
 
-            <div className="flex items-center gap-4 text-[0.72rem] text-white/30">
-              {lastUpdate && (
-                <span>Son güncelleme: <span className="text-white/50">{timeAgo(lastUpdate.toISOString())}</span></span>
-              )}
-              <button onClick={fetchData} disabled={loading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-white/[0.08]
-                  hover:border-white/20 transition-all disabled:opacity-40 text-white/50 hover:text-white/80">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  strokeWidth="2.5" className={loading ? 'animate-spin' : ''}>
-                  <path d="M21 12a9 9 0 11-6.219-8.56"/>
-                </svg>
-                Yenile
+        {/* Grup seçimi */}
+        <div className="flex flex-wrap gap-2 mb-2">
+          {GROUPS.map(g => {
+            const gChs = CHANNELS.filter(c => c.group === g.key)
+            const total = gChs.reduce((s, c) => s + (counts[c.key] ?? 0), 0)
+            const active = curCh.group === g.key
+            return (
+              <button key={g.key} type="button"
+                onClick={() => { setChannel(gChs[0].key as ChannelKey) }}
+                className="px-4 py-1.5 text-[0.72rem] font-bold tracking-[0.1em] uppercase
+                  border transition-all duration-150 rounded-sm"
+                style={{
+                  background:  active ? g.bg : 'rgba(255,255,255,0.02)',
+                  borderColor: active ? g.color + '45' : 'rgba(255,255,255,0.07)',
+                  color:       active ? g.color : 'rgba(255,255,255,0.3)',
+                }}>
+                {g.label}
+                {total > 0 && <span className="ml-1.5 opacity-50 font-normal">{total.toLocaleString('tr-TR')}</span>}
               </button>
-            </div>
+            )
+          })}
+        </div>
+
+        {/* Kanal sekmeleri */}
+        <div className="flex flex-wrap gap-1 mb-5">
+          {CHANNELS.filter(c => c.group === curCh.group).map(ch => {
+            const active = channel === ch.key
+            return (
+              <button key={ch.key} type="button"
+                onClick={() => setChannel(ch.key as ChannelKey)}
+                className="px-3 py-1 text-[0.68rem] font-semibold tracking-[0.06em] uppercase
+                  border transition-all duration-100 rounded-sm"
+                style={{
+                  background:  active ? curGrp.bg : 'transparent',
+                  borderColor: active ? curGrp.color + '40' : 'rgba(255,255,255,0.05)',
+                  color:       active ? curGrp.color : 'rgba(255,255,255,0.28)',
+                }}>
+                {ch.label}
+                {(counts[ch.key] ?? 0) > 0 && (
+                  <span className="ml-1 opacity-50 font-normal">
+                    {counts[ch.key].toLocaleString('tr-TR')}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Filtreler */}
+        <div className="flex flex-wrap gap-2">
+          {/* Arama */}
+          <div className="relative flex-1 min-w-[200px] max-w-md">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none"
+              width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" value={query} onChange={e => setQuery(e.target.value)}
+              placeholder="Item ara... (Raptor, Shard, Glave...)"
+              className="w-full pl-9 pr-8 py-2 text-[0.8rem] rounded-sm bg-white/[0.04]
+                border border-white/[0.07] text-white/80 placeholder-white/20 outline-none
+                focus:border-white/20 focus:bg-white/[0.05] transition-all"
+            />
+            {query && (
+              <button onClick={() => setQuery('')} type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/60">
+                ×
+              </button>
+            )}
           </div>
 
-          {/* ── Sunucu seçimi ── */}
-          <div className="space-y-2">
-            {/* Grup butonları */}
-            <div className="flex flex-wrap gap-2">
-              {GROUPS.map(grp => {
-                const grpChannels = CHANNELS.filter(c => c.group === grp.key)
-                const total = grpChannels.reduce((s, c) => s + (counts[c.key] ?? 0), 0)
-                const active = currentChannel.group === grp.key
-                return (
-                  <button key={grp.key} type="button"
-                    onClick={() => { setChannel(grpChannels[0].key as ChannelKey); setPage(1) }}
-                    className="relative px-5 py-2 text-[0.72rem] font-bold tracking-[0.12em] uppercase
-                      transition-all duration-200 rounded-sm overflow-hidden"
-                    style={{
-                      background:  active ? grp.glow : 'rgba(255,255,255,0.03)',
-                      border:      `1px solid ${active ? grp.color + '50' : 'rgba(255,255,255,0.07)'}`,
-                      color:       active ? grp.color : 'rgba(255,255,255,0.35)',
-                      boxShadow:   active ? `0 0 20px ${grp.glow}` : 'none',
-                    }}>
-                    {grp.label}
-                    {total > 0 && (
-                      <span className="ml-2 text-[0.6rem] opacity-60 font-normal">
-                        {total.toLocaleString('tr-TR')}
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
+          {/* +Lvl */}
+          <select value={upgrade} onChange={e => setUpgrade(e.target.value)}
+            className="appearance-none px-3 py-2 text-[0.76rem] rounded-sm bg-white/[0.04]
+              border border-white/[0.07] text-white/55 outline-none focus:border-white/20
+              transition-all cursor-pointer min-w-[100px]">
+            <option value=""  style={{ background: '#0d0d1a' }}>Tüm +Lvl</option>
+            <option value="0" style={{ background: '#0d0d1a' }}>Seviyesiz</option>
+            {[1,2,3,4,5,6,7,8,9,10,11].map(n => (
+              <option key={n} value={String(n)} style={{ background: '#0d0d1a' }}>+{n}</option>
+            ))}
+          </select>
 
-            {/* Kanal sekmeleri */}
-            <div className="flex flex-wrap gap-1">
-              {CHANNELS.filter(c => c.group === currentChannel.group).map(ch => {
-                const active = channel === ch.key
-                return (
-                  <button key={ch.key} type="button"
-                    onClick={() => { setChannel(ch.key as ChannelKey); setPage(1) }}
-                    className="px-3 py-1 text-[0.7rem] font-semibold tracking-[0.06em] uppercase
-                      transition-all duration-150 rounded-sm"
-                    style={{
-                      background:  active ? `${currentGroup.color}18` : 'transparent',
-                      border:      `1px solid ${active ? currentGroup.color + '45' : 'rgba(255,255,255,0.05)'}`,
-                      color:       active ? currentGroup.color : 'rgba(255,255,255,0.3)',
-                    }}>
-                    {ch.label}
-                    {(counts[ch.key] ?? 0) > 0 && (
-                      <span className="ml-1.5 text-[0.58rem] opacity-55">
-                        {counts[ch.key].toLocaleString('tr-TR')}
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
+          {/* Sıralama */}
+          <select value={sort} onChange={e => setSort(e.target.value)}
+            className="appearance-none px-3 py-2 text-[0.76rem] rounded-sm bg-white/[0.04]
+              border border-white/[0.07] text-white/55 outline-none focus:border-white/20
+              transition-all cursor-pointer min-w-[110px]">
+            {SORT_OPTIONS.map(o => (
+              <option key={o.value} value={o.value} style={{ background: '#0d0d1a' }}>{o.label}</option>
+            ))}
+          </select>
+
+          {/* Yenile */}
+          <button onClick={fetchData} disabled={loading} type="button"
+            className="px-3 py-2 text-[0.76rem] rounded-sm border border-white/[0.07]
+              text-white/40 hover:border-white/20 hover:text-white/70 transition-all
+              disabled:opacity-30 flex items-center gap-1.5">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.5" className={loading ? 'animate-spin' : ''}>
+              <path d="M21 12a9 9 0 11-6.219-8.56"/>
+            </svg>
+            Yenile
+          </button>
         </div>
       </div>
 
-      {/* ── Filtre Çubuğu ───────────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-20 border-b border-white/[0.05]"
-        style={{ background: 'rgba(8,8,16,0.92)', backdropFilter: 'blur(12px)' }}>
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex flex-col sm:flex-row gap-2">
+      {/* ── İçerik ── */}
+      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 pb-20">
 
-            {/* Arama */}
-            <div className="relative flex-1">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none"
-                width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
-              <input type="text" value={query} onChange={e => setQuery(e.target.value)}
-                placeholder="Item ara... (Raptor, Shard, Glave, Mirage...)"
-                className="w-full pl-9 pr-8 py-2.5 text-[0.82rem] rounded-sm bg-white/[0.04]
-                  border border-white/[0.08] text-white/80 placeholder-white/20 outline-none
-                  focus:border-white/20 focus:bg-white/[0.06] transition-all"
-              />
-              {query && (
-                <button onClick={() => setQuery('')} type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/60 transition-colors">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            {/* +Lvl filtresi */}
-            <div className="relative">
-              <select value={upgrade} onChange={e => { setUpgrade(e.target.value); setPage(1) }}
-                className="appearance-none pl-3 pr-8 py-2.5 text-[0.78rem] rounded-sm bg-white/[0.04]
-                  border border-white/[0.08] text-white/60 outline-none focus:border-white/20
-                  transition-all cursor-pointer min-w-[105px]">
-                <option value=""   style={{ background: '#0d0d1a' }}>Tüm +Lvl</option>
-                <option value="0"  style={{ background: '#0d0d1a' }}>+0 (seviyesiz)</option>
-                {[1,2,3,4,5,6,7,8,9,10,11].map(n => (
-                  <option key={n} value={String(n)} style={{ background: '#0d0d1a' }}>+{n}</option>
-                ))}
-              </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none"
-                width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </div>
-
-            {/* Sıralama */}
-            <div className="relative">
-              <select value={sort} onChange={e => { setSort(e.target.value); setPage(1) }}
-                className="appearance-none pl-3 pr-8 py-2.5 text-[0.78rem] rounded-sm bg-white/[0.04]
-                  border border-white/[0.08] text-white/60 outline-none focus:border-white/20
-                  transition-all cursor-pointer min-w-[120px]">
-                {SORT_OPTIONS.map(o => (
-                  <option key={o.value} value={o.value} style={{ background: '#0d0d1a' }}>{o.label}</option>
-                ))}
-              </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none"
-                width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </div>
+        {/* Sonuç satırı */}
+        {data && !loading && (
+          <div className="flex items-center gap-3 mb-3 text-[0.72rem] text-white/30">
+            <span className="font-bold text-white/60">{data.total.toLocaleString('tr-TR')}</span>
+            <span>ilan içinden en iyi 30</span>
+            {debouncedQ && <span className="text-white/50">&ldquo;{debouncedQ}&rdquo;</span>}
+            {upgrade && <span style={{ color: curGrp.color }}>+{upgrade === '0' ? '0' : upgrade}</span>}
+            <span className="text-white/15">·</span>
+            <span style={{ color: curGrp.color }}>{curCh.label}</span>
           </div>
-        </div>
-      </div>
-
-      {/* ── İçerik ──────────────────────────────────────────────────────────── */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        )}
 
         {/* Hata */}
         {error && (
-          <div className="p-4 mb-5 rounded border border-red-500/20 text-[0.82rem] text-red-400/80 bg-red-500/5">
-            {error} — <button onClick={fetchData} className="underline underline-offset-2">Tekrar dene</button>
+          <div className="p-4 mb-4 rounded border border-red-500/20 text-[0.8rem] text-red-400/70 bg-red-500/5">
+            {error} — <button onClick={fetchData} className="underline">Tekrar dene</button>
           </div>
         )}
 
         {/* Yükleniyor */}
         {loading && !data && (
-          <div className="flex flex-col items-center justify-center py-32 gap-5">
-            <div className="relative w-14 h-14">
-              <div className="absolute inset-0 rounded-full border-2 border-white/5" />
-              <div className="absolute inset-0 rounded-full border-2 border-t-transparent animate-spin"
-                style={{ borderColor: `${currentGroup.color}60`, borderTopColor: 'transparent' }} />
-              <div className="absolute inset-2 rounded-full border border-white/5" />
-            </div>
-            <p className="text-[0.78rem] text-white/30 tracking-wider">Pazar verisi yükleniyor...</p>
-          </div>
-        )}
-
-        {/* Sonuç bilgisi */}
-        {data && (
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-3 text-[0.74rem]">
-              <span className="text-white/60 font-semibold tabular-nums">
-                {data.total.toLocaleString('tr-TR')}
-              </span>
-              <span className="text-white/25">ilan</span>
-              {debouncedQ && (
-                <>
-                  <span className="text-white/15">·</span>
-                  <span className="text-white/40">&ldquo;{debouncedQ}&rdquo;</span>
-                </>
-              )}
-              {upgrade !== '' && (
-                <>
-                  <span className="text-white/15">·</span>
-                  <span style={{ color: currentGroup.color }}>
-                    +{upgrade === '0' ? '0' : upgrade}
-                  </span>
-                </>
-              )}
-              <span className="text-white/15">·</span>
-              <span className="font-semibold" style={{ color: currentGroup.color }}>
-                {currentChannel.label}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              {hasFilter && (
-                <button onClick={() => { setQuery(''); setUpgrade(''); setPage(1) }}
-                  className="text-[0.7rem] text-white/30 hover:text-white/60 transition-colors
-                    flex items-center gap-1 border border-white/[0.06] px-2.5 py-1 rounded-sm hover:border-white/15">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                  Filtrele
-                </button>
-              )}
-              {data.total_pages > 1 && (
-                <span className="text-[0.7rem] text-white/25">
-                  {data.page} / {data.total_pages}
-                </span>
-              )}
+          <div className="flex items-center justify-center py-32">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-10 h-10 rounded-full border-2 border-white/5 border-t-transparent animate-spin"
+                style={{ borderTopColor: curGrp.color }} />
+              <p className="text-[0.75rem] text-white/25">Yükleniyor...</p>
             </div>
           </div>
         )}
 
-        {/* Tablo */}
+        {/* Tablo - masaüstü */}
         {data && data.listings.length > 0 && (
-          <div className={`transition-opacity duration-150 ${loading ? 'opacity-40 pointer-events-none' : 'opacity-100'}`}>
-
-            {/* Desktop tablo */}
-            <div className="hidden lg:block rounded overflow-hidden"
-              style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
-              <table className="w-full text-[0.8rem]">
+          <div className={`transition-opacity duration-150 ${loading ? 'opacity-40' : 'opacity-100'}`}>
+            <div className="hidden md:block rounded overflow-hidden"
+              style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
+              <table className="w-full text-[0.8rem] border-collapse">
                 <thead>
-                  <tr style={{ background: 'rgba(255,255,255,0.025)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                    <th className="text-left py-3 px-4 text-[0.62rem] tracking-[0.18em] uppercase text-white/35 font-semibold w-[40%]">
-                      Item
-                    </th>
-                    <th className="text-center py-3 px-3 text-[0.62rem] tracking-[0.18em] uppercase text-white/35 font-semibold w-16">
-                      +Lvl
-                    </th>
-                    <th className="text-left py-3 px-4 text-[0.62rem] tracking-[0.18em] uppercase text-white/35 font-semibold w-32">
-                      Satıcı
-                    </th>
-                    <th className="text-left py-3 px-4 text-[0.62rem] tracking-[0.18em] uppercase text-white/35 font-semibold w-28">
-                      Konum
-                    </th>
-                    <th className="text-right py-3 px-4 text-[0.62rem] tracking-[0.18em] uppercase text-white/35 font-semibold w-36">
-                      Fiyat
-                    </th>
+                  <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    {['Item', '+Lvl', 'Satıcı', 'Konum', 'Fiyat'].map((h, i) => (
+                      <th key={h} className={`py-2.5 px-4 text-[0.6rem] tracking-[0.2em] uppercase
+                        text-white/30 font-semibold ${i === 4 ? 'text-right' : i === 1 ? 'text-center' : 'text-left'}`}>
+                        {h}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {data.listings.map((item, idx) => (
-                    <DesktopRow key={item.id} item={item} idx={idx} color={currentGroup.color} />
+                    <Row key={item.id} item={item} idx={idx} color={curGrp.color} />
                   ))}
                 </tbody>
               </table>
             </div>
 
-            {/* Tablet (md) */}
-            <div className="hidden md:block lg:hidden space-y-px rounded overflow-hidden"
-              style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
-              {data.listings.map((item, idx) => (
-                <TabletRow key={item.id} item={item} idx={idx} color={currentGroup.color} />
-              ))}
-            </div>
-
-            {/* Mobil */}
+            {/* Mobil kartlar */}
             <div className="md:hidden space-y-2">
               {data.listings.map(item => (
-                <MobileCard key={item.id} item={item} color={currentGroup.color} />
+                <Card key={item.id} item={item} color={curGrp.color} />
               ))}
             </div>
-
-            {/* Sayfalama */}
-            {data.total_pages > 1 && (
-              <Pagination
-                current={page} total={data.total_pages}
-                onChange={p => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                loading={loading} color={currentGroup.color}
-              />
-            )}
           </div>
         )}
 
-        {/* Boş sonuç */}
+        {/* Boş */}
         {data && data.listings.length === 0 && !loading && (
-          <div className="flex flex-col items-center justify-center py-32 gap-4 text-center">
-            <div className="w-16 h-16 rounded flex items-center justify-center"
-              style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                strokeWidth="1.5" className="text-white/20">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
-            </div>
-            <div>
-              <p className="text-[0.9rem] font-semibold text-white/40 mb-1">
-                {debouncedQ ? `"${debouncedQ}" bulunamadı` : 'Bu kanalda ilan yok'}
-              </p>
-              <p className="text-[0.75rem] text-white/20">
-                {debouncedQ ? 'Farklı bir item adı veya kanal deneyin' : 'Veriler henüz yükleniyor olabilir'}
-              </p>
-            </div>
-            {hasFilter && (
-              <button onClick={() => { setQuery(''); setUpgrade(''); setPage(1) }}
-                className="text-[0.74rem] tracking-wider uppercase text-white/30 hover:text-white/60 transition-colors mt-1">
+          <div className="flex flex-col items-center justify-center py-28 gap-3">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="1.2" className="text-white/15">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <p className="text-[0.85rem] text-white/30">
+              {debouncedQ ? `"${debouncedQ}" bulunamadı` : 'Bu kanalda ilan yok'}
+            </p>
+            <p className="text-[0.72rem] text-white/18">
+              {debouncedQ ? 'Farklı kanal veya isim deneyin' : 'Veriler yükleniyor olabilir'}
+            </p>
+            {(debouncedQ || upgrade) && (
+              <button onClick={() => { setQuery(''); setUpgrade('') }}
+                className="text-[0.7rem] text-white/30 hover:text-white/60 transition-colors mt-1">
                 Filtreleri temizle
               </button>
             )}
@@ -449,67 +338,54 @@ export function PazarClient() {
   )
 }
 
-// ── Item Tooltip ───────────────────────────────────────────────────────────────
+// ── Tooltip ────────────────────────────────────────────────────────────────────
 function ItemTooltip({ item, color }: { item: MarketListing; color: string }) {
-  const details = parseItemDetails(item.item_details)
-  const hasDetails = details.title || details.type || details.props.length > 0
-
-  if (!hasDetails) return null
+  const d = parseItemDetails(item.item_details)
+  if (!d.title && !d.type && d.props.length === 0) return null
 
   return (
-    <div className="absolute left-0 top-full mt-2 z-50 min-w-[220px] max-w-[280px] pointer-events-none"
+    <div className="absolute left-0 top-full mt-1.5 z-50 w-[240px] pointer-events-none"
       style={{
-        background: 'rgba(10,10,20,0.98)',
+        background: 'rgba(8,8,18,0.97)',
         border: `1px solid ${color}30`,
-        boxShadow: `0 12px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04)`,
+        boxShadow: `0 16px 48px rgba(0,0,0,0.85)`,
         borderRadius: '4px',
       }}>
-      {/* Başlık */}
-      {details.title && (
-        <div className="px-3 py-2 border-b" style={{ borderColor: `${color}20` }}>
-          <p className="text-[0.82rem] font-bold" style={{ color }}>
-            {details.title}
-            {item.upgrade_level ? (
-              <span className="ml-1.5 text-[0.72rem]" style={{ color: item.upgrade_level >= 8 ? '#fbbf24' : 'rgba(255,255,255,0.5)' }}>
-                +{item.upgrade_level}
-              </span>
+      {d.title && (
+        <div className="px-3 pt-2.5 pb-2 border-b border-white/[0.06]">
+          <p className="text-[0.8rem] font-bold leading-tight" style={{ color }}>
+            {d.title}{item.upgrade_level != null ? (
+              <span className="ml-1.5" style={{
+                color: item.upgrade_level >= 9 ? '#fbbf24' : item.upgrade_level >= 7 ? '#a78bfa' : 'rgba(255,255,255,0.5)'
+              }}>+{item.upgrade_level}</span>
             ) : null}
           </p>
-          {details.kind && (
-            <p className="text-[0.65rem] text-white/35 mt-0.5">{details.kind}</p>
-          )}
+          {d.kind && <p className="text-[0.62rem] text-white/30 mt-0.5">{d.kind}</p>}
         </div>
       )}
-
-      {/* Tip */}
-      {details.type && (
+      {d.type && (
         <div className="px-3 py-1.5 border-b border-white/[0.04]">
-          <span className="text-[0.68rem] text-yellow-400/70">{details.type}</span>
+          <span className="text-[0.66rem] text-yellow-400/65">{d.type}</span>
         </div>
       )}
-
-      {/* Özellikler */}
-      {details.props.length > 0 && (
+      {d.props.filter(Boolean).length > 0 && (
         <div className="px-3 py-2 space-y-0.5">
-          {details.props.filter(p => p.length > 0).map((prop, i) => (
-            <p key={i} className="text-[0.7rem] text-white/55 leading-relaxed">{prop}</p>
+          {d.props.filter(Boolean).map((p, i) => (
+            <p key={i} className="text-[0.68rem] text-white/50 leading-relaxed">{p}</p>
           ))}
         </div>
       )}
-
-      {/* Fiyat bilgisi */}
-      <div className="px-3 py-2 border-t border-white/[0.04]"
-        style={{ background: 'rgba(255,255,255,0.02)' }}>
-        <div className="flex items-center justify-between">
-          <span className="text-[0.65rem] text-white/30">Pazar fiyatı</span>
-          <span className="text-[0.75rem] font-bold" style={{ color: '#f87171' }}>
-            {item.original_price ? item.original_price.toLocaleString('tr-TR') : (item.price + 1).toLocaleString('tr-TR')} ₦
+      <div className="px-3 py-2 border-t border-white/[0.05]" style={{ background: 'rgba(255,255,255,0.015)' }}>
+        <div className="flex justify-between items-center">
+          <span className="text-[0.62rem] text-white/25">Pazar</span>
+          <span className="text-[0.73rem] font-bold text-red-400/80">
+            {(item.original_price ?? item.price + 1).toLocaleString('tr-TR')} ₦
           </span>
         </div>
-        <div className="flex items-center justify-between mt-0.5">
-          <span className="text-[0.65rem] text-white/30">Önerilen</span>
-          <span className="text-[0.75rem] font-bold text-emerald-400/80">
-            {item.price.toLocaleString('tr-TR')} ₦ <span className="text-[0.6rem] text-white/20">(-1)</span>
+        <div className="flex justify-between items-center mt-0.5">
+          <span className="text-[0.62rem] text-white/25">Öneri (-1)</span>
+          <span className="text-[0.73rem] font-bold text-emerald-400/75">
+            {item.price.toLocaleString('tr-TR')} ₦
           </span>
         </div>
       </div>
@@ -517,252 +393,168 @@ function ItemTooltip({ item, color }: { item: MarketListing; color: string }) {
   )
 }
 
-// ── Desktop Satır ──────────────────────────────────────────────────────────────
-function DesktopRow({ item, idx, color }: { item: MarketListing; idx: number; color: string }) {
-  const [showTooltip, setShowTooltip] = useState(false)
-  const img = item.img_url
+// ── Masaüstü satır ─────────────────────────────────────────────────────────────
+function Row({ item, idx, color }: { item: MarketListing; idx: number; color: string }) {
+  const [tip, setTip] = useState(false)
 
   return (
-    <tr className="group border-b transition-colors duration-100 cursor-default"
-      style={{
-        borderColor: 'rgba(255,255,255,0.035)',
-        background: showTooltip ? 'rgba(255,255,255,0.025)' : idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
-      }}>
+    <tr className="border-b transition-colors hover:bg-white/[0.02] cursor-default"
+      style={{ borderColor: 'rgba(255,255,255,0.04)' }}>
 
-      {/* Item adı + tooltip */}
+      {/* Item */}
       <td className="py-2.5 px-4">
         <div className="relative flex items-center gap-3"
-          onMouseEnter={() => setShowTooltip(true)}
-          onMouseLeave={() => setShowTooltip(false)}>
+          onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
           {/* İkon */}
-          <div className="relative flex-shrink-0 w-9 h-9 rounded flex items-center justify-center overflow-hidden"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            {img ? (
-              <img src={img} alt={item.item_name} width={32} height={32}
-                className="w-7 h-7 object-contain"
-                style={{ imageRendering: 'pixelated' }}
-                loading="lazy"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-              />
+          <div className="flex-shrink-0 w-8 h-8 rounded flex items-center justify-center overflow-hidden"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            {item.img_url ? (
+              <img src={item.img_url} alt="" width={28} height={28}
+                className="w-7 h-7 object-contain" style={{ imageRendering: 'pixelated' }}
+                loading="lazy" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
             ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                strokeWidth="1.5" className="text-white/15">
-                <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-              </svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="1.5" className="text-white/15"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>
             )}
           </div>
-          {/* Metin */}
+          {/* İsim */}
           <div className="min-w-0">
-            <p className="font-semibold text-white/85 truncate leading-snug group-hover:text-white transition-colors">
+            <p className="font-semibold text-white/85 truncate max-w-[260px] leading-snug">
               {item.item_name}
             </p>
             {item.item_details && (
-              <p className="text-[0.63rem] text-white/30 mt-0.5">
-                {parseItemDetails(item.item_details).type || 'Item'}
+              <p className="text-[0.6rem] text-white/28 mt-0.5 truncate max-w-[260px]">
+                {parseItemDetails(item.item_details).type}
               </p>
             )}
           </div>
-          {/* Tooltip */}
-          {showTooltip && <ItemTooltip item={item} color={color} />}
+          {tip && <ItemTooltip item={item} color={color} />}
         </div>
       </td>
 
       {/* +Lvl */}
-      <td className="py-2.5 px-3 text-center">
+      <td className="py-2.5 px-3 text-center w-16">
         {item.upgrade_level != null ? (
-          <span className="inline-block text-[0.72rem] font-black px-2 py-0.5 rounded-sm tabular-nums"
+          <span className="inline-block text-[0.7rem] font-black px-2 py-0.5 rounded-sm tabular-nums"
             style={{
-              background: item.upgrade_level >= 9 ? 'rgba(251,191,36,0.15)'
-                        : item.upgrade_level >= 7 ? 'rgba(167,139,250,0.12)'
-                        : 'rgba(255,255,255,0.06)',
+              background: item.upgrade_level >= 9 ? 'rgba(251,191,36,0.12)'
+                        : item.upgrade_level >= 7 ? 'rgba(167,139,250,0.1)'
+                        : 'rgba(255,255,255,0.05)',
               color:      item.upgrade_level >= 9 ? '#fbbf24'
                         : item.upgrade_level >= 7 ? '#a78bfa'
-                        : 'rgba(255,255,255,0.5)',
+                        : 'rgba(255,255,255,0.45)',
               border: `1px solid ${
-                item.upgrade_level >= 9 ? 'rgba(251,191,36,0.25)'
-                : item.upgrade_level >= 7 ? 'rgba(167,139,250,0.2)'
-                : 'rgba(255,255,255,0.08)'}`,
+                item.upgrade_level >= 9 ? 'rgba(251,191,36,0.2)'
+                : item.upgrade_level >= 7 ? 'rgba(167,139,250,0.15)'
+                : 'rgba(255,255,255,0.07)'}`,
             }}>
             +{item.upgrade_level}
           </span>
-        ) : <span className="text-white/12">—</span>}
+        ) : <span className="text-white/15 text-xs">—</span>}
       </td>
 
       {/* Satıcı */}
-      <td className="py-2.5 px-4">
-        <span className="text-[0.78rem] text-white/40 truncate block">{item.seller_name ?? '—'}</span>
+      <td className="py-2.5 px-4 w-32">
+        <span className="text-[0.77rem] text-white/38 truncate block max-w-[120px]">
+          {item.seller_name ?? '—'}
+        </span>
       </td>
 
       {/* Konum */}
-      <td className="py-2.5 px-4">
+      <td className="py-2.5 px-4 w-28">
         {item.loc_x != null && item.loc_z != null ? (
-          <span className="text-[0.72rem] font-mono text-white/35 bg-white/[0.04] px-2 py-0.5 rounded-sm">
+          <span className="inline-flex items-center gap-1 text-[0.68rem] font-mono text-white/40
+            bg-white/[0.04] border border-white/[0.06] px-2 py-0.5 rounded-sm">
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.5" className="text-white/30 flex-shrink-0">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
             {item.loc_x},{item.loc_z}
           </span>
-        ) : <span className="text-white/12">—</span>}
+        ) : <span className="text-white/15 text-xs">—</span>}
       </td>
 
       {/* Fiyat */}
-      <td className="py-2.5 px-4 text-right">
-        <div>
-          <p className="font-black text-[0.92rem] tabular-nums" style={{ color: '#f87171' }}>
-            {formatPrice(item.price)}
-          </p>
-          <p className="text-[0.6rem] text-white/20 tabular-nums mt-0.5">
-            {item.price.toLocaleString('tr-TR')} ₦
-          </p>
-        </div>
+      <td className="py-2.5 px-4 text-right w-36">
+        <p className="font-black text-[0.92rem] tabular-nums" style={{ color: '#f87171' }}>
+          {formatPrice(item.price)}
+        </p>
+        <p className="text-[0.6rem] text-white/20 tabular-nums mt-0.5">
+          {item.price.toLocaleString('tr-TR')} ₦
+        </p>
       </td>
     </tr>
   )
 }
 
-// ── Tablet Satır ───────────────────────────────────────────────────────────────
-function TabletRow({ item, idx, color }: { item: MarketListing; idx: number; color: string }) {
-  const [showTooltip, setShowTooltip] = useState(false)
-  const img = item.img_url
-  return (
-    <div className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/[0.025]"
-      style={{ background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-      <div className="relative flex-shrink-0 w-9 h-9 rounded flex items-center justify-center overflow-hidden"
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
-        onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
-        {img
-          ? <img src={img} alt={item.item_name} width={28} height={28} className="w-7 h-7 object-contain" style={{ imageRendering: 'pixelated' }} loading="lazy" />
-          : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/15"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>}
-        {showTooltip && <ItemTooltip item={item} color={color} />}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-[0.82rem] font-semibold text-white/85 truncate">{item.item_name}</span>
-          {item.upgrade_level != null && (
-            <span className="text-[0.68rem] font-black px-1.5 py-0.5 rounded-sm flex-shrink-0"
-              style={{ background: item.upgrade_level >= 7 ? 'rgba(167,139,250,0.12)' : 'rgba(255,255,255,0.06)', color: item.upgrade_level >= 7 ? '#a78bfa' : 'rgba(255,255,255,0.5)' }}>
-              +{item.upgrade_level}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-3 mt-0.5">
-          <span className="text-[0.68rem] text-white/30 truncate">{item.seller_name ?? '—'}</span>
-          {item.loc_x != null && (
-            <span className="text-[0.65rem] font-mono text-white/20">{item.loc_x},{item.loc_z}</span>
-          )}
-        </div>
-      </div>
-      <div className="text-right flex-shrink-0">
-        <p className="font-black text-[0.88rem] tabular-nums" style={{ color: '#f87171' }}>{formatPrice(item.price)}</p>
-        <p className="text-[0.6rem] text-white/20">{item.price.toLocaleString('tr-TR')} ₦</p>
-      </div>
-    </div>
-  )
-}
-
-// ── Mobil Kart ─────────────────────────────────────────────────────────────────
-function MobileCard({ item, color }: { item: MarketListing; color: string }) {
+// ── Mobil kart ─────────────────────────────────────────────────────────────────
+function Card({ item, color }: { item: MarketListing; color: string }) {
   const [expanded, setExpanded] = useState(false)
-  const img = item.img_url
-  const details = parseItemDetails(item.item_details)
+  const d = parseItemDetails(item.item_details)
+
   return (
-    <div className="rounded overflow-hidden transition-all"
+    <div className="rounded overflow-hidden"
       style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
       <div className="flex items-center gap-3 p-3">
         <div className="flex-shrink-0 w-10 h-10 rounded flex items-center justify-center overflow-hidden"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-          {img
-            ? <img src={img} alt={item.item_name} width={32} height={32} className="w-8 h-8 object-contain" style={{ imageRendering: 'pixelated' }} loading="lazy" />
-            : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/15"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>}
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+          {item.img_url ? (
+            <img src={item.img_url} alt="" width={32} height={32}
+              className="w-8 h-8 object-contain" style={{ imageRendering: 'pixelated' }} loading="lazy" />
+          ) : (
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="1.5" className="text-white/15"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>
+          )}
         </div>
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-[0.85rem] font-semibold text-white/85 truncate">{item.item_name}</span>
+            <span className="text-[0.83rem] font-semibold text-white/85 truncate">{item.item_name}</span>
             {item.upgrade_level != null && (
-              <span className="text-[0.7rem] font-black px-1.5 py-0.5 rounded-sm flex-shrink-0"
-                style={{ background: item.upgrade_level >= 7 ? 'rgba(167,139,250,0.12)' : 'rgba(255,255,255,0.06)', color: item.upgrade_level >= 7 ? '#a78bfa' : 'rgba(255,255,255,0.5)' }}>
+              <span className="text-[0.68rem] font-black px-1.5 py-0.5 rounded-sm flex-shrink-0"
+                style={{
+                  background: item.upgrade_level >= 7 ? 'rgba(167,139,250,0.1)' : 'rgba(255,255,255,0.05)',
+                  color: item.upgrade_level >= 7 ? '#a78bfa' : 'rgba(255,255,255,0.45)',
+                }}>
                 +{item.upgrade_level}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-[0.7rem] text-white/30">{item.seller_name ?? '—'}</span>
-            {item.loc_x != null && <span className="text-[0.65rem] font-mono text-white/20">{item.loc_x},{item.loc_z}</span>}
+          <div className="flex items-center gap-3 mt-0.5 text-[0.67rem] text-white/30">
+            <span className="truncate max-w-[120px]">{item.seller_name ?? '—'}</span>
+            {item.loc_x != null && (
+              <span className="font-mono flex items-center gap-0.5">
+                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                {item.loc_x},{item.loc_z}
+              </span>
+            )}
           </div>
         </div>
+
         <div className="text-right flex-shrink-0">
-          <p className="font-black text-[0.92rem] tabular-nums" style={{ color: '#f87171' }}>{formatPrice(item.price)}</p>
-          {(details.title || details.props.length > 0) && (
-            <button onClick={() => setExpanded(!expanded)}
-              className="text-[0.6rem] text-white/25 hover:text-white/50 mt-0.5 transition-colors">
+          <p className="font-black text-[0.9rem] tabular-nums" style={{ color: '#f87171' }}>
+            {formatPrice(item.price)}
+          </p>
+          {(d.type || d.props.length > 0) && (
+            <button onClick={() => setExpanded(!expanded)} type="button"
+              className="text-[0.58rem] text-white/22 hover:text-white/50 mt-0.5 transition-colors">
               {expanded ? 'gizle ▲' : 'detay ▼'}
             </button>
           )}
         </div>
       </div>
-      {expanded && (details.type || details.props.length > 0) && (
-        <div className="px-3 pb-3 border-t border-white/[0.04]">
-          {details.type && <p className="text-[0.68rem] text-yellow-400/60 mt-2 mb-1">{details.type}</p>}
-          {details.props.filter(p => p).map((p, i) => (
-            <p key={i} className="text-[0.7rem] text-white/45 leading-relaxed">{p}</p>
+
+      {expanded && (d.type || d.props.length > 0) && (
+        <div className="px-3 pb-3 border-t border-white/[0.04] pt-2">
+          {d.type && <p className="text-[0.66rem] text-yellow-400/60 mb-1">{d.type}</p>}
+          {d.props.filter(Boolean).map((p, i) => (
+            <p key={i} className="text-[0.68rem] text-white/42 leading-relaxed">{p}</p>
           ))}
         </div>
       )}
-    </div>
-  )
-}
-
-// ── Sayfalama ──────────────────────────────────────────────────────────────────
-function Pagination({ current, total, onChange, loading, color }: {
-  current: number; total: number
-  onChange: (p: number) => void; loading: boolean; color: string
-}) {
-  const pages: (number | '…')[] = []
-  if (total <= 9) {
-    for (let i = 1; i <= total; i++) pages.push(i)
-  } else {
-    pages.push(1)
-    if (current > 4) pages.push('…')
-    for (let i = Math.max(2, current - 2); i <= Math.min(total - 1, current + 2); i++) pages.push(i)
-    if (current < total - 3) pages.push('…')
-    pages.push(total)
-  }
-
-  const btnBase = `min-w-[36px] h-9 px-2 text-[0.75rem] font-semibold rounded-sm
-    transition-all duration-150 border disabled:opacity-30 disabled:cursor-not-allowed`
-
-  return (
-    <div className="flex items-center justify-center gap-1 mt-8 flex-wrap">
-      <button onClick={() => onChange(1)} disabled={current === 1 || loading}
-        className={`${btnBase} border-white/[0.07] text-white/35 hover:border-white/20 hover:text-white/60`}>
-        «
-      </button>
-      <button onClick={() => onChange(current - 1)} disabled={current === 1 || loading}
-        className={`${btnBase} border-white/[0.07] text-white/35 hover:border-white/20 hover:text-white/60`}>
-        ‹
-      </button>
-
-      {pages.map((p, i) =>
-        p === '…' ? (
-          <span key={`d${i}`} className="w-8 text-center text-white/20 text-[0.75rem]">…</span>
-        ) : (
-          <button key={p} onClick={() => onChange(p)} disabled={loading}
-            className={`${btnBase}`}
-            style={{
-              background:  p === current ? `${color}18` : 'transparent',
-              borderColor: p === current ? `${color}45` : 'rgba(255,255,255,0.07)',
-              color:       p === current ? color : 'rgba(255,255,255,0.4)',
-            }}>
-            {p}
-          </button>
-        )
-      )}
-
-      <button onClick={() => onChange(current + 1)} disabled={current === total || loading}
-        className={`${btnBase} border-white/[0.07] text-white/35 hover:border-white/20 hover:text-white/60`}>
-        ›
-      </button>
-      <button onClick={() => onChange(total)} disabled={current === total || loading}
-        className={`${btnBase} border-white/[0.07] text-white/35 hover:border-white/20 hover:text-white/60`}>
-        »
-      </button>
     </div>
   )
 }

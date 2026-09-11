@@ -22,9 +22,9 @@ export async function GET(req: NextRequest) {
     ? rawServer : 'zero3'
 
   const q        = (searchParams.get('q') ?? '').trim().slice(0, 100)
-  const pageRaw  = parseInt(searchParams.get('page') ?? '1', 10)
-  const page     = isNaN(pageRaw) || pageRaw < 1 ? 1 : pageRaw
-  const PAGE_SIZE = 50
+  const pageRaw  = 1  // Sayfalama yok, her zaman ilk 30
+  const page     = 1
+  const PAGE_SIZE = 30  // Sabit 30 ilan, sayfalama yok
 
   const sortRaw = searchParams.get('sort') ?? 'price_asc'
   const sort    = ['price_asc', 'price_desc', 'name_asc', 'newest', 'upgrade_asc', 'upgrade_desc'].includes(sortRaw)
