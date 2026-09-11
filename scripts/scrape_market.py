@@ -63,8 +63,7 @@ BASE_URL            = 'https://www.uskopazar.com'
 LIMIT               = 192    # sayfa başına max ilan
 MAX_PAGES           = 150    # kanal başına max sayfa
 BATCH_SIZE          = 500    # Supabase insert batch
-INTER_CHANNEL_SLEEP = 90     # kanallar arası bekleme (sn) — rate limit için kritik
-INTER_PAGE_SLEEP    = 0.8    # sayfalar arası bekleme (sn)
+INTER_PAGE_SLEEP    = 0.5    # sayfalar arası bekleme (sn)
 
 
 # ── Yardımcılar ────────────────────────────────────────────────────────────────
@@ -425,26 +424,41 @@ def sb_log(server: str, status: str, count: int, err: Optional[str], ms: int) ->
 def main() -> None:
     log.info('=' * 65)
     log.info(f'MSGKO Scraper v3 — {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
-    log.info(f'Kanallar: {", ".join(c[0] for c in CHANNELS)}')
     log.info('=' * 65)
 
     if not SUPABASE_URL or not SUPABASE_KEY:
         log.error('SUPABASE_URL / SUPABASE_SERVICE_KEY eksik!')
         sys.exit(1)
 
+    # Hangi kanalı çekeceğimizi belirle — sıralı rotation
+    # Son çekilen kanalı dosyada tut
+    state_file = os.path.join(_base, '.scraper_state')
+    try:
+        with open(state_file) as f:
+            last_idx = int(f.read().strip())
+    except Exception:
+        last_idx = -1
+
+    # Sonraki kanal
+    next_idx = (last_idx + 1) % len(CHANNELS)
+    db_key, server_type, label = CHANNELS[next_idx]
+
+    log.info(f'Kanal: {label} ({db_key}, serverType={server_type})')
+    log.info(f'Onceki indeks: {last_idx} → Siradaki: {next_idx}')
+
     sess = MarketSession()
     if not sess.init():
-        log.warning('Token alinamadi — site erisilemez. Bu run atlaniyor.')
+        log.warning('Token alinamadi — bu run atlaniyor.')
         sys.exit(0)
 
     # Bağlantı testi
     log.info('Baglanti testi...')
-    for wait_secs in [0, 30, 60, 120]:
+    for wait_secs in [0, 60, 120]:
         if wait_secs > 0:
             log.info(f'{wait_secs}sn bekleniyor...')
             time.sleep(wait_secs)
             sess.refresh_token() or sess.init()
-        test_r = sess._post(0, 1)
+        test_r = sess._post(server_type, 1)
         if test_r and test_r.status_code == 200:
             log.info('Baglanti OK!')
             break
@@ -453,29 +467,60 @@ def main() -> None:
         log.warning('Site engelliyor — bu run atlaniyor')
         sys.exit(0)
 
+    # Tek kanalı çek
     t_start = time.time()
-    results = scrape_all_channels(sess)
+    now = datetime.now(timezone.utc).isoformat()
+    all_listings: list[dict] = []
+    consecutive_empty = 0
 
-    log.info('')
-    log.info('━━━ Supabase yazma ━━━')
-    grand = 0
-    for db_key, listings in results.items():
+    for pg in range(1, MAX_PAGES + 1):
+        html = sess.fetch_page(server_type, pg, label)
+        if html is None:
+            log.warning(f'  [{label}] Sayfa {pg} alinamadi — bitti')
+            break
+
+        listings = parse_html(html, db_key, now)
         if not listings:
-            log.warning(f'[{db_key}] ilan yok')
-            sb_log(db_key, 'error', 0, 'no listings', 0)
+            consecutive_empty += 1
+            if consecutive_empty >= 2:
+                break
+            time.sleep(INTER_PAGE_SLEEP)
             continue
+
+        consecutive_empty = 0
+        all_listings.extend(listings)
+        log.info(f'  [{label}] Sayfa {pg}: {len(listings):3d} ilan  '
+                 f'(toplam={len(all_listings):5d}, {int(time.time()-t_start)}s)')
+
+        if len(listings) < LIMIT:
+            break
+        time.sleep(INTER_PAGE_SLEEP)
+
+    log.info(f'[{label}] TOPLAM: {len(all_listings)} ilan ({int(time.time()-t_start)}s)')
+
+    # Supabase'e yaz
+    if all_listings:
         t0 = time.time()
         sb_delete(db_key)
-        n  = sb_insert(listings)
-        grand += n
+        n = sb_insert(all_listings)
         ms = int((time.time() - t0) * 1000)
-        sb_log(db_key, 'success' if n else 'error', n,
-               None if n else 'insert failed', ms)
-        log.info(f'  [{db_key}] {n:5d} ilan yazildi ({ms}ms)')
+        sb_log(db_key, 'success' if n else 'error', n, None if n else 'insert failed', ms)
+        log.info(f'[{db_key}] {n} ilan yazildi ({ms}ms)')
+    else:
+        sb_log(db_key, 'error', 0, 'no listings', 0)
+        log.warning(f'[{db_key}] ilan yok — Supabase guncellenmedi')
+
+    # State'i güncelle
+    try:
+        with open(state_file, 'w') as f:
+            f.write(str(next_idx))
+        log.info(f'State guncellendi: {next_idx}')
+    except Exception as e:
+        log.warning(f'State yazma hatasi: {e}')
 
     total_ms = int((time.time() - t_start) * 1000)
     log.info('=' * 65)
-    log.info(f'TOPLAM: {grand} ilan — {total_ms // 1000}sn')
+    log.info(f'Tamamlandi: {label} — {total_ms // 1000}sn')
     log.info('=' * 65)
 
 

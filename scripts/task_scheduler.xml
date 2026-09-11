@@ -17,7 +17,7 @@
     <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
     <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
     <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
-    <ExecutionTimeLimit>PT10M</ExecutionTimeLimit>
+    <ExecutionTimeLimit>PT30M</ExecutionTimeLimit>
     <Enabled>true</Enabled>
     <Hidden>true</Hidden>
   </Settings>
