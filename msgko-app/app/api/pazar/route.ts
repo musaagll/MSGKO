@@ -19,69 +19,64 @@ function parseRaw(item: MarketListing & { raw_data?: string | null }): MarketLis
   let original_price: number | null = null
   try {
     if (item.raw_data) {
-      const r       = JSON.parse(item.raw_data)
-      img_url       = r.img_url        ?? null
-      loc_x         = r.loc_x          ?? null
-      loc_z         = r.loc_z          ?? null
-      item_details  = r.item_details   ?? null
-      listed_date   = r.listed_date    ?? null
-      original_price = r.original_price ?? null
+      const r        = JSON.parse(item.raw_data)
+      img_url        = r.img_url         ?? null
+      loc_x          = r.loc_x           ?? null
+      loc_z          = r.loc_z           ?? null
+      item_details   = r.item_details    ?? null
+      listed_date    = r.listed_date     ?? null
+      original_price = r.original_price  ?? null
     }
   } catch { /* ignore */ }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { raw_data: _, ...rest } = item as MarketListing & { raw_data?: string | null }
   return { ...rest, img_url, loc_x, loc_z, item_details, listed_date, original_price }
 }
 
 // ── GET /api/pazar ─────────────────────────────────────────────────────────────
-// Parametreler:
-//   server   = "zero3" | "zero3,zero4" | "all_zero" | "all" (zorunlu)
-//   q        = arama (ilike)
-//   page     = sayfa no, 1-based
-//   sort     = price_asc | price_desc | name_asc | newest | upgrade_asc | upgrade_desc
-//   upgrade  = "" | "0" | "1".."11"
+// server   = "zero3" | "zero3,zero4" | "all_zero" | "all"
+// q        = item arama (ilike)
+// page     = sayfa (1-based)
+// sort     = price_asc | price_desc | name_asc | newest | upgrade_asc | upgrade_desc
+// upgrade  = "" | "0" | "1".."11"
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams
 
-  // ── Server listesi çözümle ──────────────────────────────────────────────────
+  // ── Server listesi ──────────────────────────────────────────────────────────
   const rawServer = (sp.get('server') ?? 'zero3').toLowerCase().trim()
   let serverKeys: string[]
 
   if (rawServer === 'all') {
     serverKeys = CHANNELS.map(c => c.key)
   } else if (rawServer.startsWith('all_')) {
-    const grp = rawServer.slice(4) // "all_zero" → "zero"
+    const grp = rawServer.slice(4)
     serverKeys = CHANNELS.filter(c => c.group === grp).map(c => c.key)
-    if (serverKeys.length === 0) serverKeys = ['zero3']
+    if (!serverKeys.length) serverKeys = ['zero3']
   } else {
-    // "zero3" veya "zero3,zero4,zero5"
-    serverKeys = rawServer
-      .split(',')
-      .map(s => s.trim())
-      .filter(s => VALID_KEYS.has(s as ChannelKey))
-    if (serverKeys.length === 0) serverKeys = ['zero3']
+    serverKeys = rawServer.split(',').map(s => s.trim()).filter(s => VALID_KEYS.has(s as ChannelKey))
+    if (!serverKeys.length) serverKeys = ['zero3']
   }
 
-  // ── Diğer parametreler ──────────────────────────────────────────────────────
-  const q         = (sp.get('q') ?? '').trim().slice(0, 100)
-  const pageRaw   = parseInt(sp.get('page') ?? '1', 10)
-  const page      = isNaN(pageRaw) || pageRaw < 1 ? 1 : pageRaw
-  const offset    = (page - 1) * PAGE_SIZE
+  // ── Parametreler ────────────────────────────────────────────────────────────
+  const q       = (sp.get('q') ?? '').trim().slice(0, 100)
+  const pageRaw = parseInt(sp.get('page') ?? '1', 10)
+  const page    = isNaN(pageRaw) || pageRaw < 1 ? 1 : pageRaw
+  const offset  = (page - 1) * PAGE_SIZE
 
-  const sortRaw   = sp.get('sort') ?? 'price_asc'
-  const sort      = ['price_asc','price_desc','name_asc','newest','upgrade_asc','upgrade_desc']
+  const sortRaw = sp.get('sort') ?? 'price_asc'
+  const sort    = ['price_asc','price_desc','name_asc','newest','upgrade_asc','upgrade_desc']
     .includes(sortRaw) ? sortRaw : 'price_asc'
 
   const upgradeRaw   = sp.get('upgrade') ?? ''
-  const upgradeLevel = upgradeRaw === ''
-    ? null
+  const upgradeLevel = upgradeRaw === '' ? null
     : (isNaN(parseInt(upgradeRaw, 10)) ? null : parseInt(upgradeRaw, 10))
 
   const supabase = await createClient()
 
-  // ── Supabase sorgusu ────────────────────────────────────────────────────────
-  let query = supabase
-    .from('market_listings')
+  // ── Sorgu — market_listings_grouped VIEW kullan ─────────────────────────────
+  // View: aynı (server,item_name,upgrade_level,seller_name,price) → tek satır, item_count=N
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query = (supabase as any)
+    .from('market_listings_grouped')
     .select('*', { count: 'exact' })
 
   if (serverKeys.length === 1) {
@@ -90,16 +85,12 @@ export async function GET(req: NextRequest) {
     query = query.in('server', serverKeys)
   }
 
-  if (q) {
-    query = query.ilike('item_name', `%${q}%`)
-  }
+  if (q) query = query.ilike('item_name', `%${q}%`)
 
   if (upgradeLevel !== null) {
-    if (upgradeLevel === 0) {
-      query = query.is('upgrade_level', null)
-    } else {
-      query = query.eq('upgrade_level', upgradeLevel)
-    }
+    query = upgradeLevel === 0
+      ? query.is('upgrade_level', null)
+      : query.eq('upgrade_level', upgradeLevel)
   }
 
   switch (sort) {
@@ -111,15 +102,12 @@ export async function GET(req: NextRequest) {
     case 'upgrade_desc': query = query.order('upgrade_level', { ascending: false, nullsFirst: false }); break
   }
 
-  // price_asc ile sıralıyorken ikincil sıra: item_name → tutarlı sayfalama
+  // İkincil sıra: tutarlı sayfalama için
   if (sort === 'price_asc' || sort === 'price_desc') {
     query = query.order('item_name', { ascending: true })
   }
 
-  // Gruplama için daha fazla veri çek (aynı item tekrarlarını birleştireceğiz)
-  // PAGE_SIZE * 20 çekip grupladıktan sonra PAGE_SIZE kadar döndür
-  const FETCH_MULT = 20
-  query = query.range(offset * FETCH_MULT, offset * FETCH_MULT + PAGE_SIZE * FETCH_MULT - 1)
+  query = query.range(offset, offset + PAGE_SIZE - 1)
 
   const { data, count, error } = await query
   if (error) {
@@ -135,29 +123,11 @@ export async function GET(req: NextRequest) {
     .limit(1)
     .maybeSingle()
 
-  // ── Gruplama: aynı (server, item_name, upgrade_level, seller_name, price) → tek satır ──
-  const rawListings = ((data ?? []) as (MarketListing & { raw_data?: string | null })[])
-    .map(parseRaw)
-
-  const groupMap = new Map<string, MarketListing & { _count: number }>()
-  for (const item of rawListings) {
-    const key = `${item.server}||${item.item_name}||${item.upgrade_level ?? ''}||${item.seller_name ?? ''}||${item.price}`
-    if (groupMap.has(key)) {
-      groupMap.get(key)!._count++
-    } else {
-      groupMap.set(key, { ...item, _count: 1 })
-    }
-  }
-
-  // Gruplanmış listeyi PAGE_SIZE'a kes
-  const grouped = Array.from(groupMap.values()).slice(0, PAGE_SIZE)
-  const listings: MarketListing[] = grouped.map(({ _count, ...item }) => ({
-    ...item,
-    item_count: _count,
-  }))
-
   const total      = count ?? 0
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+
+  const listings = ((data ?? []) as (MarketListing & { raw_data?: string | null })[])
+    .map(parseRaw)
 
   const response: PazarResponse = {
     listings,
@@ -175,15 +145,16 @@ export async function GET(req: NextRequest) {
   })
 }
 
-// ── POST /api/pazar — tüm kanalların ilan sayılarını döndürür ─────────────────
+// ── POST — tüm kanalların ilan sayıları ────────────────────────────────────────
 export async function POST() {
   const supabase = await createClient()
   const result: Record<string, number> = {}
 
   await Promise.all(
     CHANNELS.map(async ch => {
-      const { count } = await supabase
-        .from('market_listings')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { count } = await (supabase as any)
+        .from('market_listings_grouped')
         .select('*', { count: 'exact', head: true })
         .eq('server', ch.key)
       result[ch.key] = count ?? 0
