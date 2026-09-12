@@ -116,7 +116,10 @@ export async function GET(req: NextRequest) {
     query = query.order('item_name', { ascending: true })
   }
 
-  query = query.range(offset, offset + PAGE_SIZE - 1)
+  // Gruplama için daha fazla veri çek (aynı item tekrarlarını birleştireceğiz)
+  // PAGE_SIZE * 20 çekip grupladıktan sonra PAGE_SIZE kadar döndür
+  const FETCH_MULT = 20
+  query = query.range(offset * FETCH_MULT, offset * FETCH_MULT + PAGE_SIZE * FETCH_MULT - 1)
 
   const { data, count, error } = await query
   if (error) {
@@ -124,7 +127,6 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Son scrape zamanı ───────────────────────────────────────────────────────
-  // Birden fazla server varsa en son çekilen zamanı döndür
   const { data: logData } = await supabase
     .from('market_scrape_log')
     .select('scraped_at')
@@ -133,11 +135,29 @@ export async function GET(req: NextRequest) {
     .limit(1)
     .maybeSingle()
 
+  // ── Gruplama: aynı (server, item_name, upgrade_level, seller_name, price) → tek satır ──
+  const rawListings = ((data ?? []) as (MarketListing & { raw_data?: string | null })[])
+    .map(parseRaw)
+
+  const groupMap = new Map<string, MarketListing & { _count: number }>()
+  for (const item of rawListings) {
+    const key = `${item.server}||${item.item_name}||${item.upgrade_level ?? ''}||${item.seller_name ?? ''}||${item.price}`
+    if (groupMap.has(key)) {
+      groupMap.get(key)!._count++
+    } else {
+      groupMap.set(key, { ...item, _count: 1 })
+    }
+  }
+
+  // Gruplanmış listeyi PAGE_SIZE'a kes
+  const grouped = Array.from(groupMap.values()).slice(0, PAGE_SIZE)
+  const listings: MarketListing[] = grouped.map(({ _count, ...item }) => ({
+    ...item,
+    item_count: _count,
+  }))
+
   const total      = count ?? 0
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
-
-  const listings = ((data ?? []) as (MarketListing & { raw_data?: string | null })[])
-    .map(parseRaw)
 
   const response: PazarResponse = {
     listings,
