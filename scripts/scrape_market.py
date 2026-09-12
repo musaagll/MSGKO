@@ -73,21 +73,38 @@ def parse_upgrade(text: str) -> tuple[str, Optional[int]]:
         return text[:m2.start()].strip(), int(m2.group(1))
     return text.strip(), None
 
-def next_channel() -> tuple[int, str, int, str]:
-    """State dosyasından sonraki kanal indeksini al, güncelle."""
+def next_channel() -> tuple[int, str, int, str, int]:
+    """State dosyasından sonraki kanal ve order_type al.
+    State formatı: "idx:order_type" örn "0:0" veya "3:1"
+    Her çağrıda sıralı ilerler: (0,ASC)→(0,DESC)→(1,ASC)→(1,DESC)→...
+    """
     try:
         with open(STATE_FILE) as f:
-            last = int(f.read().strip())
+            parts = f.read().strip().split(':')
+            last_idx = int(parts[0])
+            last_order = int(parts[1]) if len(parts) > 1 else 0
     except Exception:
-        last = -1
-    idx = (last + 1) % len(CHANNELS)
+        last_idx = -1
+        last_order = 1  # ilk çalışmada idx=0, order=0(ASC) gelsin
+
+    # Sıradaki: aynı kanal ama farklı order, ya da sonraki kanal
+    if last_order == 0:
+        # ASC yaptık, şimdi aynı kanal DESC
+        next_idx = last_idx
+        next_order = 1
+    else:
+        # DESC yaptık, sonraki kanal ASC
+        next_idx = (last_idx + 1) % len(CHANNELS)
+        next_order = 0
+
     try:
         with open(STATE_FILE, 'w') as f:
-            f.write(str(idx))
+            f.write(f'{next_idx}:{next_order}')
     except Exception as e:
         log.warning(f'State yazma hatasi: {e}')
-    db_key, server_type, label = CHANNELS[idx]
-    return idx, db_key, server_type, label
+
+    db_key, server_type, label = CHANNELS[next_idx]
+    return next_idx, db_key, server_type, label, next_order
 
 
 # ── Session ────────────────────────────────────────────────────────────────────
@@ -381,8 +398,9 @@ def main() -> None:
         sys.exit(1)
 
     # Hangi kanalı çekeceğimizi belirle
-    idx, db_key, server_type, label = next_channel()
-    log.info(f'Kanal [{idx}]: {label} (serverType={server_type})')
+    idx, db_key, server_type, label, order_type = next_channel()
+    pass_name = 'ASC (ucuz→pahalı)' if order_type == 0 else 'DESC (pahalı→ucuz)'
+    log.info(f'Kanal [{idx}]: {label} (serverType={server_type}) — {pass_name}')
 
     # Token al
     sess = MarketSession()
@@ -482,20 +500,16 @@ def main() -> None:
         log.info(f'  [{label}] {pass_name} bitti: {len(listings_out)} ilan')
         return listings_out
 
-    # ── Hangi orderType kullanılacak: rotation'a göre değiştir ──────────────────
-    # Çift index (0,2,4...) → ASC (ucuzdan), tek index (1,3,5...) → DESC (pahalıdan)
-    order_type = 0 if idx % 2 == 0 else 1
-    pass_name  = 'ASC (ucuz→pahalı)' if order_type == 0 else 'DESC (pahalı→ucuz)'
+    # ── Sayfaları çek ─────────────────────────────────────────────────────────
     log.info(f'[{label}] {pass_name}')
-
     all_listings = fetch_all_pages(order_type, pass_name, first_html if order_type == 0 else None)
     log.info(f'[{label}] TOPLAM: {len(all_listings)} ilan')
 
-    # Supabase'e yaz — DESC pass ise önce DELETE, ASC pass ise UPSERT (birikimli)
+    # Supabase'e yaz
+    # ASC (ucuzdan): önce DELETE, taze yaz
+    # DESC (pahalıdan): eski veriyi KORU, üstüne ekle (duplicate olsa bile view gruplar)
     if all_listings:
         t0 = time.time()
-        # ASC (ucuzdan): eski veriyi sil, taze yaz
-        # DESC (pahalıdan): eski veriyi KORUYARAK ekle (UPSERT)
         if order_type == 0:
             sb_delete(db_key)
         n = sb_insert(all_listings)
