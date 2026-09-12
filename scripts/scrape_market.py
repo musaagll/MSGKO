@@ -176,7 +176,7 @@ class MarketSession:
                         'req_token':    self.token,
                         'pageCount':    page_num,
                         'merchantType': 0,
-                        'orderType':    1,
+                        'orderType':    0,   # 0 = ucuzdan pahalıya → tüm fiyat aralığı
                         'limitType':    LIMIT,
                         'serverType':   server_type,
                         'searchType':   0,
@@ -302,7 +302,7 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
         # ── Tarih ─────────────────────────────────────────────────────────────
         date_val = cells[5].get_text(strip=True) if len(cells) > 5 else None
 
-        pm = minus_one(price)
+        pm = price  # Gerçek pazar fiyatı
         results.append({
             'server':         channel_key,
             'item_name':      item_name,
@@ -314,7 +314,6 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
             'scraped_at':     now,
             'raw_data':       json.dumps({
                 'original_price': price,
-                'minus_one':      pm,
                 'source':         'uskopazar.com',
                 'img_url':        img_url,
                 'raw_name':       item_name,
@@ -406,7 +405,7 @@ def main() -> None:
                 data={
                     'fingerprint': sess.fingerprint,
                     'req_token':   sess.token,
-                    'pageCount': 1, 'merchantType': 0, 'orderType': 1,
+                    'pageCount': 1, 'merchantType': 0, 'orderType': 0,
                     'limitType': LIMIT, 'serverType': server_type,
                     'searchType': 0, 'itemType': 0, 'minVal': 0, 'maxVal': 0,
                     'Item_Arti': 0, 'tarih': '',
