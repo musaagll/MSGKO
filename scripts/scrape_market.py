@@ -176,7 +176,7 @@ class MarketSession:
                         'req_token':    self.token,
                         'pageCount':    page_num,
                         'merchantType': 0,
-                        'orderType':    0,   # 0 = ucuzdan pahalıya → tüm fiyat aralığı
+                        'orderType':    0,   # 0 = ucuzdan pahalıya (tüm aralık)
                         'limitType':    LIMIT,
                         'serverType':   server_type,
                         'searchType':   0,
@@ -302,14 +302,13 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
         # ── Tarih ─────────────────────────────────────────────────────────────
         date_val = cells[5].get_text(strip=True) if len(cells) > 5 else None
 
-        pm = price  # Gerçek pazar fiyatı
         results.append({
             'server':         channel_key,
             'item_name':      item_name,
             'item_count':     1,
             'upgrade_level':  upgrade_level,
-            'price':          pm,
-            'price_per_unit': pm,
+            'price':          price,
+            'price_per_unit': price,
             'seller_name':    seller,
             'scraped_at':     now,
             'raw_data':       json.dumps({

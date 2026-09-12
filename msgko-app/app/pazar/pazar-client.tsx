@@ -253,7 +253,7 @@ export function PazarClient() {
         {data && !loading && (
           <div className="flex items-center gap-3 mb-3 text-[0.72rem] text-white/30">
             <span className="font-bold text-white/60">{data.total.toLocaleString('tr-TR')}</span>
-            <span>ilan içinden en ucuz 30</span>
+            <span>ilan</span>
             {debouncedQ && <span className="text-white/50">&ldquo;{debouncedQ}&rdquo;</span>}
             {upgrade && <span style={{ color: curGrp.color }}>+{upgrade === '0' ? '0' : upgrade}</span>}
             <span className="text-white/15">·</span>
@@ -287,7 +287,7 @@ export function PazarClient() {
               <table className="w-full text-[0.8rem] border-collapse">
                 <thead>
                   <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                    {['Item', '+Lvl', 'Satıcı', 'Konum', 'Fiyat (Noah)'].map((h, i) => (
+                    {['Item', '+Lvl', 'Satıcı', 'Konum', 'Fiyat'].map((h, i) => (
                       <th key={h} className={`py-2.5 px-4 text-[0.6rem] tracking-[0.2em] uppercase
                         text-white/30 font-semibold ${i === 4 ? 'text-right' : i === 1 ? 'text-center' : 'text-left'}`}>
                         {h}
@@ -377,9 +377,15 @@ function ItemTooltip({ item, color }: { item: MarketListing; color: string }) {
       )}
       <div className="px-3 py-2 border-t border-white/[0.05]" style={{ background: 'rgba(255,255,255,0.015)' }}>
         <div className="flex justify-between items-center">
-          <span className="text-[0.62rem] text-white/25">Fiyat</span>
+          <span className="text-[0.62rem] text-white/25">Pazar</span>
           <span className="text-[0.73rem] font-bold text-red-400/80">
             {(item.original_price ?? item.price).toLocaleString('tr-TR')} ₦
+          </span>
+        </div>
+        <div className="flex justify-between items-center mt-0.5">
+          <span className="text-[0.62rem] text-white/25">Öneri (-1)</span>
+          <span className="text-[0.73rem] font-bold text-emerald-400/75">
+            {item.price.toLocaleString('tr-TR')} ₦
           </span>
         </div>
       </div>
