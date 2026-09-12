@@ -390,8 +390,8 @@ def main() -> None:
         log.warning('Token alinamadi — site erisilemez, run atlaniyor')
         sys.exit(0)
 
-    # İlk sayfa + bağlantı testi (aynı istek)
-    log.info(f'[{label}] Sayfa 1 cekiliyor...')
+    # İlk sayfa + bağlantı testi
+    log.info(f'[{label}] Baglanti testi...')
     first_html = None
     for wait in [0, 60, 120]:
         if wait:
@@ -423,39 +423,85 @@ def main() -> None:
         log.warning('Site engelliyor — run atlaniyor')
         sys.exit(0)
 
-    # Tüm sayfaları çek
-    now = datetime.now(timezone.utc).isoformat()
-    all_listings: list[dict] = []
-    consecutive_empty = 0
+    # ── Pass fonksiyonu: belirli orderType ile tüm sayfaları çek ──────────────
+    def fetch_all_pages(order_type: int, pass_name: str, first_page_html=None) -> list[dict]:
+        now_str = datetime.now(timezone.utc).isoformat()
+        listings_out: list[dict] = []
+        consecutive_empty = 0
 
-    for pg in range(1, MAX_PAGES + 1):
-        html = first_html if pg == 1 else sess.fetch(server_type, pg, label)
+        for pg in range(1, MAX_PAGES + 1):
+            if pg == 1 and first_page_html and order_type == 0:
+                html = first_page_html
+            else:
+                # orderType farklıysa her zaman istek at
+                html = sess.sess.post(
+                    f'{BASE_URL}/dashboard/getItemList',
+                    data={
+                        'fingerprint': sess.fingerprint,
+                        'req_token':   sess.token,
+                        'pageCount': pg, 'merchantType': 0, 'orderType': order_type,
+                        'limitType': LIMIT, 'serverType': server_type,
+                        'searchType': 0, 'itemType': 0, 'minVal': 0, 'maxVal': 0,
+                        'Item_Arti': 0, 'tarih': '',
+                    },
+                    timeout=25,
+                )
+                if html.status_code == 429:
+                    log.warning(f'  [{label}] {pass_name} p{pg} → 429, 60sn bekle')
+                    time.sleep(60)
+                    sess.refresh_token() or sess.get_token()
+                    html = sess.fetch(server_type, pg, label)
+                elif html.status_code != 200:
+                    log.warning(f'  [{label}] {pass_name} p{pg} → HTTP {html.status_code}')
+                    html = None
+                else:
+                    html = html.text
 
-        if html is None:
-            log.warning(f'  [{label}] Sayfa {pg} alinamadi — bitti')
-            break
+            if html is None:
+                log.warning(f'  [{label}] {pass_name} sayfa {pg} alinamadi — bitti')
+                break
 
-        listings = parse_html(html, db_key, now)
+            parsed = parse_html(html, db_key, now_str)
+            if not parsed:
+                consecutive_empty += 1
+                if consecutive_empty >= 2:
+                    break
+                time.sleep(PAGE_SLEEP)
+                continue
 
-        if not listings:
-            consecutive_empty += 1
-            log.info(f'  [{label}] Sayfa {pg}: 0 ilan (bos: {consecutive_empty})')
-            if consecutive_empty >= 2:
+            consecutive_empty = 0
+            listings_out.extend(parsed)
+            log.info(f'  [{label}] {pass_name} p{pg:3d}: {len(parsed):3d} ilan '
+                     f'(toplam={len(listings_out):5d}, {int(time.time()-t_start)}s)')
+
+            if len(parsed) < LIMIT:
+                log.info(f'  [{label}] {pass_name} son sayfa — bitti')
                 break
             time.sleep(PAGE_SLEEP)
-            continue
 
-        consecutive_empty = 0
-        all_listings.extend(listings)
-        log.info(f'  [{label}] Sayfa {pg:3d}: {len(listings):3d} ilan '
-                 f'(toplam={len(all_listings):5d}, {int(time.time()-t_start)}s)')
+        log.info(f'  [{label}] {pass_name} bitti: {len(listings_out)} ilan')
+        return listings_out
 
-        if len(listings) < LIMIT:
-            log.info(f'  [{label}] Son sayfa — bitti')
-            break
-        time.sleep(PAGE_SLEEP)
+    # ── Pass 1: ucuzdan pahalıya (orderType=0) ─────────────────────────────────
+    log.info(f'[{label}] PASS 1: ucuzdan pahalıya')
+    pass1 = fetch_all_pages(0, 'ASC', first_html)
 
-    log.info(f'[{label}] TOPLAM: {len(all_listings)} ilan')
+    # ── Pass 2: pahalıdan ucuya (orderType=1) — kalan ilanlar için ────────────
+    log.info(f'[{label}] PASS 2: pahalıdan ucuya')
+    time.sleep(5)
+    pass2 = fetch_all_pages(1, 'DESC')
+
+    # İki passtan gelen ilanları birleştir, duplicate'leri at
+    # Key: item_name + upgrade_level + seller_name + price
+    seen: set[str] = set()
+    all_listings: list[dict] = []
+    for item in pass1 + pass2:
+        key = f"{item['item_name']}|{item.get('upgrade_level')}|{item.get('seller_name')}|{item['price']}"
+        if key not in seen:
+            seen.add(key)
+            all_listings.append(item)
+
+    log.info(f'[{label}] TOPLAM (dedup): {len(all_listings)} unique ilan')
 
     # Supabase'e yaz
     if all_listings:
