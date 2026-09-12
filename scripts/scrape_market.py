@@ -482,31 +482,22 @@ def main() -> None:
         log.info(f'  [{label}] {pass_name} bitti: {len(listings_out)} ilan')
         return listings_out
 
-    # ── Pass 1: ucuzdan pahalıya (orderType=0) ─────────────────────────────────
-    log.info(f'[{label}] PASS 1: ucuzdan pahalıya')
-    pass1 = fetch_all_pages(0, 'ASC', first_html)
+    # ── Hangi orderType kullanılacak: rotation'a göre değiştir ──────────────────
+    # Çift index (0,2,4...) → ASC (ucuzdan), tek index (1,3,5...) → DESC (pahalıdan)
+    order_type = 0 if idx % 2 == 0 else 1
+    pass_name  = 'ASC (ucuz→pahalı)' if order_type == 0 else 'DESC (pahalı→ucuz)'
+    log.info(f'[{label}] {pass_name}')
 
-    # ── Pass 2: pahalıdan ucuya (orderType=1) — kalan ilanlar için ────────────
-    log.info(f'[{label}] PASS 2: pahalıdan ucuya')
-    time.sleep(5)
-    pass2 = fetch_all_pages(1, 'DESC')
+    all_listings = fetch_all_pages(order_type, pass_name, first_html if order_type == 0 else None)
+    log.info(f'[{label}] TOPLAM: {len(all_listings)} ilan')
 
-    # İki passtan gelen ilanları birleştir, duplicate'leri at
-    # Key: item_name + upgrade_level + seller_name + price
-    seen: set[str] = set()
-    all_listings: list[dict] = []
-    for item in pass1 + pass2:
-        key = f"{item['item_name']}|{item.get('upgrade_level')}|{item.get('seller_name')}|{item['price']}"
-        if key not in seen:
-            seen.add(key)
-            all_listings.append(item)
-
-    log.info(f'[{label}] TOPLAM (dedup): {len(all_listings)} unique ilan')
-
-    # Supabase'e yaz
+    # Supabase'e yaz — DESC pass ise önce DELETE, ASC pass ise UPSERT (birikimli)
     if all_listings:
         t0 = time.time()
-        sb_delete(db_key)
+        # ASC (ucuzdan): eski veriyi sil, taze yaz
+        # DESC (pahalıdan): eski veriyi KORUYARAK ekle (UPSERT)
+        if order_type == 0:
+            sb_delete(db_key)
         n = sb_insert(all_listings)
         ms = int((time.time() - t0) * 1000)
         sb_log(db_key, 'success' if n else 'error', n,
