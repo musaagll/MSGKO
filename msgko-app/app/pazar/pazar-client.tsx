@@ -266,26 +266,8 @@ export function PazarClient() {
 
         {/* ── Filtre Çubuğu ──────────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row gap-2">
-          {/* Arama — esnek genişlik */}
-          <div className="relative flex-1 min-w-0">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none"
-              width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            <input type="text" value={query} onChange={e => setQuery(e.target.value)}
-              placeholder="Item ara... (Raptor, Shard, Glave, Mirage...)"
-              className="w-full pl-9 pr-8 py-2 text-[0.8rem] rounded-sm bg-white/[0.04]
-                border border-white/[0.07] text-white/80 placeholder-white/20 outline-none
-                focus:border-white/20 focus:bg-white/[0.05] transition-all"
-            />
-            {query && (
-              <button onClick={() => setQuery('')} type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30
-                  hover:text-white/70 transition-colors text-base leading-none">
-                ×
-              </button>
-            )}
-          </div>
+          {/* Arama — ucuzagb autocomplete */}
+          <SearchBox query={query} onChange={setQuery} />
 
           {/* +Lvl */}
           <select value={upgrade} onChange={e => setUpgrade(e.target.value)}
@@ -873,6 +855,129 @@ function Pagination({
         className={`${btn} border-white/[0.07] text-white/35 hover:border-white/20 hover:text-white/65`}>
         »
       </button>
+    </div>
+  )
+}
+
+// ── SearchBox — ucuzagb.com /api/items/ara autocomplete ───────────────────────
+interface AcItem { id: number; n: string; s: string; p: string | null }
+
+function SearchBox({ query, onChange }: { query: string; onChange: (v: string) => void }) {
+  const [suggestions, setSuggestions] = useState<AcItem[]>([])
+  const [open, setOpen]               = useState(false)
+  const [acTimer, setAcTimer]         = useState<ReturnType<typeof setTimeout> | null>(null)
+  const boxRef                        = useRef<HTMLDivElement>(null)
+
+  // Dış tıklamada kapat
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  function handleInput(val: string) {
+    onChange(val)
+    if (acTimer) clearTimeout(acTimer)
+    if (val.trim().length < 2) { setSuggestions([]); setOpen(false); return }
+    setAcTimer(setTimeout(async () => {
+      try {
+        const r = await fetch(
+          `https://ucuzagb.com/api/items/ara?q=${encodeURIComponent(val)}&limit=8`,
+        )
+        const d = await r.json()
+        setSuggestions(d.itemler ?? [])
+        setOpen(true)
+      } catch { /* ignore */ }
+    }, 300))
+  }
+
+  function pick(name: string) {
+    onChange(name)
+    setOpen(false)
+    setSuggestions([])
+  }
+
+  return (
+    <div ref={boxRef} className="relative flex-1 min-w-0">
+      {/* Arama ikonu */}
+      <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none"
+        width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+
+      <input
+        type="text"
+        value={query}
+        onChange={e => handleInput(e.target.value)}
+        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        placeholder="Item ara... (Raptor, Shard, Glave, Mirage...)"
+        className="w-full pl-9 pr-8 py-2 text-[0.8rem] rounded-sm bg-white/[0.04]
+          border border-white/[0.07] text-white/80 placeholder-white/20 outline-none
+          focus:border-white/20 focus:bg-white/[0.05] transition-all"
+        autoComplete="off"
+      />
+
+      {/* Temizle */}
+      {query && (
+        <button onClick={() => { onChange(''); setSuggestions([]); setOpen(false) }} type="button"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30
+            hover:text-white/70 transition-colors text-base leading-none">
+          ×
+        </button>
+      )}
+
+      {/* Öneri listesi */}
+      {open && suggestions.length > 0 && (
+        <div
+          className="absolute left-0 right-0 top-full mt-1 z-50 overflow-hidden rounded-sm"
+          style={{
+            background:   'rgba(10,10,22,0.98)',
+            border:       '1px solid rgba(255,255,255,0.1)',
+            boxShadow:    '0 12px 32px rgba(0,0,0,0.7)',
+          }}
+        >
+          {suggestions.map(item => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => pick(item.n)}
+              className="w-full flex items-center gap-3 px-3 py-2 text-left
+                hover:bg-white/[0.06] transition-colors group"
+            >
+              {/* Item ikonu */}
+              {item.p ? (
+                <img
+                  src={`https://ucuzagb.com${item.p}`}
+                  alt=""
+                  width={24} height={24}
+                  className="w-6 h-6 object-contain flex-shrink-0"
+                  style={{ imageRendering: 'pixelated' }}
+                  onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
+              ) : (
+                <div className="w-6 h-6 flex-shrink-0 bg-white/[0.04] rounded-sm" />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-[0.78rem] font-semibold text-white/80
+                  group-hover:text-white transition-colors truncate">
+                  {item.n}
+                </p>
+                <p className="text-[0.62rem] text-white/30 capitalize truncate">
+                  {item.s}
+                </p>
+              </div>
+            </button>
+          ))}
+          <div className="px-3 py-1.5 border-t border-white/[0.05]
+            text-[0.58rem] text-white/20 text-right">
+            ucuzagb.com
+          </div>
+        </div>
+      )}
     </div>
   )
 }
