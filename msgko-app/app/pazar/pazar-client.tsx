@@ -1,4 +1,5 @@
 'use client'
+'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
@@ -159,7 +160,7 @@ export function PazarClient() {
     <div className="min-h-screen" style={{ background: '#07070f' }}>
 
       {/* ══ HEADER ══════════════════════════════════════════════════════════════ */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-24 pb-5">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-5">
         <nav className="mb-4">
           <ol className="flex items-center gap-2 text-[0.68rem] text-white/20">
             <li><Link href="/" className="hover:text-white/50 transition-colors">Ana Sayfa</Link></li>
@@ -194,7 +195,7 @@ export function PazarClient() {
         <div className="space-y-2 mb-5">
 
           {/* Satır 1: Tüm serverler + Grup butonları */}
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5 overflow-x-auto pb-1">
             {/* Tüm Serverler */}
             <button type="button" onClick={() => changeServer('all')}
               className="px-3 py-1.5 text-[0.7rem] font-bold tracking-[0.08em] uppercase border
@@ -238,7 +239,7 @@ export function PazarClient() {
 
           {/* Satır 2: Tekil kanal sekmeleri (aktif gruba göre) */}
           {activeGrp && (
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1 overflow-x-auto pb-1">
               {CHANNELS.filter(c => c.group === activeGrp).map(ch => {
                 const active = server === ch.key
                 const cnt    = counts[ch.key] ?? 0
