@@ -73,38 +73,21 @@ def parse_upgrade(text: str) -> tuple[str, Optional[int]]:
         return text[:m2.start()].strip(), int(m2.group(1))
     return text.strip(), None
 
-def next_channel() -> tuple[int, str, int, str, int]:
-    """State dosyasından sonraki kanal ve order_type al.
-    State formatı: "idx:order_type" örn "0:0" veya "3:1"
-    Her çağrıda sıralı ilerler: (0,ASC)→(0,DESC)→(1,ASC)→(1,DESC)→...
-    """
+def next_channel() -> tuple[int, str, int, str]:
+    """State dosyasından sonraki kanal indeksini al."""
     try:
         with open(STATE_FILE) as f:
-            parts = f.read().strip().split(':')
-            last_idx = int(parts[0])
-            last_order = int(parts[1]) if len(parts) > 1 else 0
+            last = int(f.read().strip().split(':')[0])
     except Exception:
-        last_idx = -1
-        last_order = 1  # ilk çalışmada idx=0, order=0(ASC) gelsin
-
-    # Sıradaki: aynı kanal ama farklı order, ya da sonraki kanal
-    if last_order == 0:
-        # ASC yaptık, şimdi aynı kanal DESC
-        next_idx = last_idx
-        next_order = 1
-    else:
-        # DESC yaptık, sonraki kanal ASC
-        next_idx = (last_idx + 1) % len(CHANNELS)
-        next_order = 0
-
+        last = -1
+    idx = (last + 1) % len(CHANNELS)
     try:
         with open(STATE_FILE, 'w') as f:
-            f.write(f'{next_idx}:{next_order}')
+            f.write(str(idx))
     except Exception as e:
         log.warning(f'State yazma hatasi: {e}')
-
-    db_key, server_type, label = CHANNELS[next_idx]
-    return next_idx, db_key, server_type, label, next_order
+    db_key, server_type, label = CHANNELS[idx]
+    return idx, db_key, server_type, label
 
 
 # ── Session ────────────────────────────────────────────────────────────────────
@@ -398,9 +381,8 @@ def main() -> None:
         sys.exit(1)
 
     # Hangi kanalı çekeceğimizi belirle
-    idx, db_key, server_type, label, order_type = next_channel()
-    pass_name = 'ASC (ucuz→pahalı)' if order_type == 0 else 'DESC (pahalı→ucuz)'
-    log.info(f'Kanal [{idx}]: {label} (serverType={server_type}) — {pass_name}')
+    idx, db_key, server_type, label = next_channel()
+    log.info(f'Kanal [{idx}]: {label} (serverType={server_type})')
 
     # Token al
     sess = MarketSession()
@@ -408,7 +390,7 @@ def main() -> None:
         log.warning('Token alinamadi — site erisilemez, run atlaniyor')
         sys.exit(0)
 
-    # İlk sayfa + bağlantı testi
+    # Bağlantı testi — ilk sayfa
     log.info(f'[{label}] Baglanti testi...')
     first_html = None
     for wait in [0, 60, 120]:
@@ -441,77 +423,79 @@ def main() -> None:
         log.warning('Site engelliyor — run atlaniyor')
         sys.exit(0)
 
-    # ── Pass fonksiyonu: belirli orderType ile tüm sayfaları çek ──────────────
-    def fetch_all_pages(order_type: int, pass_name: str, first_page_html=None) -> list[dict]:
-        now_str = datetime.now(timezone.utc).isoformat()
-        listings_out: list[dict] = []
-        consecutive_empty = 0
+    # ── Tüm sayfaları çek (orderType=0, ucuzdan pahalıya) ─────────────────────
+    now_str = datetime.now(timezone.utc).isoformat()
+    all_listings: list[dict] = []
+    consecutive_empty = 0
 
-        for pg in range(1, MAX_PAGES + 1):
-            if pg == 1 and first_page_html and order_type == 0:
-                html = first_page_html
-            else:
-                # orderType farklıysa her zaman istek at
-                html = sess.sess.post(
+    for pg in range(1, MAX_PAGES + 1):
+        if pg == 1:
+            html_text = first_html
+        else:
+            resp = sess.sess.post(
+                f'{BASE_URL}/dashboard/getItemList',
+                data={
+                    'fingerprint': sess.fingerprint,
+                    'req_token':   sess.token,
+                    'pageCount': pg, 'merchantType': 0, 'orderType': 0,
+                    'limitType': LIMIT, 'serverType': server_type,
+                    'searchType': 0, 'itemType': 0, 'minVal': 0, 'maxVal': 0,
+                    'Item_Arti': 0, 'tarih': '',
+                },
+                timeout=25,
+            )
+            if resp.status_code == 429:
+                # 429 → 90sn bekle + token yenile → tekrar dene → hâlâ 429 → dur
+                log.warning(f'  [{label}] p{pg} → 429, 90sn bekleniyor...')
+                time.sleep(90)
+                sess.refresh_token() or sess.get_token()
+                resp2 = sess.sess.post(
                     f'{BASE_URL}/dashboard/getItemList',
                     data={
                         'fingerprint': sess.fingerprint,
                         'req_token':   sess.token,
-                        'pageCount': pg, 'merchantType': 0, 'orderType': order_type,
+                        'pageCount': pg, 'merchantType': 0, 'orderType': 0,
                         'limitType': LIMIT, 'serverType': server_type,
                         'searchType': 0, 'itemType': 0, 'minVal': 0, 'maxVal': 0,
                         'Item_Arti': 0, 'tarih': '',
                     },
                     timeout=25,
                 )
-                if html.status_code == 429:
-                    log.warning(f'  [{label}] {pass_name} p{pg} → 429, 60sn bekle')
-                    time.sleep(60)
-                    sess.refresh_token() or sess.get_token()
-                    html = sess.fetch(server_type, pg, label)
-                elif html.status_code != 200:
-                    log.warning(f'  [{label}] {pass_name} p{pg} → HTTP {html.status_code}')
-                    html = None
-                else:
-                    html = html.text
-
-            if html is None:
-                log.warning(f'  [{label}] {pass_name} sayfa {pg} alinamadi — bitti')
-                break
-
-            parsed = parse_html(html, db_key, now_str)
-            if not parsed:
-                consecutive_empty += 1
-                if consecutive_empty >= 2:
+                if resp2.status_code != 200:
+                    log.warning(f'  [{label}] p{pg} hâlâ {resp2.status_code} — kanal bitti')
                     break
-                time.sleep(PAGE_SLEEP)
-                continue
+                html_text = resp2.text
+            elif resp.status_code != 200:
+                log.warning(f'  [{label}] p{pg} → HTTP {resp.status_code} — bitti')
+                break
+            else:
+                html_text = resp.text
 
-            consecutive_empty = 0
-            listings_out.extend(parsed)
-            log.info(f'  [{label}] {pass_name} p{pg:3d}: {len(parsed):3d} ilan '
-                     f'(toplam={len(listings_out):5d}, {int(time.time()-t_start)}s)')
-
-            if len(parsed) < LIMIT:
-                log.info(f'  [{label}] {pass_name} son sayfa — bitti')
+        parsed = parse_html(html_text, db_key, now_str)
+        if not parsed:
+            consecutive_empty += 1
+            if consecutive_empty >= 2:
+                log.info(f'  [{label}] 2 ard arda bos sayfa — bitti')
                 break
             time.sleep(PAGE_SLEEP)
+            continue
 
-        log.info(f'  [{label}] {pass_name} bitti: {len(listings_out)} ilan')
-        return listings_out
+        consecutive_empty = 0
+        all_listings.extend(parsed)
+        log.info(f'  [{label}] p{pg:3d}: {len(parsed):3d} ilan '
+                 f'(toplam={len(all_listings):5d}, {int(time.time()-t_start)}s)')
 
-    # ── Sayfaları çek ─────────────────────────────────────────────────────────
-    log.info(f'[{label}] {pass_name}')
-    all_listings = fetch_all_pages(order_type, pass_name, first_html if order_type == 0 else None)
+        if len(parsed) < LIMIT:
+            log.info(f'  [{label}] Son sayfa — bitti')
+            break
+        time.sleep(PAGE_SLEEP)
+
     log.info(f'[{label}] TOPLAM: {len(all_listings)} ilan')
 
-    # Supabase'e yaz
-    # ASC (ucuzdan): önce DELETE, taze yaz
-    # DESC (pahalıdan): eski veriyi KORU, üstüne ekle (duplicate olsa bile view gruplar)
+    # Supabase — DELETE + INSERT (temiz veri)
     if all_listings:
         t0 = time.time()
-        if order_type == 0:
-            sb_delete(db_key)
+        sb_delete(db_key)
         n = sb_insert(all_listings)
         ms = int((time.time() - t0) * 1000)
         sb_log(db_key, 'success' if n else 'error', n,
@@ -519,7 +503,7 @@ def main() -> None:
         log.info(f'[{db_key}] {n} ilan yazildi ({ms}ms)')
     else:
         sb_log(db_key, 'error', 0, 'no listings', 0)
-        log.warning(f'[{db_key}] ilan yok')
+        log.warning(f'[{db_key}] ilan yok — Supabase guncellenmedi')
 
     log.info(f'Tamamlandi — {int(time.time()-t_start)}sn')
     log.info('=' * 60)

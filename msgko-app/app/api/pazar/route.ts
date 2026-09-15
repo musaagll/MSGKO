@@ -33,88 +33,68 @@ function parseRaw(item: MarketListing & { raw_data?: string | null }): MarketLis
 }
 
 // ── GET /api/pazar ─────────────────────────────────────────────────────────────
-// server   = "zero3" | "zero3,zero4" | "all_zero" | "all"
-// q        = item arama (ilike)
-// page     = sayfa (1-based)
-// sort     = price_asc | price_desc | name_asc | newest | upgrade_asc | upgrade_desc
-// upgrade  = "" | "0" | "1".."11"
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams
 
-  // ── Server listesi ──────────────────────────────────────────────────────────
+  // ── Server çözümle ──────────────────────────────────────────────────────────
   const rawServer = (sp.get('server') ?? 'zero3').toLowerCase().trim()
-  let serverKeys: string[]
+  let serverParam: string
 
   if (rawServer === 'all') {
-    serverKeys = CHANNELS.map(c => c.key)
+    serverParam = 'all'
   } else if (rawServer.startsWith('all_')) {
-    const grp = rawServer.slice(4)
-    serverKeys = CHANNELS.filter(c => c.group === grp).map(c => c.key)
-    if (!serverKeys.length) serverKeys = ['zero3']
+    serverParam = rawServer  // e.g. "all_zero"
   } else {
-    serverKeys = rawServer.split(',').map(s => s.trim()).filter(s => VALID_KEYS.has(s as ChannelKey))
-    if (!serverKeys.length) serverKeys = ['zero3']
+    // tekil veya virgüllü — tekil ise doğrula
+    const keys = rawServer.split(',').map(s => s.trim()).filter(s => VALID_KEYS.has(s as ChannelKey))
+    serverParam = keys.length ? keys[0] : 'zero3'  // RPC tek server alıyor
   }
 
-  // ── Parametreler ────────────────────────────────────────────────────────────
-  const q       = (sp.get('q') ?? '').trim().slice(0, 100)
-  const pageRaw = parseInt(sp.get('page') ?? '1', 10)
-  const page    = isNaN(pageRaw) || pageRaw < 1 ? 1 : pageRaw
-  const offset  = (page - 1) * PAGE_SIZE
+  const q         = (sp.get('q') ?? '').trim().slice(0, 100)
+  const pageRaw   = parseInt(sp.get('page') ?? '1', 10)
+  const page      = isNaN(pageRaw) || pageRaw < 1 ? 1 : pageRaw
+  const offset    = (page - 1) * PAGE_SIZE
 
   const sortRaw = sp.get('sort') ?? 'price_asc'
   const sort    = ['price_asc','price_desc','name_asc','newest','upgrade_asc','upgrade_desc']
     .includes(sortRaw) ? sortRaw : 'price_asc'
 
   const upgradeRaw   = sp.get('upgrade') ?? ''
-  const upgradeLevel = upgradeRaw === '' ? null
-    : (isNaN(parseInt(upgradeRaw, 10)) ? null : parseInt(upgradeRaw, 10))
+  const upgradeLevel = upgradeRaw === '' ? -1
+    : (isNaN(parseInt(upgradeRaw, 10)) ? -1 : parseInt(upgradeRaw, 10))
 
   const supabase = await createClient()
 
-  // ── Sorgu — market_listings_grouped VIEW kullan ─────────────────────────────
-  // View: aynı (server,item_name,upgrade_level,seller_name,price) → tek satır, item_count=N
+  // ── RPC çağrısı — limit yok, gruplama DB tarafında ─────────────────────────
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query = (supabase as any)
-    .from('market_listings_grouped')
-    .select('*', { count: 'exact' })
+  const { data, error } = await (supabase as any).rpc('get_market_listings', {
+    p_server:  serverParam,
+    p_q:       q || null,
+    p_sort:    sort,
+    p_upgrade: upgradeLevel,
+    p_limit:   PAGE_SIZE,
+    p_offset:  offset,
+  })
 
-  if (serverKeys.length === 1) {
-    query = query.eq('server', serverKeys[0])
-  } else {
-    query = query.in('server', serverKeys)
-  }
-
-  if (q) query = query.ilike('item_name', `%${q}%`)
-
-  if (upgradeLevel !== null) {
-    query = upgradeLevel === 0
-      ? query.is('upgrade_level', null)
-      : query.eq('upgrade_level', upgradeLevel)
-  }
-
-  switch (sort) {
-    case 'price_asc':    query = query.order('price',         { ascending: true  }); break
-    case 'price_desc':   query = query.order('price',         { ascending: false }); break
-    case 'name_asc':     query = query.order('item_name',     { ascending: true  }); break
-    case 'newest':       query = query.order('scraped_at',    { ascending: false }); break
-    case 'upgrade_asc':  query = query.order('upgrade_level', { ascending: true,  nullsFirst: false }); break
-    case 'upgrade_desc': query = query.order('upgrade_level', { ascending: false, nullsFirst: false }); break
-  }
-
-  // İkincil sıra: tutarlı sayfalama için
-  if (sort === 'price_asc' || sort === 'price_desc') {
-    query = query.order('item_name', { ascending: true })
-  }
-
-  query = query.range(offset, offset + PAGE_SIZE - 1)
-
-  const { data, count, error } = await query
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
+  // ── Toplam sayı (count RPC) ─────────────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: countData } = await (supabase as any).rpc('get_market_listings_count', {
+    p_server:  serverParam,
+    p_q:       q || null,
+    p_upgrade: upgradeLevel,
+  })
+
   // ── Son scrape zamanı ───────────────────────────────────────────────────────
+  const serverKeys = serverParam === 'all'
+    ? CHANNELS.map(c => c.key)
+    : serverParam.startsWith('all_')
+      ? CHANNELS.filter(c => c.group === serverParam.slice(4)).map(c => c.key)
+      : [serverParam]
+
   const { data: logData } = await supabase
     .from('market_scrape_log')
     .select('scraped_at')
@@ -123,7 +103,7 @@ export async function GET(req: NextRequest) {
     .limit(1)
     .maybeSingle()
 
-  const total      = count ?? 0
+  const total      = (countData as number) ?? 0
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   const listings = ((data ?? []) as (MarketListing & { raw_data?: string | null })[])
@@ -135,9 +115,9 @@ export async function GET(req: NextRequest) {
     page,
     page_size:      PAGE_SIZE,
     total_pages:    totalPages,
-    server:         serverKeys.join(','),
+    server:         serverParam,
     last_scraped:   logData?.scraped_at ?? null,
-    upgrade_filter: upgradeLevel,
+    upgrade_filter: upgradeLevel === -1 ? null : upgradeLevel,
   }
 
   return NextResponse.json(response, {
@@ -152,9 +132,8 @@ export async function POST() {
 
   await Promise.all(
     CHANNELS.map(async ch => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { count } = await (supabase as any)
-        .from('market_listings_grouped')
+      const { count } = await supabase
+        .from('market_listings')
         .select('*', { count: 'exact', head: true })
         .eq('server', ch.key)
       result[ch.key] = count ?? 0
