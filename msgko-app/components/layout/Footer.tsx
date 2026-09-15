@@ -32,6 +32,13 @@ const REHBER_LINKS = [
   { label: 'Priest Rehberi',  href: '/rehber/priest' },
 ]
 
+const OYUN_LINKS = [
+  { label: 'USKO Pazar',       href: '/pazar' },
+  { label: 'Boss Rehberleri',  href: '/boss' },
+  { label: 'Harita Rehberleri',href: '/harita' },
+  { label: 'Item Veritabanı',  href: '/item' },
+]
+
 export function Footer() {
   return (
     <>
@@ -48,7 +55,7 @@ export function Footer() {
         />
 
         <div className="relative max-w-[1280px] mx-auto px-8 pt-16 pb-0">
-          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr_1.5fr] gap-12 pb-14 border-b border-white/[0.05]">
+          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1.5fr] gap-12 pb-14 border-b border-white/[0.05]">
 
             {/* Col 1 — Marka */}
             <div>
@@ -96,6 +103,22 @@ export function Footer() {
                   className="text-[0.72rem] tracking-[0.1em] uppercase text-purple-400/40 hover:text-purple-400/70 transition-colors mt-1">
                   Tüm Rehberler →
                 </Link>
+              </nav>
+            </div>
+
+            {/* Col 3 — Oyun */}
+            <div>
+              <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase mb-6 text-white/90">
+                OYUN
+              </h3>
+              <nav className="flex flex-col gap-3">
+                {OYUN_LINKS.map(({ label, href }) => (
+                  <Link key={href} href={href}
+                    className="group flex items-center gap-2 text-[0.76rem] text-white/40 hover:text-white/90 transition-all duration-200 hover:pl-1">
+                    <span className="w-1 h-1 rounded-full flex-shrink-0 bg-amber-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {label}
+                  </Link>
+                ))}
               </nav>
             </div>
 

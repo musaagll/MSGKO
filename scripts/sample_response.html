@@ -1,0 +1,536 @@
+
+
+     <div class="tab-content">
+    <!-- HOME -->
+    <div class="tab-pane fade show active" id="view-home" role="tabpanel" aria-labelledby="view-home-tab">
+                    <!--  // Masaüstü cihaz için view (gercek tablo) -->
+           <input class="hidden" id="dataCount" value="4550">
+
+           <style>
+             /* Tablo cizgileri: tema/CDN kaynakli sert beyaz kenarliklari ezerek cok silik tona sabitler */
+             .usk-itable, .usk-itable thead, .usk-itable tbody,
+             .usk-itable tr, .usk-itable th, .usk-itable td { border:0 !important; }
+             .usk-itable tbody tr { border-top:1px solid #312f2f !important; }
+             .usk-itable tbody tr:first-child { border-top:0 !important; }
+             .usk-itable tbody tr:hover { background:rgba(148,163,184,.05); }
+             .usk-itable thead tr { border-bottom:1px solid #312f2f !important; }
+             .usk-itable-wrap { border:1px solid #312f2f !important; }
+           </style>
+           <div class="usk-itable-wrap w-full overflow-x-auto rounded-2lg bg-white dark:bg-jacarta-700 dark:text-white">
+             <table class="usk-itable w-full min-w-[736px] table-fixed border-collapse text-sm">
+               <colgroup>
+                 <col style="width:26%"><col style="width:22%">
+                 <col style="width:16%">                 <col style="width:16%"><col style="width:13%"><col style="width:17%">
+               </colgroup>
+               <thead>
+                 <tr class="bg-jacarta-50 dark:bg-jacarta-600 text-jacarta-700 dark:text-jacarta-100">
+                   <th class="py-3 px-4 text-left   font-semibold">Item Adı</th>
+                   <th class="py-3 px-4 text-left   font-semibold">Kullanıcı Adı</th>
+                   <th class="py-3 px-4 text-right  font-semibold">Lokasyon</th>                   <th class="py-3 px-4 text-center font-semibold">Ücret</th>
+                   <th class="py-3 px-4 text-center font-semibold"></th>
+                   <th class="py-3 px-4 text-right  font-semibold">Eklenme Tarihi</th>
+                 </tr>
+               </thead>
+               <tbody>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>EXP Flash</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_3_9912_70_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">EXP Flash                                                                                                                                                                                                                                                 </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">SisyphusPriest       </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="829" data-z="526">
+                       829,526(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">710</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(399127000,'EXP Flash                                                                                                                                                                                                                                                 ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>EXP Flash</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_3_9912_70_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">EXP Flash                                                                                                                                                                                                                                                 </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">MEROOOOO             </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="754" data-z="764">
+                       754,764(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">999</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(399127000,'EXP Flash                                                                                                                                                                                                                                                 ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>Apples of Moradon</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Lune Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_8_1041_80_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">Apples of Moradon                                                                                                                                                                                                                                         </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">FREEEEED             </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="758" data-z="765">
+                       758,765(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">999</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(810418000,'Apples of Moradon                                                                                                                                                                                                                                         ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>Dungeon Key</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Lune Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_3_7908_00_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">Dungeon Key                                                                                                                                                                                                                                               </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">0KCU                 </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="824" data-z="554">
+                       824,554(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">999</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(379080000,'Dungeon Key                                                                                                                                                                                                                                               ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>Unstable Centaur' Heart</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Lune Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_8_1009_50_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">Unstable Centaur Heart                                                                                                                                                                                                                                    </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">FREEEEED             </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="758" data-z="765">
+                       758,765(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">1.999</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(810095000,'Unstable Centaur Heart                                                                                                                                                                                                                                    ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>DC Flash</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_3_9912_80_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">DC Flash                                                                                                                                                                                                                                                  </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">SisyphusPriest       </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="829" data-z="526">
+                       829,526(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">2.750</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(399128000,'DC Flash                                                                                                                                                                                                                                                  ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>DC Flash</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_3_9912_80_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">DC Flash                                                                                                                                                                                                                                                  </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">Flux                 </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="831" data-z="521">
+                       831,521(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">2.999</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(399128000,'DC Flash                                                                                                                                                                                                                                                  ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>War Flash</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_3_9912_90_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">War Flash                                                                                                                                                                                                                                                 </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">Yenug                </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="814" data-z="585">
+                       814,585(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">2.999</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(399129000,'War Flash                                                                                                                                                                                                                                                 ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>DC Flash</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_3_9912_80_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">DC Flash                                                                                                                                                                                                                                                  </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">RoquePiedroP         </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="820" data-z="551">
+                       820,551(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">3.000</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(399128000,'DC Flash                                                                                                                                                                                                                                                  ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>War Flash</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_3_9912_90_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">War Flash                                                                                                                                                                                                                                                 </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">Ganthet              </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="824" data-z="523">
+                       824,523(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">3.333</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(399129000,'War Flash                                                                                                                                                                                                                                                 ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>EXP Flash</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Item</div><div class='item_property white'><p>Weight : 0.10</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_3_9912_70_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">EXP Flash                                                                                                                                                                                                                                                 </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">Flux                 </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="831" data-z="521">
+                       831,521(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">3.333</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(399127000,'EXP Flash                                                                                                                                                                                                                                                 ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                                  <tr class="dark:bg-jacarta-900 align-middle">
+
+                   <!-- Item Adı -->
+                   <td class="py-3 px-4 text-left">
+                     <div class="flex items-center gap-3">
+                       <span class="shrink-0" data-container="body" data-html="true" title="" data-tippy-content="<div class='item_title white'>Water of Favors</div><div class='item_type white'>Non Upgrade Item</div><div class='item_kind'>Item</div><div class='item_property white'><p>Weight : 4.5.00</p></div><div class='item_property lime'></div><div class='item_property white'></div>">
+                         <img src="https://www.uskopazar.com/assets/img/item/itemicon_3_8901_40_0.jpg" id="exchangeimg" class="w-9 h-9">
+                       </span>
+                       <span class="text-sm text-jacarta-700 dark:text-white truncate">
+                         <span class="white">Water of Favors                                                                                                                                                                                                                                           </span>
+                       </span>
+                     </div>
+                   </td>
+
+                   <!-- Kullanıcı Adı -->
+                   <td class="py-3 px-4 text-left whitespace-nowrap truncate">TheSirseri           </td>
+
+                   <!-- Lokasyon (simdilik gizli) -->
+                                      <td class="py-3 px-4 text-right whitespace-nowrap">
+                     <button class="text-green item-properties" onclick="handleButtonClick(this)" data-x="766" data-z="649">
+                       766,649(Click)
+                     </button>
+                   </td>
+                   
+                   <!-- Ücret -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                     <div class="flex flex-col items-center gap-1">
+                       <span style="color:red">3.500</span>
+                                              <button type="button" onclick="if(window.openMargin)openMargin(389014000,'Water of Favors                                                                                                                                                                                                                                           ','zero')" style="font-size:11px;padding:2px 9px;border:1px solid #8b5cf6;background:#8b5cf6;color:#fff;border-radius:6px;cursor:pointer">📊 Marj</button>
+                     </div>
+                   </td>
+
+                   <!-- Sunucu -->
+                   <td class="py-3 px-4 text-center whitespace-nowrap">
+                                        </td>
+
+                   <!-- Eklenme Tarihi -->
+                   <td class="py-3 px-4 text-right whitespace-nowrap">11.09.2026</td>
+
+                 </tr>
+                 
+                                </tbody>
+             </table>
+           </div>
+
+          </div>
+
+
+</div>
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        tippy('[data-tippy-content]', {
+            allowHTML: true,
+            trigger: 'mouseenter', // 'mouseenter' olarak ayarlandı
+            interactive: true,
+        });
+    });
+</script>

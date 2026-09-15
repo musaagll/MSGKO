@@ -29,6 +29,12 @@ const REHBER_ITEMS = [
   { label: 'Tüm Rehberler →',     href: '/rehber',              desc: '' },
 ]
 
+const OYUN_ITEMS = [
+  { label: 'Boss Rehberleri',  href: '/boss',   desc: 'Spawn, drop ve taktikler' },
+  { label: 'Harita Rehberleri', href: '/harita', desc: 'Farm, boss ve NPC konumları' },
+  { label: 'Item Veritabanı',  href: '/item',   desc: 'Silah, zırh ve aksesuar' },
+]
+
 
 // ── Dropdown bileşeni ─────────────────────────────────────────────────────────
 function NavDropdown({
@@ -229,6 +235,8 @@ export function Navbar() {
             {/* Rehber dropdown */}
             <NavDropdown label="Rehber" items={REHBER_ITEMS} accentColor="purple" />
 
+            {/* Oyun dropdown */}
+            <NavDropdown label="Oyun" items={OYUN_ITEMS} accentColor="amber" />
 
             <div className="w-px h-5 mx-1 bg-white/[0.08]" />
 
