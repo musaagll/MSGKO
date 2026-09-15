@@ -123,7 +123,7 @@ export function Navbar() {
   const pathname = usePathname()
   const isScrolled = useScrollDetect(20)
   const { isOpen, openMenu, closeMenu } = useMobileMenu()
-  const [wsMovieOpen, setWsMovieOpen] = useState(false)
+  const [instagramOpen, setInstagramOpen] = useState(false)
   const [iletisimOpen, setIletisimOpen] = useState(false)
   const [youtubeOpen, setYoutubeOpen] = useState(false)
   const [asasModalOpen, setAsasModalOpen] = useState(false)
@@ -133,7 +133,7 @@ export function Navbar() {
     const handler = (e: CustomEvent<{ modalId: string }>) => {
       switch (e.detail.modalId) {
         case 'youtube':   setYoutubeOpen(true); break
-        case 'instagram': setWsMovieOpen(true); break
+        case 'instagram': setInstagramOpen(true); break
         case 'wallpaper': setWallpaperOpen(true); break
         case 'iletisim':  setIletisimOpen(true); break
         case 'asas':      setAsasModalOpen(true); break
@@ -337,7 +337,7 @@ export function Navbar() {
         isOpen={isOpen}
         onClose={closeMenu}
         onYoutubeOpen={() => setYoutubeOpen(true)}
-        onInstagramOpen={() => setWsMovieOpen(true)}
+        onInstagramOpen={() => setInstagramOpen(true)}
         onIletisimOpen={() => setIletisimOpen(true)}
         onAsasOpen={() => setAsasModalOpen(true)}
         onWallpaperOpen={() => setWallpaperOpen(true)}
@@ -367,7 +367,7 @@ export function Navbar() {
       </SidePanel>
 
       {/* Instagram Modal */}
-      <InstagramModal isOpen={wsMovieOpen} onClose={() => setWsMovieOpen(false)} />
+      <InstagramModal isOpen={instagramOpen} onClose={() => setInstagramOpen(false)} />
 
     </>
   )

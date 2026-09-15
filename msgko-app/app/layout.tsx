@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter, Rajdhani } from 'next/font/google'
-import Script from 'next/script'
 import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -8,7 +7,6 @@ import { ChatWidget } from '@/components/ui/ChatWidget'
 import { ParticleBackground } from '@/components/ui/ParticleBackground'
 import { Analytics } from '@vercel/analytics/next'
 import { PageViewTracker } from '@/components/ui/PageViewTracker'
-import { AdSense } from '@/components/ui/AdSense'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -343,20 +341,10 @@ export default function RootLayout({
         <ParticleBackground />
         <Navbar />
         {children}
-        {/* Footer öncesi reklam — her sayfada görünür, içerikle çakışmaz */}
-        <div className="w-full max-w-[1280px] mx-auto px-6 sm:px-8 py-6">
-          <AdSense slot="8727584512" />
-        </div>
         <Footer />
         <ChatWidget />
         <PageViewTracker />
         <Analytics />
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4962952498469276"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   )

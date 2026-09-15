@@ -1,4 +1,4 @@
-import type { NavItem, FooterColumn, SocialLink, Feature } from './types'
+import type { NavItem, SocialLink, Feature } from './types'
 
 // ─── Navigation ──────────────────────────────────────────────────────────────
 
@@ -32,30 +32,6 @@ export const FEATURES: Feature[] = [
     icon: '◈',
     title: 'Kaliteli İçerik',
     description: 'Yüksek kaliteli ve düzenli eğitim videoları.',
-  },
-]
-
-// ─── Footer ───────────────────────────────────────────────────────────────────
-
-export const FOOTER_COLUMNS: FooterColumn[] = [
-  {
-    heading: 'HIZLI ERİŞİM',
-    links: [
-      { label: 'Ana Sayfa', href: '/' },
-      { label: 'Asas Eğitimleri', href: '/kategoriler/asas' },
-      { label: 'Okçu Eğitimleri', href: '/kategoriler/okcu' },
-      { label: 'İletişim', href: '/iletisim' },
-    ],
-  },
-  {
-    heading: 'KATEGORİLER',
-    links: [
-      { label: 'Asas PK Taktikleri', href: '/kategoriler/asas' },
-      { label: 'Asas Farm Rotaları', href: '/kategoriler/asas' },
-      { label: 'Okçu PK Taktikleri', href: '/kategoriler/okcu' },
-      { label: 'Okçu Skill Rehberleri', href: '/kategoriler/okcu' },
-      { label: 'Okçu Farm Rotaları', href: '/kategoriler/okcu' },
-    ],
   },
 ]
 

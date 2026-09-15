@@ -186,7 +186,7 @@ export function MobileMenu({
                   transition={{ delay: 0.15, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <Link
-                    href="/kategoriler/okcu"
+                    href="/rehber/okcu"
                     onClick={onClose}
                     className="flex items-center justify-between px-3 py-3 mb-1 border-l-2 border-transparent text-white/50 hover:border-purple-500/30 hover:bg-white/[0.03] hover:text-white/85 transition-all duration-200"
                   >

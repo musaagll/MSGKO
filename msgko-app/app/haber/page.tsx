@@ -11,7 +11,6 @@ export const metadata: Metadata = buildMetadata({
   keywords: [
     'knight online haber', 'knight online güncelleme', 'knight online patch',
     'knight online etkinlik', 'knight online duyuru', 'knight online bakım',
-    'knight online son dakika', 'knight online yeni içerik',
   ],
   ogType: 'website',
 })
@@ -48,40 +47,25 @@ export default function HaberIndexPage() {
             Knight Online Haberler
           </h1>
           <p className="text-[0.9rem] leading-[1.8] text-white/50 max-w-2xl">
-            Knight Online&#39;daki en güncel güncellemeler, patch notları, etkinlikler ve
-            önemli duyurular burada yayınlanır.
+            Knight Online güncellemeleri, patch notları ve duyurular.
           </p>
         </header>
 
         <section className="max-w-[1280px] mx-auto px-6 sm:px-8 pb-20">
-          {/* Haberler Supabase'den gelecek — şimdilik placeholder */}
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 flex items-center justify-center mb-6 border border-white/[0.06]"
+            <div className="w-14 h-14 flex items-center justify-center mb-6 border border-white/[0.06]"
               style={{ background: 'rgba(255,255,255,0.02)' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 strokeWidth="1.5" className="text-white/20" aria-hidden="true">
                 <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
               </svg>
             </div>
-            <h2 className="text-[0.9rem] font-semibold text-white/40 mb-2">
-              Haberler yakında yayınlanacak
-            </h2>
-            <p className="text-[0.78rem] text-white/25 max-w-sm leading-relaxed">
-              Knight Online güncellemeleri ve duyuruları için bu sayfayı takip edin.
-              Admin panelinden haber eklendikçe burada görünecek.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3 justify-center">
-              <Link href="/rehber" className="px-5 py-2.5 text-[0.76rem] font-semibold tracking-[0.08em] uppercase
-                border border-purple-500/30 text-purple-400/70 hover:border-purple-500/60 hover:text-purple-400
-                transition-all duration-200">
-                Rehberlere Bak
-              </Link>
-              <Link href="/" className="px-5 py-2.5 text-[0.76rem] font-semibold tracking-[0.08em] uppercase
-                border border-white/10 text-white/40 hover:border-white/20 hover:text-white/70
-                transition-all duration-200">
-                Ana Sayfa
-              </Link>
-            </div>
+            <p className="text-[0.85rem] text-white/35 mb-6">Henüz haber yok.</p>
+            <Link href="/" className="px-5 py-2 text-[0.75rem] font-semibold tracking-[0.08em] uppercase
+              border border-white/10 text-white/40 hover:border-white/20 hover:text-white/70
+              transition-all duration-200">
+              Ana Sayfa
+            </Link>
           </div>
         </section>
       </main>
