@@ -117,11 +117,11 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://*.ytimg.com https://*.cdninstagram.com https://image.nttgame.com https://*.supabase.co https://pagead2.googlesyndication.com https://*.googleusercontent.com https://*.googlesyndication.com https://kobugda.com https://www.uskopazar.com",
+              "img-src 'self' data: blob: https://*.ytimg.com https://*.cdninstagram.com https://image.nttgame.com https://*.supabase.co https://pagead2.googlesyndication.com https://*.googleusercontent.com https://*.googlesyndication.com https://kobugda.com https://www.uskopazar.com https://www.google.com https://ucuzagb.com https://www.enucuzgb.com",
               "media-src 'self' blob:",
               "frame-src https://www.youtube.com https://www.instagram.com https://googleads.g.doubleclick.net",
               "worker-src 'self' blob:",
-              "connect-src 'self' https://*.supabase.co https://www.googleapis.com https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net",
+              "connect-src 'self' https://*.supabase.co https://www.googleapis.com https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ucuzagb.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
@@ -160,6 +160,21 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'image.nttgame.com',
+      },
+      // Google Favicon servisi — GB Fiyatları sayfası
+      {
+        protocol: 'https',
+        hostname: 'www.google.com',
+        pathname: '/s2/favicons/**',
+      },
+      // enucuzgb / ucuzagb item ikonları
+      {
+        protocol: 'https',
+        hostname: 'www.enucuzgb.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ucuzagb.com',
       },
     ],
   },
