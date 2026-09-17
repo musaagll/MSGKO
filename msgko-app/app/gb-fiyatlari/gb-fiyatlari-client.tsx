@@ -13,46 +13,45 @@ interface PricesData { [key: string]: SiteData }
 const SITE_META: Record<string, { color: string; bg: string; logo: string }> = {
   knightpin:  {
     color: '#6366f1', bg: 'rgba(99,102,241,0.12)',
-    logo: 'https://knightpin.com/favicon.ico',
+    logo: 'https://cdn.oyunextechnologies.com/images/logo_1778519291_8f7105a4.png',
   },
   bynogame:   {
     color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',
-    logo: 'https://www.bynogame.com/logo/bng-logo-day-1699348321831.png',
+    logo: 'https://www.google.com/s2/favicons?domain=bynogame.com&sz=128',
   },
   kopazar:    {
     color: '#10b981', bg: 'rgba(16,185,129,0.12)',
-    logo: 'https://www.kopazar.com/assetss/images/apple-touch-icon.png',
+    logo: 'https://kopazar.com/assetss/images/apple-touch-icon.png',
   },
   kabasakal:  {
     color: '#3b82f6', bg: 'rgba(59,130,246,0.12)',
-    logo: 'https://kabasakalonline.com/favicon.ico',
+    logo: 'https://cdn.kabasakalonline.net/uploads/2026/07/favicon-b-y-k-2-2c47fd2e5a.png',
   },
   oyuneks:    {
     color: '#ec4899', bg: 'rgba(236,72,153,0.12)',
-    logo: 'https://oyuneks.com/favicon.ico',
+    logo: 'https://www.google.com/s2/favicons?domain=oyuneks.com&sz=128',
   },
   sonteklif:  {
     color: '#f97316', bg: 'rgba(249,115,22,0.12)',
-    logo: 'https://www.sonteklif.com/favicon.ico',
+    logo: 'https://www.sonteklif.com/favicon.png',
   },
   gamesatis:  {
     color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)',
-    logo: 'https://www.gamesatis.com/favicon.ico',
+    logo: 'https://images.gamesatis.com/assets/logo-light.svg',
   },
   oyunfor:    {
     color: '#14b8a6', bg: 'rgba(20,184,166,0.12)',
-    logo: 'https://www.oyunfor.com/favicon.ico',
+    logo: 'https://www.google.com/s2/favicons?domain=oyunfor.com&sz=128',
   },
   bursagb:    {
     color: '#ef4444', bg: 'rgba(239,68,68,0.12)',
-    logo: 'https://www.bursagb.com/favicon.ico',
+    logo: 'https://assets.hyperteknoloji.com/cdn/bursagb/setting/dbursagb%286%29_cf2b6ffa603cceb5af92add3b03f55',
   },
 }
 
 function logoUrl(key: string, domain: string) {
-  const meta = SITE_META[key]
-  if (meta?.logo) return meta.logo
-  // fallback: Google favicon (yüksek çözünürlük)
+  const logo = SITE_META[key]?.logo
+  if (logo) return logo
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`
 }
 
