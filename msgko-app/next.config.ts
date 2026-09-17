@@ -117,7 +117,7 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://*.ytimg.com https://*.cdninstagram.com https://image.nttgame.com https://*.supabase.co https://pagead2.googlesyndication.com https://*.googleusercontent.com https://*.googlesyndication.com https://kobugda.com https://www.uskopazar.com https://www.google.com https://ucuzagb.com https://www.enucuzgb.com",
+              "img-src 'self' data: blob: https://*.ytimg.com https://*.cdninstagram.com https://image.nttgame.com https://*.supabase.co https://pagead2.googlesyndication.com https://*.googleusercontent.com https://*.googlesyndication.com https://kobugda.com https://www.uskopazar.com https://www.google.com https://ucuzagb.com https://www.enucuzgb.com https://knightpin.com https://www.bynogame.com https://www.kopazar.com https://kabasakalonline.com https://oyuneks.com https://www.sonteklif.com https://www.gamesatis.com https://www.oyunfor.com https://www.bursagb.com",
               "media-src 'self' blob:",
               "frame-src https://www.youtube.com https://www.instagram.com https://googleads.g.doubleclick.net",
               "worker-src 'self' blob:",
@@ -167,6 +167,16 @@ const nextConfig: NextConfig = {
         hostname: 'www.google.com',
         pathname: '/s2/favicons/**',
       },
+      // GB satış siteleri logoları
+      { protocol: 'https', hostname: 'knightpin.com' },
+      { protocol: 'https', hostname: 'www.bynogame.com' },
+      { protocol: 'https', hostname: 'www.kopazar.com' },
+      { protocol: 'https', hostname: 'kabasakalonline.com' },
+      { protocol: 'https', hostname: 'oyuneks.com' },
+      { protocol: 'https', hostname: 'www.sonteklif.com' },
+      { protocol: 'https', hostname: 'www.gamesatis.com' },
+      { protocol: 'https', hostname: 'www.oyunfor.com' },
+      { protocol: 'https', hostname: 'www.bursagb.com' },
       // enucuzgb / ucuzagb item ikonları
       {
         protocol: 'https',

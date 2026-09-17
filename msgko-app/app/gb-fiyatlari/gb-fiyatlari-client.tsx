@@ -9,21 +9,51 @@ interface SitePrice  { server: string; sell: number | null; buy: number | null }
 interface SiteData   { name: string; url: string; prices: SitePrice[] }
 interface PricesData { [key: string]: SiteData }
 
-// ── Site metadata (logo renk + favicon) ─────────────────────────────────────
-const SITE_META: Record<string, { color: string; bg: string }> = {
-  knightpin:  { color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
-  bynogame:   { color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
-  kopazar:    { color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
-  kabasakal:  { color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
-  oyuneks:    { color: '#ec4899', bg: 'rgba(236,72,153,0.12)' },
-  sonteklif:  { color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
-  gamesatis:  { color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
-  oyunfor:    { color: '#14b8a6', bg: 'rgba(20,184,166,0.12)'  },
-  bursagb:    { color: '#ef4444', bg: 'rgba(239,68,68,0.12)'   },
+// ── Site metadata (logo URL + renk) ─────────────────────────────────────────
+const SITE_META: Record<string, { color: string; bg: string; logo: string }> = {
+  knightpin:  {
+    color: '#6366f1', bg: 'rgba(99,102,241,0.12)',
+    logo: 'https://knightpin.com/favicon.ico',
+  },
+  bynogame:   {
+    color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',
+    logo: 'https://www.bynogame.com/logo/bng-logo-day-1699348321831.png',
+  },
+  kopazar:    {
+    color: '#10b981', bg: 'rgba(16,185,129,0.12)',
+    logo: 'https://www.kopazar.com/assetss/images/apple-touch-icon.png',
+  },
+  kabasakal:  {
+    color: '#3b82f6', bg: 'rgba(59,130,246,0.12)',
+    logo: 'https://kabasakalonline.com/favicon.ico',
+  },
+  oyuneks:    {
+    color: '#ec4899', bg: 'rgba(236,72,153,0.12)',
+    logo: 'https://oyuneks.com/favicon.ico',
+  },
+  sonteklif:  {
+    color: '#f97316', bg: 'rgba(249,115,22,0.12)',
+    logo: 'https://www.sonteklif.com/favicon.ico',
+  },
+  gamesatis:  {
+    color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)',
+    logo: 'https://www.gamesatis.com/favicon.ico',
+  },
+  oyunfor:    {
+    color: '#14b8a6', bg: 'rgba(20,184,166,0.12)',
+    logo: 'https://www.oyunfor.com/favicon.ico',
+  },
+  bursagb:    {
+    color: '#ef4444', bg: 'rgba(239,68,68,0.12)',
+    logo: 'https://www.bursagb.com/favicon.ico',
+  },
 }
 
-function faviconUrl(domain: string) {
-  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`
+function logoUrl(key: string, domain: string) {
+  const meta = SITE_META[key]
+  if (meta?.logo) return meta.logo
+  // fallback: Google favicon (yüksek çözünürlük)
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`
 }
 
 // ── Sunucu sırası ve renkleri ────────────────────────────────────────────────
@@ -239,7 +269,7 @@ export function GbFiyatlariClient() {
             {serverPrices.map((s, idx) => {
               const isBestSell = s.sell !== null && s.sell === bestSell
               const isBestBuy  = s.buy  !== null && s.buy  === bestBuy
-              const meta = SITE_META[s.key] ?? { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)' }
+              const meta = SITE_META[s.key] ?? { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', logo: '' }
               const domain = new URL(s.url).hostname
 
               return (
@@ -273,19 +303,27 @@ export function GbFiyatlariClient() {
                   </span>
 
                   {/* Logo */}
-                  <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden"
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden"
                     style={{ background: meta.bg, border: `1px solid ${meta.color}30` }}>
                     <Image
-                      src={faviconUrl(domain)}
+                      src={logoUrl(s.key, domain)}
                       alt={s.name}
-                      width={28}
-                      height={28}
-                      className="w-7 h-7 object-contain"
+                      width={40}
+                      height={40}
+                      className="w-8 h-8 object-contain"
                       unoptimized
                       onError={(e) => {
                         const el = e.target as HTMLImageElement
-                        el.style.display = 'none'
-                        el.parentElement!.innerHTML = `<span style="font-size:1.1rem">${s.name[0]}</span>`
+                        // Fallback: Google favicon
+                        if (!el.src.includes('google.com')) {
+                          el.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`
+                        } else {
+                          el.style.display = 'none'
+                          if (el.parentElement) {
+                            el.parentElement.innerHTML =
+                              `<span style="font-size:1.3rem;font-weight:900;color:${meta.color}">${s.name[0]}</span>`
+                          }
+                        }
                       }}
                     />
                   </div>
