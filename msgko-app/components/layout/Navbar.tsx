@@ -240,6 +240,21 @@ export function Navbar() {
 
             <div className="w-px h-5 mx-1 bg-white/[0.08]" />
 
+            {/* GB Fiyatları nav button */}
+            <Link href="/gb-fiyatlari" className={NAV_BUTTON_CLASS}>
+              <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-green-500/[0.06]" />
+              <span className="relative z-10 flex items-center gap-2">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 group-hover:scale-110"
+                  style={{ background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.25)' }}>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                    className="text-green-400">
+                    <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
+                </span>
+                <span className="text-[#C8C8D8]/50 group-hover:text-green-300 transition-colors duration-200">GB Fiyatları</span>
+              </span>
+            </Link>
+
             {/* Pazar nav button */}
             <Link href="/pazar" className={NAV_BUTTON_CLASS}>
               <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-amber-500/[0.06]" />

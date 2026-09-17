@@ -210,7 +210,32 @@ export function MobileMenu({
                   Sosyal Medya
                 </p>
 
-                {/* YouTube butonu */}
+                {/* GB Fiyatları butonu */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.18, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <Link
+                    href="/gb-fiyatlari"
+                    onClick={onClose}
+                    className="w-full flex items-center justify-between px-3 py-3 mb-1 border-l-2 border-transparent text-white/50 hover:border-green-500/40 hover:bg-green-500/[0.05] hover:text-white/85 transition-all duration-200 group"
+                  >
+                    <span className="flex items-center gap-2.5 text-[0.85rem] font-medium tracking-[0.04em]">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-200 group-hover:scale-110"
+                        style={{ background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.25)' }}>
+                        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                          className="text-green-400">
+                          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                      </span>
+                      <span className="group-hover:text-green-300 transition-colors duration-200">GB Fiyatları</span>
+                    </span>
+                    <ChevronRight size={13} className="text-white/20" />
+                  </Link>
+                </motion.div>
+
+              {/* YouTube butonu */}
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}

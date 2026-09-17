@@ -33,10 +33,11 @@ const REHBER_LINKS = [
 ]
 
 const OYUN_LINKS = [
-  { label: 'USKO Pazar',       href: '/pazar' },
-  { label: 'Boss Rehberleri',  href: '/boss' },
-  { label: 'Harita Rehberleri',href: '/harita' },
-  { label: 'Item Veritabanı',  href: '/item' },
+  { label: 'GB Fiyatları',       href: '/gb-fiyatlari' },
+  { label: 'USKO Pazar',         href: '/pazar' },
+  { label: 'Boss Rehberleri',    href: '/boss' },
+  { label: 'Harita Rehberleri',  href: '/harita' },
+  { label: 'Item Veritabanı',    href: '/item' },
 ]
 
 export function Footer() {
