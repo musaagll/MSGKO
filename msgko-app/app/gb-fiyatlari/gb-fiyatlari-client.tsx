@@ -2,61 +2,65 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
-// ── Tipler ──────────────────────────────────────────────────────────────────
-interface SitePrice {
-  server: string
-  sell: number | null
-  buy: number | null
+// ── Tipler ───────────────────────────────────────────────────────────────────
+interface SitePrice  { server: string; sell: number | null; buy: number | null }
+interface SiteData   { name: string; url: string; prices: SitePrice[] }
+interface PricesData { [key: string]: SiteData }
+
+// ── Site metadata (logo renk + favicon) ─────────────────────────────────────
+const SITE_META: Record<string, { color: string; bg: string }> = {
+  knightpin:  { color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
+  bynogame:   { color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+  kopazar:    { color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+  kabasakal:  { color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+  oyuneks:    { color: '#ec4899', bg: 'rgba(236,72,153,0.12)' },
+  sonteklif:  { color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
+  gamesatis:  { color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
+  oyunfor:    { color: '#14b8a6', bg: 'rgba(20,184,166,0.12)'  },
+  bursagb:    { color: '#ef4444', bg: 'rgba(239,68,68,0.12)'   },
 }
 
-interface SiteData {
-  name: string
-  url: string
-  prices: SitePrice[]
+function faviconUrl(domain: string) {
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`
 }
 
-interface PricesData {
-  [siteName: string]: SiteData
+// ── Sunucu sırası ve renkleri ────────────────────────────────────────────────
+const SERVER_ORDER = ['Zero','Pandora','Agartha','Destan','Oreads','Dryads','Minark','Felis']
+const SERVER_COLOR: Record<string, { text: string; bg: string; glow: string }> = {
+  Zero:    { text: '#60a5fa', bg: 'rgba(96,165,250,0.1)',   glow: 'rgba(96,165,250,0.25)'   },
+  Pandora: { text: '#34d399', bg: 'rgba(52,211,153,0.1)',   glow: 'rgba(52,211,153,0.25)'   },
+  Agartha: { text: '#fbbf24', bg: 'rgba(251,191,36,0.1)',   glow: 'rgba(251,191,36,0.25)'   },
+  Destan:  { text: '#a78bfa', bg: 'rgba(167,139,250,0.1)',  glow: 'rgba(167,139,250,0.25)'  },
+  Oreads:  { text: '#fb923c', bg: 'rgba(251,146,60,0.1)',   glow: 'rgba(251,146,60,0.25)'   },
+  Dryads:  { text: '#f472b6', bg: 'rgba(244,114,182,0.1)',  glow: 'rgba(244,114,182,0.25)'  },
+  Minark:  { text: '#94a3b8', bg: 'rgba(148,163,184,0.1)',  glow: 'rgba(148,163,184,0.2)'   },
+  Felis:   { text: '#86efac', bg: 'rgba(134,239,172,0.1)',  glow: 'rgba(134,239,172,0.2)'   },
 }
 
-// ── KO sunucularının sırası ve renkleri ─────────────────────────────────────
-const SERVER_ORDER = ['Zero', 'Pandora', 'Agartha', 'Destan', 'Oreads', 'Dryads', 'Minark', 'Felis']
-const SERVER_COLOR: Record<string, string> = {
-  Zero:    '#60a5fa',
-  Pandora: '#34d399',
-  Agartha: '#fbbf24',
-  Destan:  '#a78bfa',
-  Oreads:  '#fb923c',
-  Dryads:  '#f472b6',
-  Minark:  '#94a3b8',
-  Felis:   '#86efac',
+function timeAgo(iso: string) {
+  const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
+  if (s < 60)   return `${s}sn önce`
+  if (s < 3600) return `${Math.floor(s/60)}dk önce`
+  return `${Math.floor(s/3600)}sa önce`
 }
 
-function timeAgo(iso: string): string {
-  const d = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
-  if (d < 60)   return `${d}sn önce`
-  if (d < 3600) return `${Math.floor(d / 60)}dk önce`
-  return `${Math.floor(d / 3600)}sa önce`
-}
-
-// ── Ana bileşen ──────────────────────────────────────────────────────────────
+// ── Ana bileşen ───────────────────────────────────────────────────────────────
 export function GbFiyatlariClient() {
-  const [sites, setSites]           = useState<PricesData>({})
-  const [updatedAt, setUpdatedAt]   = useState<string | null>(null)
-  const [loading, setLoading]       = useState(true)
-  const [activeServer, setActive]   = useState('Zero')
-  const [mode, setMode]             = useState<'sell' | 'buy'>('sell')
-  const [lastFetch, setLastFetch]   = useState<Date | null>(null)
+  const [sites, setSites]         = useState<PricesData>({})
+  const [updatedAt, setUpdatedAt] = useState<string|null>(null)
+  const [loading, setLoading]     = useState(true)
+  const [activeServer, setActive] = useState('Zero')
+  const [mode, setMode]           = useState<'sell'|'buy'>('sell')
 
   const fetchPrices = useCallback(async () => {
     try {
       const r = await fetch('/api/gb-fiyatlari', { cache: 'no-store' })
-      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      if (!r.ok) throw new Error()
       const d = await r.json()
       setSites(d.sites ?? {})
       setUpdatedAt(d.updatedAt ?? null)
-      setLastFetch(new Date())
     } catch { /* ignore */ } finally {
       setLoading(false)
     }
@@ -68,319 +72,303 @@ export function GbFiyatlariClient() {
     return () => clearInterval(t)
   }, [fetchPrices])
 
-  // Seçili sunucu için tüm sitelerin fiyatları
+  // Seçili sunucu + mod için sıralı liste
   const serverPrices = Object.entries(sites)
     .map(([key, site]) => {
       const sp = site.prices.find(p => p.server === activeServer)
-      return {
-        key,
-        name: site.name,
-        url:  site.url,
-        sell: sp?.sell ?? null,
-        buy:  sp?.buy  ?? null,
-      }
+      return { key, name: site.name, url: site.url, sell: sp?.sell ?? null, buy: sp?.buy ?? null }
     })
     .filter(s => s.sell !== null || s.buy !== null)
-    .sort((a, b) => {
-      const av = mode === 'sell' ? (a.sell ?? Infinity) : (b.buy ?? -Infinity)
-      const bv = mode === 'sell' ? (b.sell ?? Infinity) : (a.buy ?? -Infinity)
-      return mode === 'sell' ? av - bv : bv - av
-    })
+    .sort((a, b) =>
+      mode === 'sell'
+        ? (a.sell ?? Infinity) - (b.sell ?? Infinity)
+        : (b.buy ?? -Infinity) - (a.buy ?? -Infinity)
+    )
 
   const bestSell = Math.min(...serverPrices.map(s => s.sell ?? Infinity))
   const bestBuy  = Math.max(...serverPrices.map(s => s.buy  ?? -Infinity))
 
-  // Tüm sunucular için özet (en ucuz satış)
-  const serverSummary = SERVER_ORDER.map(srv => {
-    const prices = Object.values(sites)
-      .map(site => site.prices.find(p => p.server === srv)?.sell ?? null)
-      .filter((v): v is number => v !== null)
-    const minSell = prices.length ? Math.min(...prices) : null
-    const maxBuy = Object.values(sites)
-      .map(site => site.prices.find(p => p.server === srv)?.buy ?? null)
-      .filter((v): v is number => v !== null)
-    const bestBuyForSrv = maxBuy.length ? Math.max(...maxBuy) : null
-    return { server: srv, minSell, bestBuy: bestBuyForSrv }
+  // Özet kartlar
+  const summary = SERVER_ORDER.map(srv => {
+    const prices = Object.values(sites).flatMap(site =>
+      site.prices.filter(p => p.server === srv).map(p => p.sell).filter((v): v is number => v !== null)
+    )
+    const buys = Object.values(sites).flatMap(site =>
+      site.prices.filter(p => p.server === srv).map(p => p.buy).filter((v): v is number => v !== null)
+    )
+    return {
+      server:  srv,
+      minSell: prices.length ? Math.min(...prices) : null,
+      maxBuy:  buys.length   ? Math.max(...buys)   : null,
+    }
   })
 
+  const sc = SERVER_COLOR[activeServer] ?? SERVER_COLOR['Minark']
+
   return (
-    <div className="min-h-screen" style={{ background: '#07070f' }}>
+    <div className="min-h-screen" style={{ background: '#06060e' }}>
+
+      {/* ── Üst şerit — canlı güncelleme bildirimi ── */}
+      <div className="w-full border-b border-white/[0.05]"
+        style={{ background: 'rgba(74,222,128,0.04)' }}>
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-2 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-[0.68rem] text-green-400/60">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"
+              style={{ boxShadow: '0 0 6px #4ade80' }} />
+            Canlı • Her 5 dakikada güncellenir
+          </div>
+          {updatedAt && (
+            <span className="text-[0.65rem] text-white/20">
+              Son güncelleme: <span className="text-white/40">{timeAgo(updatedAt)}</span>
+            </span>
+          )}
+        </div>
+      </div>
 
       {/* ── Header ── */}
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-6">
-        <nav className="mb-4">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8">
+        <nav className="mb-5">
           <ol className="flex items-center gap-2 text-[0.68rem] text-white/20">
             <li><Link href="/" className="hover:text-white/50 transition-colors">Ana Sayfa</Link></li>
-            <li className="text-white/10">/</li>
+            <li>/</li>
             <li className="text-white/40">GB Fiyatları</li>
           </ol>
         </nav>
 
-        <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-green-400"
-                style={{ boxShadow: '0 0 6px #4ade80' }} />
-              <span className="text-[0.6rem] tracking-[0.25em] uppercase font-bold text-green-400/70">
-                Canlı Fiyatlar
-              </span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              GB <span className="text-green-400">Fiyatları</span>
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white">
+              GB <span style={{ color: '#4ade80' }}>Fiyatları</span>
             </h1>
-            <p className="text-[0.78rem] text-white/30 mt-1">
-              9 site · 8 sunucu · 5dk güncelleme
+            <p className="text-[0.8rem] text-white/35 mt-2">
+              Knight Online Gold Bar — 9 site karşılaştırması · Anlık fiyatlar
             </p>
           </div>
-          <div className="flex items-center gap-3 text-[0.7rem] text-white/25">
-            {updatedAt && <span>Güncellendi: <span className="text-white/50">{timeAgo(updatedAt)}</span></span>}
-            <button onClick={fetchPrices}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-white/[0.08]
-                hover:border-white/20 transition-all text-white/40 hover:text-white/70">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M21 12a9 9 0 11-6.219-8.56"/>
-              </svg>
-              Yenile
-            </button>
-          </div>
+          <button onClick={fetchPrices}
+            className="flex items-center gap-2 px-4 py-2 rounded text-[0.76rem] font-semibold
+              border border-white/[0.08] text-white/40 hover:border-green-500/40
+              hover:text-green-400 transition-all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M21 12a9 9 0 11-6.219-8.56"/>
+            </svg>
+            Yenile
+          </button>
         </div>
 
-        {/* ── Sunucu Özet Kartları ── */}
-        {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-20 rounded animate-pulse"
-                style={{ background: 'rgba(255,255,255,0.04)' }} />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
-            {serverSummary.map(({ server, minSell, bestBuy: bestBuyVal }) => {
-              const active = activeServer === server
-              const color  = SERVER_COLOR[server] ?? '#94a3b8'
-              return (
-                <button
-                  key={server}
-                  onClick={() => setActive(server)}
-                  className="flex flex-col items-start p-3 rounded transition-all duration-150 text-left"
-                  style={{
-                    background:  active ? `${color}12` : 'rgba(255,255,255,0.02)',
-                    border:      `1px solid ${active ? color + '40' : 'rgba(255,255,255,0.06)'}`,
-                    boxShadow:   active ? `0 0 16px ${color}18` : 'none',
-                  }}
-                >
-                  <span className="text-[0.7rem] font-bold mb-1" style={{ color: active ? color : 'rgba(255,255,255,0.45)' }}>
-                    {server}
+        {/* ── Sunucu kartları ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-8">
+          {summary.map(({ server, minSell, maxBuy }) => {
+            const active = activeServer === server
+            const c = SERVER_COLOR[server] ?? SERVER_COLOR['Minark']
+            return (
+              <button key={server} onClick={() => setActive(server)}
+                className="flex flex-col items-start p-3 rounded-lg transition-all duration-150 text-left relative overflow-hidden"
+                style={{
+                  background:  active ? c.bg   : 'rgba(255,255,255,0.02)',
+                  border:      `1px solid ${active ? c.text + '50' : 'rgba(255,255,255,0.06)'}`,
+                  boxShadow:   active ? `0 4px 24px ${c.glow}` : 'none',
+                }}>
+                {active && (
+                  <div className="absolute inset-0 pointer-events-none"
+                    style={{ background: `radial-gradient(ellipse at 50% 100%, ${c.glow} 0%, transparent 70%)` }} />
+                )}
+                <span className="text-[0.65rem] font-bold tracking-wider mb-1.5 relative z-10"
+                  style={{ color: active ? c.text : 'rgba(255,255,255,0.3)' }}>
+                  {server}
+                </span>
+                {minSell ? (
+                  <span className="text-[0.95rem] font-black tabular-nums text-white/90 relative z-10">
+                    {minSell}₺
                   </span>
-                  {minSell ? (
-                    <span className="text-[1rem] font-black tabular-nums text-white/90">
-                      {minSell}₺
-                    </span>
-                  ) : (
-                    <span className="text-[0.75rem] text-white/20">—</span>
-                  )}
-                  {bestBuyVal && (
-                    <span className="text-[0.62rem] text-white/30 mt-0.5">
-                      Alış: {bestBuyVal}₺
-                    </span>
-                  )}
-                </button>
-              )
-            })}
-          </div>
-        )}
-      </div>
+                ) : (
+                  <span className="text-[0.72rem] text-white/15">—</span>
+                )}
+                {maxBuy && (
+                  <span className="text-[0.58rem] text-white/30 mt-0.5 relative z-10">
+                    alış {maxBuy}₺
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
 
-      {/* ── Detay Tablo ── */}
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 pb-24">
-
-        {/* Filtre bar */}
-        <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full flex-shrink-0"
-              style={{ background: SERVER_COLOR[activeServer] ?? '#94a3b8' }} />
-            <h2 className="text-[0.9rem] font-bold text-white/80"
-              style={{ color: SERVER_COLOR[activeServer] ?? '#94a3b8' }}>
+        {/* ── Mod seçici ── */}
+        <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
+          <div className="flex items-center gap-3">
+            <div className="w-2.5 h-2.5 rounded-full"
+              style={{ background: sc.text, boxShadow: `0 0 8px ${sc.glow}` }} />
+            <h2 className="text-[1rem] font-bold" style={{ color: sc.text }}>
               {activeServer} Sunucusu
             </h2>
-            <span className="text-[0.72rem] text-white/30 ml-2">
-              {serverPrices.length} site karşılaştırıldı
+            <span className="text-[0.72rem] text-white/25">
+              {serverPrices.length} site listelendi
             </span>
           </div>
-
-          {/* Satış / Alış toggle */}
-          <div className="flex rounded overflow-hidden border border-white/[0.07]">
+          <div className="flex rounded-lg overflow-hidden border border-white/[0.07]">
             {(['sell', 'buy'] as const).map(m => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                className="px-4 py-1.5 text-[0.72rem] font-semibold tracking-wider uppercase transition-all"
+              <button key={m} onClick={() => setMode(m)}
+                className="px-5 py-2 text-[0.72rem] font-bold tracking-wider uppercase transition-all"
                 style={{
-                  background: mode === m ? 'rgba(255,255,255,0.08)' : 'transparent',
-                  color:      mode === m ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.3)',
+                  background: mode === m ? 'rgba(255,255,255,0.07)' : 'transparent',
+                  color:      mode === m ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)',
+                  borderRight: m === 'sell' ? '1px solid rgba(255,255,255,0.07)' : 'none',
                 }}>
-                {m === 'sell' ? 'Satış Fiyatı' : 'Alış Fiyatı'}
+                {m === 'sell' ? '↓ En Ucuz Satış' : '↑ En Yüksek Alış'}
               </button>
             ))}
           </div>
         </div>
+      </div>
 
+      {/* ── Fiyat listesi ── */}
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 pb-24">
         {loading ? (
-          <div className="space-y-2">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-14 rounded animate-pulse"
-                style={{ background: 'rgba(255,255,255,0.03)', animationDelay: `${i * 0.05}s` }} />
+          <div className="space-y-3">
+            {[...Array(7)].map((_, i) => (
+              <div key={i} className="h-20 rounded-xl animate-pulse"
+                style={{ background: 'rgba(255,255,255,0.03)', animationDelay: `${i*0.07}s` }} />
             ))}
           </div>
         ) : serverPrices.length === 0 ? (
           <div className="flex items-center justify-center py-20">
-            <p className="text-[0.85rem] text-white/25">Bu sunucu için fiyat bulunamadı</p>
+            <p className="text-white/25">Bu sunucu için fiyat bulunamadı</p>
           </div>
         ) : (
-          <div className="rounded overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
-            {/* Desktop tablo */}
-            <table className="w-full text-[0.82rem] border-collapse hidden md:table">
-              <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  <th className="text-left py-3 px-5 text-[0.6rem] tracking-[0.2em] uppercase text-white/30 font-semibold">
-                    Site
-                  </th>
-                  <th className="text-right py-3 px-5 text-[0.6rem] tracking-[0.2em] uppercase text-white/30 font-semibold">
-                    Satış Fiyatı
-                  </th>
-                  <th className="text-right py-3 px-5 text-[0.6rem] tracking-[0.2em] uppercase text-white/30 font-semibold">
-                    Alış Fiyatı
-                  </th>
-                  <th className="text-right py-3 px-5 text-[0.6rem] tracking-[0.2em] uppercase text-white/30 font-semibold w-28">
-                    Durum
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {serverPrices.map((s, idx) => {
-                  const isBestSell = s.sell !== null && s.sell === bestSell
-                  const isBestBuy  = s.buy  !== null && s.buy  === bestBuy
-                  return (
-                    <tr key={s.key}
-                      className="border-b hover:bg-white/[0.02] transition-colors"
-                      style={{ borderColor: 'rgba(255,255,255,0.04)' }}>
-                      {/* Site adı */}
-                      <td className="py-3 px-5">
-                        <a href={s.url} target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-2 group">
-                          <span className="text-[0.82rem] font-semibold text-white/75
-                            group-hover:text-white transition-colors">
-                            {s.name}
-                          </span>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" strokeWidth="2"
-                            className="text-white/20 group-hover:text-white/50 transition-colors">
-                            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-                            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                          </svg>
-                        </a>
-                      </td>
-                      {/* Satış */}
-                      <td className="py-3 px-5 text-right">
-                        {s.sell !== null ? (
-                          <div className="flex items-center justify-end gap-2">
-                            {isBestSell && (
-                              <span className="text-[0.58rem] font-bold px-1.5 py-0.5 rounded-sm
-                                bg-green-500/15 text-green-400 border border-green-500/25">
-                                EN UCUZ
-                              </span>
-                            )}
-                            <span className={`font-black text-[0.92rem] tabular-nums ${
-                              isBestSell ? 'text-green-400' : 'text-white/75'
-                            }`}>
-                              {s.sell.toLocaleString('tr-TR')}₺
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-white/20 text-xs">—</span>
-                        )}
-                      </td>
-                      {/* Alış */}
-                      <td className="py-3 px-5 text-right">
-                        {s.buy !== null ? (
-                          <div className="flex items-center justify-end gap-2">
-                            {isBestBuy && (
-                              <span className="text-[0.58rem] font-bold px-1.5 py-0.5 rounded-sm
-                                bg-blue-500/15 text-blue-400 border border-blue-500/25">
-                                EN YÜKSEK
-                              </span>
-                            )}
-                            <span className={`font-semibold tabular-nums ${
-                              isBestBuy ? 'text-blue-400' : 'text-white/45'
-                            }`}>
-                              {s.buy.toLocaleString('tr-TR')}₺
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-white/20 text-xs">—</span>
-                        )}
-                      </td>
-                      {/* Durum */}
-                      <td className="py-3 px-5 text-right">
-                        <a href={s.url} target="_blank" rel="noopener noreferrer"
-                          className="inline-block text-[0.68rem] font-semibold tracking-wider uppercase
-                            px-3 py-1 border border-white/[0.08] text-white/35
-                            hover:border-white/25 hover:text-white/70 transition-all">
-                          Siteye Git
-                        </a>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+          <div className="space-y-2.5">
+            {serverPrices.map((s, idx) => {
+              const isBestSell = s.sell !== null && s.sell === bestSell
+              const isBestBuy  = s.buy  !== null && s.buy  === bestBuy
+              const meta = SITE_META[s.key] ?? { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)' }
+              const domain = new URL(s.url).hostname
 
-            {/* Mobil kartlar */}
-            <div className="md:hidden divide-y divide-white/[0.04]">
-              {serverPrices.map(s => {
-                const isBestSell = s.sell !== null && s.sell === bestSell
-                const isBestBuy  = s.buy  !== null && s.buy  === bestBuy
-                return (
-                  <div key={s.key} className="flex items-center gap-3 px-4 py-3">
-                    <div className="flex-1 min-w-0">
-                      <a href={s.url} target="_blank" rel="noopener noreferrer"
-                        className="text-[0.82rem] font-semibold text-white/75 hover:text-white transition-colors">
-                        {s.name}
-                      </a>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      {s.sell !== null && (
-                        <p className={`font-black text-[0.88rem] tabular-nums ${
-                          isBestSell ? 'text-green-400' : 'text-white/75'
+              return (
+                <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer"
+                  className="group flex items-center gap-4 px-5 py-4 rounded-xl
+                    transition-all duration-200 cursor-pointer"
+                  style={{
+                    background: idx === 0 && isBestSell
+                      ? 'rgba(74,222,128,0.05)'
+                      : 'rgba(255,255,255,0.025)',
+                    border: `1px solid ${
+                      idx === 0 && isBestSell
+                        ? 'rgba(74,222,128,0.2)'
+                        : 'rgba(255,255,255,0.06)'
+                    }`,
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLElement).style.background = meta.bg
+                    ;(e.currentTarget as HTMLElement).style.borderColor = meta.color + '40'
+                  }}
+                  onMouseLeave={e => {
+                    ;(e.currentTarget as HTMLElement).style.background = idx === 0 && isBestSell
+                      ? 'rgba(74,222,128,0.05)' : 'rgba(255,255,255,0.025)'
+                    ;(e.currentTarget as HTMLElement).style.borderColor = idx === 0 && isBestSell
+                      ? 'rgba(74,222,128,0.2)' : 'rgba(255,255,255,0.06)'
+                  }}
+                >
+                  {/* Sıra numarası */}
+                  <span className="text-[0.65rem] font-bold text-white/20 w-5 text-center flex-shrink-0">
+                    {idx + 1}
+                  </span>
+
+                  {/* Logo */}
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden"
+                    style={{ background: meta.bg, border: `1px solid ${meta.color}30` }}>
+                    <Image
+                      src={faviconUrl(domain)}
+                      alt={s.name}
+                      width={28}
+                      height={28}
+                      className="w-7 h-7 object-contain"
+                      unoptimized
+                      onError={(e) => {
+                        const el = e.target as HTMLImageElement
+                        el.style.display = 'none'
+                        el.parentElement!.innerHTML = `<span style="font-size:1.1rem">${s.name[0]}</span>`
+                      }}
+                    />
+                  </div>
+
+                  {/* Site adı + domain */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[0.88rem] font-bold text-white/80
+                      group-hover:text-white transition-colors truncate">
+                      {s.name}
+                    </p>
+                    <p className="text-[0.65rem] text-white/25 mt-0.5">{domain}</p>
+                  </div>
+
+                  {/* En ucuz / en yüksek badge */}
+                  <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+                    {isBestSell && mode === 'sell' && (
+                      <span className="text-[0.62rem] font-black px-2 py-1 rounded-md
+                        bg-green-500/15 text-green-400 border border-green-500/30 tracking-wider">
+                        ★ EN UCUZ
+                      </span>
+                    )}
+                    {isBestBuy && mode === 'buy' && (
+                      <span className="text-[0.62rem] font-black px-2 py-1 rounded-md
+                        bg-blue-500/15 text-blue-400 border border-blue-500/30 tracking-wider">
+                        ★ EN YÜKSEK
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Fiyatlar */}
+                  <div className="flex items-center gap-6 flex-shrink-0">
+                    {/* Satış */}
+                    <div className="text-right">
+                      <p className="text-[0.6rem] text-white/25 mb-0.5">Satış</p>
+                      {s.sell !== null ? (
+                        <p className={`text-[1rem] font-black tabular-nums leading-tight ${
+                          isBestSell ? 'text-green-400' : 'text-white/85'
                         }`}>
                           {s.sell.toLocaleString('tr-TR')}₺
-                          {isBestSell && <span className="text-[0.58rem] ml-1 text-green-400/70">★</span>}
                         </p>
-                      )}
-                      {s.buy !== null && (
-                        <p className={`text-[0.68rem] tabular-nums ${
-                          isBestBuy ? 'text-blue-400/80' : 'text-white/30'
-                        }`}>
-                          Alış: {s.buy.toLocaleString('tr-TR')}₺
-                        </p>
+                      ) : (
+                        <p className="text-[0.8rem] text-white/20">—</p>
                       )}
                     </div>
+
+                    {/* Alış */}
+                    <div className="text-right hidden sm:block">
+                      <p className="text-[0.6rem] text-white/25 mb-0.5">Alış</p>
+                      {s.buy !== null ? (
+                        <p className={`text-[0.85rem] font-semibold tabular-nums leading-tight ${
+                          isBestBuy ? 'text-blue-400' : 'text-white/40'
+                        }`}>
+                          {s.buy.toLocaleString('tr-TR')}₺
+                        </p>
+                      ) : (
+                        <p className="text-[0.8rem] text-white/20">—</p>
+                      )}
+                    </div>
+
+                    {/* Ok */}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2"
+                      className="text-white/15 group-hover:text-white/50 transition-colors flex-shrink-0">
+                      <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                      <polyline points="15 3 21 3 21 9"/>
+                      <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
                   </div>
-                )
-              })}
-            </div>
+                </a>
+              )
+            })}
           </div>
         )}
 
-        {/* Kaynak notu */}
-        <p className="text-[0.62rem] text-white/15 text-center mt-6">
-          Veriler{' '}
+        {/* Kaynak */}
+        <div className="flex items-center justify-center gap-2 mt-8 text-[0.62rem] text-white/15">
+          <span>Veriler</span>
           <a href="https://ucuzagb.com" target="_blank" rel="noopener noreferrer"
-            className="hover:text-white/40 transition-colors underline underline-offset-2">
+            className="text-white/30 hover:text-white/60 transition-colors underline underline-offset-2">
             ucuzagb.com
-          </a>{' '}
-          üzerinden 5 dakikada bir güncellenir.
-        </p>
+          </a>
+          <span>üzerinden 5dk'da bir güncellenir.</span>
+        </div>
       </div>
     </div>
   )
