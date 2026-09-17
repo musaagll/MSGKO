@@ -51,10 +51,11 @@ export function GbFiyatlariClient() {
 
   const fetchPrices = useCallback(async () => {
     try {
-      const r = await fetch('https://ucuzagb.com/api/prices', { cache: 'no-store' })
+      const r = await fetch('/api/gb-fiyatlari', { cache: 'no-store' })
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
       const d = await r.json()
-      setSites(d.ko?.sites ?? {})
-      setUpdatedAt(d.ko?.updatedAt ?? null)
+      setSites(d.sites ?? {})
+      setUpdatedAt(d.updatedAt ?? null)
       setLastFetch(new Date())
     } catch { /* ignore */ } finally {
       setLoading(false)

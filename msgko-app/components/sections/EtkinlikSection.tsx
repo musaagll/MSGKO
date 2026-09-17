@@ -82,7 +82,7 @@ export function EtkinlikSection() {
   const [, setTick]             = useState(0)
 
   useEffect(() => {
-    fetch('https://ucuzagb.com/api/etkinlikler')
+    fetch('/api/gb-fiyatlari?etkinlik=1')
       .then(r => r.json())
       .then((d: EtkinlikData) => { setData(d); setLoading(false) })
       .catch(() => setLoading(false))

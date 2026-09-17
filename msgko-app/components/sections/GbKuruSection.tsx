@@ -35,7 +35,7 @@ export function GbKuruSection() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('https://ucuzagb.com/api/gb-kuru?game=ko')
+    fetch('/api/gb-fiyatlari?kuru=1')
       .then(r => r.json())
       .then((d: GbKuruData) => {
         setData(d)
@@ -47,7 +47,7 @@ export function GbKuruSection() {
   // 5 dk yenile
   useEffect(() => {
     const t = setInterval(() => {
-      fetch('https://ucuzagb.com/api/gb-kuru?game=ko')
+      fetch('/api/gb-fiyatlari?kuru=1')
         .then(r => r.json())
         .then((d: GbKuruData) => setData(d))
         .catch(() => {})
