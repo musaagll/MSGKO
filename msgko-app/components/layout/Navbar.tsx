@@ -240,85 +240,37 @@ export function Navbar() {
 
             <div className="w-px h-5 mx-1 bg-white/[0.08]" />
 
-            {/* GB Fiyatları nav button */}
-            <Link href="/gb-fiyatlari" className={NAV_BUTTON_CLASS}>
-              <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-green-500/[0.06]" />
-              <span className="relative z-10 flex items-center gap-2">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 group-hover:scale-110"
-                  style={{ background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.25)' }}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-                    className="text-green-400">
-                    <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                  </svg>
-                </span>
-                <span className="text-[#C8C8D8]/50 group-hover:text-green-300 transition-colors duration-200">GB Fiyatları</span>
-              </span>
+            {/* GB Fiyatları — vurgulu buton */}
+            <Link
+              href="/gb-fiyatlari"
+              className="relative flex items-center h-9 px-4 ml-1 gap-1.5 text-[0.78rem] font-bold tracking-[0.06em] uppercase transition-all duration-300 border text-green-300/80 border-green-500/30 bg-green-500/[0.07] hover:border-green-400/60 hover:bg-green-500/[0.14] hover:text-white"
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                className="opacity-80" aria-hidden="true">
+                <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+              GB Fiyatları
             </Link>
 
-            {/* Pazar nav button */}
-            <Link href="/pazar" className={NAV_BUTTON_CLASS}>
+            {/* Pazar */}
+            <Link href="/pazar" className={`${NAV_BUTTON_CLASS} ml-1`}>
               <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-amber-500/[0.06]" />
-              <span className="relative z-10 flex items-center gap-2">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 group-hover:scale-110"
-                  style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.25)' }}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                    className="text-amber-400 transition-colors duration-200">
-                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-                  </svg>
-                </span>
-                <span className="text-[#C8C8D8]/50 group-hover:text-amber-300 transition-colors duration-200">Pazar</span>
-              </span>
-            </Link>
-
-            {/* YouTube nav button */}
-            <Link href="/youtube" className={NAV_BUTTON_CLASS}>
-              <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-red-500/[0.06]" />
-              <span className="relative z-10 flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
-                  className="text-red-500/60 group-hover:text-red-400 transition-colors duration-200 flex-shrink-0">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              <span className="relative z-10 flex items-center gap-1.5">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  className="text-amber-400/60 group-hover:text-amber-400 transition-colors flex-shrink-0">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
                 </svg>
-                <span className="text-[#C8C8D8]/50 group-hover:text-red-300 transition-colors duration-200">Youtube</span>
+                <span className="text-[#C8C8D8]/50 group-hover:text-amber-300 transition-colors">Pazar</span>
               </span>
             </Link>
 
-            {/* Instagram nav button */}
-            <Link href="/instagram" className={NAV_BUTTON_CLASS}>
-              <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-pink-500/[0.06]" />
-              <span className="relative z-10 flex items-center gap-2">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 group-hover:scale-110"
-                  style={{ background: 'rgba(236,72,153,0.15)', border: '1px solid rgba(236,72,153,0.25)' }}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                    className="text-pink-400 transition-colors duration-200">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                  </svg>
-                </span>
-                <span className="text-[#C8C8D8]/50 group-hover:text-pink-300 transition-colors duration-200">Instagram</span>
-              </span>
-            </Link>
-
-            {/* Destek nav button */}
-            <Link href="/destek" className={NAV_BUTTON_CLASS}>
-              <span className="absolute inset-x-1 inset-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-sm bg-pink-500/[0.06]" />
-              <span className="relative z-10 flex items-center gap-2">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 group-hover:scale-110"
-                  style={{ background: 'rgba(236,72,153,0.15)', border: '1px solid rgba(236,72,153,0.25)' }}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                    className="text-pink-400 transition-colors duration-200">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                  </svg>
-                </span>
-                <span className="text-[#C8C8D8]/50 group-hover:text-pink-300 transition-colors duration-200">Destek</span>
-              </span>
-            </Link>
+            <div className="w-px h-5 mx-2 bg-white/[0.08]" />
 
             <Link
               href="/wallpaper"
-              className="relative flex items-center h-9 px-5 ml-1 text-[0.78rem] font-semibold tracking-[0.08em] uppercase transition-all duration-300 border text-purple-300/70 border-purple-500/20 bg-purple-500/[0.04] hover:border-purple-500/50 hover:bg-purple-500/[0.12] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+              className="relative flex items-center h-9 px-4 text-[0.75rem] font-semibold tracking-[0.08em] uppercase transition-all duration-300 border text-purple-300/70 border-purple-500/20 bg-purple-500/[0.04] hover:border-purple-500/50 hover:bg-purple-500/[0.12] hover:text-white"
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5 opacity-70" aria-hidden="true">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5 opacity-70" aria-hidden="true">
                 <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
               </svg>
               Wallpaper
@@ -326,7 +278,7 @@ export function Navbar() {
 
             <Link
               href="/iletisim"
-              className="relative flex items-center h-9 px-5 ml-2 text-[0.78rem] font-semibold tracking-[0.08em] uppercase transition-all duration-300 border text-purple-300/80 border-purple-500/30 bg-purple-500/[0.06] hover:border-purple-500/70 hover:bg-purple-500/[0.18] hover:text-white hover:shadow-[0_0_20px_rgba(139,92,246,0.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+              className="relative flex items-center h-9 px-4 ml-1 text-[0.75rem] font-semibold tracking-[0.08em] uppercase transition-all duration-300 border text-purple-300/80 border-purple-500/30 bg-purple-500/[0.06] hover:border-purple-500/70 hover:bg-purple-500/[0.18] hover:text-white"
             >
               İletişim
             </Link>
