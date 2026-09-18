@@ -1,11 +1,12 @@
-"""
-MSGKO Market Scraper v4
+﻿"""
+MSGKO Market Scraper v5
 ========================
-- Playwright YOK — pure requests
-- REQ_TOKEN HTML'den alınır (var REQ_TOKEN = "...";)
-- Kanal rotation: her çalışmada 1 kanal, sırayla devir
-- Konsol penceresi yok (pythonw.exe ile çalışır)
-- Log: scripts/scraper.log dosyasına yazılır
+- pure requests, Playwright YOK
+- REQ_TOKEN HTML'den alinir
+- Kanal rotation: her calistirmada 1 kanal
+- ASC + DESC donusumlu — hem ucuz hem pahali itemlar yakalanir
+- Konsol yok (pythonw.exe)
+- Log: scripts/scraper.log
 """
 
 import os, re, sys, json, time, logging, requests
@@ -14,7 +15,6 @@ from typing import Optional
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 
-# ── Log dosyasına yaz (konsol yok, pencere açılmıyor) ─────────────────────────
 _base    = os.path.dirname(os.path.abspath(__file__))
 _logfile = os.path.join(_base, 'scraper.log')
 
@@ -23,24 +23,22 @@ logging.basicConfig(
     format='%(asctime)s [%(levelname)s] %(message)s',
     handlers=[
         logging.FileHandler(_logfile, encoding='utf-8'),
-        logging.StreamHandler(sys.stdout),  # Task Scheduler'da görünmez
+        logging.StreamHandler(sys.stdout),
     ],
 )
 log = logging.getLogger('msgko')
 
-# ── Ortam ──────────────────────────────────────────────────────────────────────
 load_dotenv(os.path.join(_base, '.env'))
 load_dotenv(os.path.join(_base, '..', 'msgko-admin', '.env.local'))
 SUPABASE_URL = os.environ.get('SUPABASE_URL') or os.environ.get('NEXT_PUBLIC_SUPABASE_URL', '')
 SUPABASE_KEY = os.environ.get('SUPABASE_SERVICE_KEY') or os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
 
-# ── Sabitler ───────────────────────────────────────────────────────────────────
-BASE_URL         = 'https://www.uskopazar.com'
-LIMIT            = 192    # sayfa başına max ilan
-MAX_PAGES        = 200    # kanal başına max sayfa
-BATCH_SIZE       = 500    # Supabase batch
-PAGE_SLEEP       = 0.5    # sayfalar arası bekleme (sn)
-STATE_FILE       = os.path.join(_base, '.scraper_state')
+BASE_URL   = 'https://www.uskopazar.com'
+LIMIT      = 192
+MAX_PAGES  = 200
+BATCH_SIZE = 500
+PAGE_SLEEP = 0.5
+STATE_FILE = os.path.join(_base, '.scraper_state')
 
 CHANNELS = [
     ('zero3',    0,  'Zero 3'),
@@ -56,13 +54,10 @@ CHANNELS = [
 ]
 
 
-# ── Yardımcılar ────────────────────────────────────────────────────────────────
 def parse_price(raw: str) -> Optional[int]:
     c = re.sub(r'[^\d]', '', str(raw))
     return int(c) if c else None
 
-def minus_one(p: Optional[int]) -> Optional[int]:
-    return (p - 1) if p and p > 1 else p
 
 def parse_upgrade(text: str) -> tuple[str, Optional[int]]:
     m = re.search(r'\(\+(\d+)\)', text)
@@ -73,28 +68,36 @@ def parse_upgrade(text: str) -> tuple[str, Optional[int]]:
         return text[:m2.start()].strip(), int(m2.group(1))
     return text.strip(), None
 
-def next_channel() -> tuple[int, str, int, str]:
-    """State dosyasından sonraki kanal indeksini al."""
+
+def next_channel() -> tuple[int, str, int, str, int]:
+    """
+    State = global run sayaci.
+    run // 10 = tur numarasi  (her 10 kanalda bir tur biter)
+    run %  10 = kanal indeksi
+    Cift tur  → orderType=0 (ucuzdan pahaliya)
+    Tek  tur  → orderType=1 (pahalidan ucuya)
+    """
     try:
         with open(STATE_FILE) as f:
-            last = int(f.read().strip().split(':')[0])
+            run = int(f.read().strip())
     except Exception:
-        last = -1
-    idx = (last + 1) % len(CHANNELS)
+        run = -1
+    run += 1
+    idx        = run % len(CHANNELS)
+    tur        = run // len(CHANNELS)
+    order_type = 0 if tur % 2 == 0 else 1
     try:
         with open(STATE_FILE, 'w') as f:
-            f.write(str(idx))
+            f.write(str(run))
     except Exception as e:
         log.warning(f'State yazma hatasi: {e}')
     db_key, server_type, label = CHANNELS[idx]
-    return idx, db_key, server_type, label
+    return idx, db_key, server_type, label, order_type
 
 
-# ── Session ────────────────────────────────────────────────────────────────────
 HEADERS = {
     'User-Agent':      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                       'AppleWebKit/537.36 (KHTML, like Gecko) '
-                       'Chrome/124.0.0.0 Safari/537.36',
+                       'AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36',
     'Accept-Language': 'tr-TR,tr;q=0.9,en;q=0.8',
 }
 POST_HEADERS = {
@@ -105,6 +108,7 @@ POST_HEADERS = {
     'Referer':          f'{BASE_URL}/',
 }
 
+
 class MarketSession:
     def __init__(self):
         self.sess        = requests.Session()
@@ -113,48 +117,39 @@ class MarketSession:
         self.sess.headers.update(HEADERS)
 
     def get_token(self) -> bool:
-        """Ana sayfadan REQ_TOKEN al."""
         for attempt in range(3):
             try:
                 r = self.sess.get(BASE_URL, timeout=20)
                 if r.status_code == 200:
-                    m = re.search(
-                        r'var\s+REQ_TOKEN\s*=\s*["\']([A-Za-z0-9\-_.=+/]+)["\']',
-                        r.text)
+                    m = re.search(r'var\s+REQ_TOKEN\s*=\s*"([A-Za-z0-9\-_.=+/]+)"', r.text)
                     if m:
                         self.token = m.group(1)
-                        log.info(f'Token alindi: {self.token[:20]}...')
-                        # POST için header güncelle
                         self.sess.headers.update(POST_HEADERS)
+                        log.info(f'Token alindi: {self.token[:20]}...')
                         return True
-                    # reqToken endpoint'ini dene
                     r2 = self.sess.post(
                         f'{BASE_URL}/dashboard/reqToken',
-                        headers={**POST_HEADERS, 'Content-Length': '0'},
-                        timeout=10)
+                        headers={**POST_HEADERS, 'Content-Length': '0'}, timeout=10)
                     if r2.ok:
                         d = r2.json()
                         if d.get('ok') and d.get('token'):
                             self.token = d['token']
-                            log.info(f'Token (endpoint): {self.token[:20]}...')
                             self.sess.headers.update(POST_HEADERS)
+                            log.info(f'Token (endpoint): {self.token[:20]}...')
                             return True
-                    log.warning(f'Token HTML/endpoint bulunamadi (deneme {attempt+1})')
                 else:
                     log.warning(f'Ana sayfa HTTP {r.status_code} (deneme {attempt+1})')
             except Exception as e:
-                log.warning(f'Token hatasi (deneme {attempt+1}): {e}')
+                log.warning(f'Token hatasi: {e}')
             if attempt < 2:
                 time.sleep(15)
         return False
 
     def refresh_token(self) -> bool:
-        """Mevcut session ile hızlı token yenile."""
         try:
             r = self.sess.post(
                 f'{BASE_URL}/dashboard/reqToken',
-                headers={**POST_HEADERS, 'Content-Length': '0'},
-                timeout=10)
+                headers={**POST_HEADERS, 'Content-Length': '0'}, timeout=10)
             if r.ok:
                 d = r.json()
                 if d.get('ok') and d.get('token'):
@@ -165,55 +160,44 @@ class MarketSession:
             log.warning(f'Token yenileme hatasi: {e}')
         return False
 
-    def fetch(self, server_type: int, page_num: int, label: str) -> Optional[str]:
-        """Bir sayfa çek. 429 → bekle+yenile, hata → None."""
+    def post_page(self, server_type: int, page: int, order_type: int) -> Optional[str]:
+        data = {
+            'fingerprint':  self.fingerprint,
+            'req_token':    self.token,
+            'pageCount':    page,
+            'merchantType': 0,
+            'orderType':    order_type,
+            'limitType':    LIMIT,
+            'serverType':   server_type,
+            'searchType':   0,
+            'itemType':     0,
+            'minVal':       0,
+            'maxVal':       0,
+            'Item_Arti':    0,
+            'tarih':        '',
+        }
         for attempt in range(3):
             try:
-                r = self.sess.post(
-                    f'{BASE_URL}/dashboard/getItemList',
-                    data={
-                        'fingerprint':  self.fingerprint,
-                        'req_token':    self.token,
-                        'pageCount':    page_num,
-                        'merchantType': 0,
-                        'orderType':    0,   # 0 = ucuzdan pahalıya (tüm aralık)
-                        'limitType':    LIMIT,
-                        'serverType':   server_type,
-                        'searchType':   0,
-                        'itemType':     0,
-                        'minVal':       0,
-                        'maxVal':       0,
-                        'Item_Arti':    0,
-                        'tarih':        '',
-                    },
-                    timeout=25,
-                )
+                r = self.sess.post(f'{BASE_URL}/dashboard/getItemList', data=data, timeout=25)
                 if r.status_code == 200:
                     return r.text
                 elif r.status_code == 429:
-                    wait = 60 * (attempt + 1)  # 60, 120, 180 sn
-                    log.warning(f'  [{label}] p{page_num} → 429 — {wait}sn bekleniyor')
+                    wait = 90 * (attempt + 1)
+                    log.warning(f'  p{page} 429 — {wait}sn bekleniyor')
                     time.sleep(wait)
                     self.refresh_token() or self.get_token()
                 else:
-                    log.warning(f'  [{label}] p{page_num} → HTTP {r.status_code}')
+                    log.warning(f'  p{page} HTTP {r.status_code}')
                     if attempt < 2:
                         time.sleep(5)
                     else:
                         return None
-            except requests.Timeout:
-                log.warning(f'  [{label}] p{page_num} → Timeout (deneme {attempt+1})')
-                time.sleep(10)
-            except requests.ConnectionError as e:
-                log.warning(f'  [{label}] p{page_num} → Baglanti hatasi: {e}')
-                time.sleep(15)
             except Exception as e:
-                log.warning(f'  [{label}] p{page_num} → Hata: {e}')
+                log.warning(f'  p{page} hata: {e}')
                 time.sleep(10)
         return None
 
 
-# ── HTML Parser ────────────────────────────────────────────────────────────────
 def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
     soup = BeautifulSoup(html, 'lxml')
     rows = soup.select('tbody tr')
@@ -226,7 +210,7 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
         if len(cells) < 4:
             continue
 
-        # ── Item adı ──────────────────────────────────────────────────────────
+        # Item adi
         raw_name = ''
         name_span = cells[0].find('span', class_='white')
         if name_span:
@@ -242,11 +226,11 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
         if not raw_name:
             continue
 
-        # ── Görsel ────────────────────────────────────────────────────────────
+        # Gorsel
         img = cells[0].find('img')
         img_url = img.get('src') if img else None
 
-        # ── Upgrade seviyesi ──────────────────────────────────────────────────
+        # Upgrade
         upgrade_level: Optional[int] = None
         tippy = cells[0].find(attrs={'data-tippy-content': True})
         if tippy:
@@ -262,10 +246,27 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
         if not item_name:
             continue
 
-        # ── Satıcı ────────────────────────────────────────────────────────────
+        # Satici
         seller = cells[1].get_text(strip=True) if len(cells) > 1 else None
 
-        # ── Fiyat ─────────────────────────────────────────────────────────────
+        # Lokasyon
+        loc_x: Optional[int] = None
+        loc_z: Optional[int] = None
+        if len(cells) > 2:
+            loc_btn = cells[2].find('button')
+            if loc_btn:
+                try:
+                    loc_x = int(loc_btn.get('data-x', ''))
+                    loc_z = int(loc_btn.get('data-z', ''))
+                except (ValueError, TypeError):
+                    pass
+
+        # Tippy item detaylari
+        item_details: Optional[str] = None
+        if tippy:
+            item_details = tippy.get('data-tippy-content', '') or None
+
+        # Fiyat
         price_el = None
         if len(cells) > 3:
             for sp in cells[3].find_all('span'):
@@ -282,24 +283,6 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
         if not price or price <= 0:
             continue
 
-        # ── Lokasyon (td[2] → button data-x data-z) ──────────────────────────
-        loc_x: Optional[int] = None
-        loc_z: Optional[int] = None
-        if len(cells) > 2:
-            loc_btn = cells[2].find('button')
-            if loc_btn:
-                try:
-                    loc_x = int(loc_btn.get('data-x', ''))
-                    loc_z = int(loc_btn.get('data-z', ''))
-                except (ValueError, TypeError):
-                    pass
-
-        # ── Tippy item detayları (item_title, item_type, item_property) ───────
-        item_details: Optional[str] = None
-        if tippy:
-            item_details = tippy.get('data-tippy-content', '') or None
-
-        # ── Tarih ─────────────────────────────────────────────────────────────
         date_val = cells[5].get_text(strip=True) if len(cells) > 5 else None
 
         results.append({
@@ -326,7 +309,6 @@ def parse_html(html: str, channel_key: str, now: str) -> list[dict]:
     return results
 
 
-# ── Supabase ───────────────────────────────────────────────────────────────────
 def _sb_h() -> dict:
     return {
         'apikey':        SUPABASE_KEY,
@@ -335,6 +317,7 @@ def _sb_h() -> dict:
         'Prefer':        'return=minimal',
     }
 
+
 def sb_delete(server_key: str) -> None:
     try:
         requests.delete(
@@ -342,6 +325,7 @@ def sb_delete(server_key: str) -> None:
             headers=_sb_h(), timeout=30)
     except Exception as e:
         log.warning(f'DELETE hatasi: {e}')
+
 
 def sb_insert(listings: list[dict]) -> int:
     n = 0
@@ -359,6 +343,7 @@ def sb_insert(listings: list[dict]) -> int:
             log.error(f'INSERT exception: {e}')
     return n
 
+
 def sb_log(server: str, status: str, count: int, err: Optional[str], ms: int) -> None:
     try:
         requests.post(
@@ -370,28 +355,26 @@ def sb_log(server: str, status: str, count: int, err: Optional[str], ms: int) ->
         pass
 
 
-# ── main ───────────────────────────────────────────────────────────────────────
 def main() -> None:
     t_start = time.time()
     log.info('=' * 60)
-    log.info(f'MSGKO Scraper v4 — {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+    log.info(f'MSGKO Scraper v5 — {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
 
     if not SUPABASE_URL or not SUPABASE_KEY:
         log.error('SUPABASE_URL / SUPABASE_SERVICE_KEY eksik!')
         sys.exit(1)
 
-    # Hangi kanalı çekeceğimizi belirle
-    idx, db_key, server_type, label = next_channel()
-    log.info(f'Kanal [{idx}]: {label} (serverType={server_type})')
+    idx, db_key, server_type, label, order_type = next_channel()
+    order_name = 'ASC (ucuz->pahali)' if order_type == 0 else 'DESC (pahali->ucuz)'
+    log.info(f'Kanal [{idx}]: {label} | {order_name}')
 
-    # Token al
     sess = MarketSession()
     if not sess.get_token():
-        log.warning('Token alinamadi — site erisilemez, run atlaniyor')
+        log.warning('Token alinamadi — run atlaniyor')
         sys.exit(0)
 
-    # Bağlantı testi — ilk sayfa
-    log.info(f'[{label}] Baglanti testi...')
+    # Baglanti testi — ilk sayfa
+    log.info(f'[{label}] Sayfa 1 cekiliyor...')
     first_html = None
     for wait in [0, 60, 120]:
         if wait:
@@ -399,23 +382,11 @@ def main() -> None:
             time.sleep(wait)
             sess.refresh_token() or sess.get_token()
         try:
-            r = sess.sess.post(
-                f'{BASE_URL}/dashboard/getItemList',
-                data={
-                    'fingerprint': sess.fingerprint,
-                    'req_token':   sess.token,
-                    'pageCount': 1, 'merchantType': 0, 'orderType': 0,
-                    'limitType': LIMIT, 'serverType': server_type,
-                    'searchType': 0, 'itemType': 0, 'minVal': 0, 'maxVal': 0,
-                    'Item_Arti': 0, 'tarih': '',
-                },
-                timeout=25,
-            )
-            if r.status_code == 200:
-                first_html = r.text
+            html = sess.post_page(server_type, 1, order_type)
+            if html:
+                first_html = html
                 log.info('Baglanti OK!')
                 break
-            log.warning(f'Sayfa 1: HTTP {r.status_code}')
         except Exception as e:
             log.warning(f'Sayfa 1 hatasi: {e}')
 
@@ -423,59 +394,22 @@ def main() -> None:
         log.warning('Site engelliyor — run atlaniyor')
         sys.exit(0)
 
-    # ── Tüm sayfaları çek (orderType=0, ucuzdan pahalıya) ─────────────────────
+    # Tum sayfalari cek
     now_str = datetime.now(timezone.utc).isoformat()
     all_listings: list[dict] = []
     consecutive_empty = 0
 
     for pg in range(1, MAX_PAGES + 1):
-        if pg == 1:
-            html_text = first_html
-        else:
-            resp = sess.sess.post(
-                f'{BASE_URL}/dashboard/getItemList',
-                data={
-                    'fingerprint': sess.fingerprint,
-                    'req_token':   sess.token,
-                    'pageCount': pg, 'merchantType': 0, 'orderType': 0,
-                    'limitType': LIMIT, 'serverType': server_type,
-                    'searchType': 0, 'itemType': 0, 'minVal': 0, 'maxVal': 0,
-                    'Item_Arti': 0, 'tarih': '',
-                },
-                timeout=25,
-            )
-            if resp.status_code == 429:
-                # 429 → 90sn bekle + token yenile → tekrar dene → hâlâ 429 → dur
-                log.warning(f'  [{label}] p{pg} → 429, 90sn bekleniyor...')
-                time.sleep(90)
-                sess.refresh_token() or sess.get_token()
-                resp2 = sess.sess.post(
-                    f'{BASE_URL}/dashboard/getItemList',
-                    data={
-                        'fingerprint': sess.fingerprint,
-                        'req_token':   sess.token,
-                        'pageCount': pg, 'merchantType': 0, 'orderType': 0,
-                        'limitType': LIMIT, 'serverType': server_type,
-                        'searchType': 0, 'itemType': 0, 'minVal': 0, 'maxVal': 0,
-                        'Item_Arti': 0, 'tarih': '',
-                    },
-                    timeout=25,
-                )
-                if resp2.status_code != 200:
-                    log.warning(f'  [{label}] p{pg} hâlâ {resp2.status_code} — kanal bitti')
-                    break
-                html_text = resp2.text
-            elif resp.status_code != 200:
-                log.warning(f'  [{label}] p{pg} → HTTP {resp.status_code} — bitti')
-                break
-            else:
-                html_text = resp.text
+        html_text = first_html if pg == 1 else sess.post_page(server_type, pg, order_type)
+
+        if html_text is None:
+            log.warning(f'  [{label}] p{pg} alinamadi — bitti')
+            break
 
         parsed = parse_html(html_text, db_key, now_str)
         if not parsed:
             consecutive_empty += 1
             if consecutive_empty >= 2:
-                log.info(f'  [{label}] 2 ard arda bos sayfa — bitti')
                 break
             time.sleep(PAGE_SLEEP)
             continue
@@ -490,12 +424,17 @@ def main() -> None:
             break
         time.sleep(PAGE_SLEEP)
 
-    log.info(f'[{label}] TOPLAM: {len(all_listings)} ilan')
+    log.info(f'[{label}] TOPLAM: {len(all_listings)} ilan | {order_name}')
 
-    # Supabase — DELETE + INSERT (temiz veri)
     if all_listings:
         t0 = time.time()
-        sb_delete(db_key)
+        # ASC: DELETE + INSERT (temiz, ucuz itemlar taze)
+        # DESC: sadece INSERT (pahali itemlar biriksin, duplicate RPC'de gruplandiriyor)
+        if order_type == 0:
+            sb_delete(db_key)
+            log.info(f'[{db_key}] ASC: DELETE + INSERT')
+        else:
+            log.info(f'[{db_key}] DESC: INSERT (birikim modu)')
         n = sb_insert(all_listings)
         ms = int((time.time() - t0) * 1000)
         sb_log(db_key, 'success' if n else 'error', n,
@@ -503,7 +442,7 @@ def main() -> None:
         log.info(f'[{db_key}] {n} ilan yazildi ({ms}ms)')
     else:
         sb_log(db_key, 'error', 0, 'no listings', 0)
-        log.warning(f'[{db_key}] ilan yok — Supabase guncellenmedi')
+        log.warning(f'[{db_key}] ilan yok')
 
     log.info(f'Tamamlandi — {int(time.time()-t_start)}sn')
     log.info('=' * 60)
