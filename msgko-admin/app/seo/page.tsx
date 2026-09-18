@@ -1,9 +1,9 @@
 import { SeoClient } from './seo-client'
-import { createClient } from '@/lib/supabase'
+import { createServiceClient } from '@/lib/supabase'
 
 // Supabase'den mevcut içerik sayılarını çek
 async function getSeoStats() {
-  const supabase = createClient()
+  const supabase = createServiceClient()
 
   const tables = ['guides', 'bosses', 'maps', 'items', 'quests', 'news', 'farm_spots', 'builds'] as const
 

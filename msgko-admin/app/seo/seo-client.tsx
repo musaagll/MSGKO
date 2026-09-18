@@ -151,22 +151,22 @@ const SECTION_LABELS: Record<string, string> = {
 
 const S = {
   card: {
-    padding: 20,
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.07)',
+    padding: 18,
+    background: 'var(--surface)',
+    border: '1px solid var(--border)',
   } as React.CSSProperties,
   label: {
-    fontSize: 11,
-    fontWeight: 600,
-    letterSpacing: '0.12em',
+    fontSize: 9,
+    fontWeight: 700,
+    letterSpacing: '0.22em',
     textTransform: 'uppercase' as const,
-    color: 'rgba(255,255,255,0.35)',
+    color: 'rgba(201,168,76,0.55)',
     marginBottom: 6,
   } as React.CSSProperties,
   value: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 800,
-    color: '#fff',
+    color: 'rgba(242,242,244,0.92)',
     lineHeight: 1.1,
   } as React.CSSProperties,
 }
@@ -194,53 +194,57 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
       {/* Başlık */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 4 }}>SEO Dashboard</h1>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>MSGKO.NET — Topical Authority Durumu</p>
+          <h1 style={{ fontSize: 16, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(242,242,244,0.9)', marginBottom: 3 }}>SEO Dashboard</h1>
+          <p style={{ fontSize: 11, color: 'rgba(160,160,184,0.38)' }}>MSGKO.NET — Topical Authority Durumu</p>
         </div>
         <a
           href="https://msgko.net"
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            fontSize: 12, color: 'rgba(124,58,237,0.7)',
+            display: 'flex', alignItems: 'center', gap: 5,
+            fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+            color: 'rgba(201,168,76,0.6)',
             textDecoration: 'none', padding: '6px 12px',
-            border: '1px solid rgba(124,58,237,0.25)',
+            border: '1px solid rgba(201,168,76,0.22)',
+            background: 'rgba(201,168,76,0.04)',
           }}
         >
-          <ExternalLink size={12} />
+          <ExternalLink size={10} />
           msgko.net
         </a>
       </div>
 
+      <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,0.18), transparent)', marginBottom: 20 }} />
+
       {/* Özet Kartlar */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 24 }}>
         <div style={S.card}>
-          <p style={S.label}>İndexlenebilir Sayfa</p>
+          <p style={S.label}>İndexlenebilir</p>
           <p style={S.value}>{totalIndexable}</p>
-          <p style={{ fontSize: 11, color: 'rgba(16,185,129,0.7)', marginTop: 4 }}>Google'a açık</p>
+          <p style={{ fontSize: 10, color: 'rgba(52,211,153,0.6)', marginTop: 4 }}>Google'a açık</p>
         </div>
         <div style={S.card}>
-          <p style={S.label}>Noindex Sayfa</p>
-          <p style={{ ...S.value, color: 'rgba(245,158,11,0.9)' }}>{totalNoindex}</p>
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>Kasıtlı gizlendi</p>
+          <p style={S.label}>Noindex</p>
+          <p style={{ ...S.value, color: 'rgba(201,168,76,0.8)' }}>{totalNoindex}</p>
+          <p style={{ fontSize: 10, color: 'rgba(160,160,184,0.3)', marginTop: 4 }}>Kasıtlı gizlendi</p>
         </div>
         <div style={S.card}>
           <p style={S.label}>SEO Kuralı</p>
           <p style={S.value}>{okRules}/{SEO_RULES.length}</p>
-          <p style={{ fontSize: 11, color: warnRules > 0 ? 'rgba(245,158,11,0.7)' : 'rgba(16,185,129,0.7)', marginTop: 4 }}>
+          <p style={{ fontSize: 10, color: warnRules > 0 ? 'rgba(201,168,76,0.7)' : 'rgba(52,211,153,0.6)', marginTop: 4 }}>
             {warnRules > 0 ? `${warnRules} uyarı` : 'Tümü tamam'}
           </p>
         </div>
         <div style={S.card}>
-          <p style={S.label}>Aktif Redirect</p>
+          <p style={S.label}>Redirect</p>
           <p style={S.value}>{redirectCount}</p>
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>301/302</p>
+          <p style={{ fontSize: 10, color: 'rgba(160,160,184,0.3)', marginTop: 4 }}>301/302</p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 2, marginBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 0 }}>
+      <div style={{ display: 'flex', gap: 2, marginBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.055)', paddingBottom: 0 }}>
         {([
           { id: 'overview',  label: 'Genel Bakış' },
           { id: 'pages',     label: 'Sayfa Envanteri' },
@@ -249,11 +253,11 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
         ] as const).map((tab) => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
             style={{
-              padding: '8px 16px', fontSize: 12, fontWeight: 500, border: 'none',
+              padding: '8px 16px', fontSize: 11, fontWeight: activeTab === tab.id ? 700 : 400, border: 'none',
               background: 'transparent', cursor: 'pointer',
-              color: activeTab === tab.id ? '#fff' : 'rgba(255,255,255,0.35)',
-              borderBottom: activeTab === tab.id ? '2px solid rgba(124,58,237,0.8)' : '2px solid transparent',
-              marginBottom: -1,
+              color: activeTab === tab.id ? 'rgba(242,242,244,0.9)' : 'rgba(160,160,184,0.38)',
+              borderBottom: activeTab === tab.id ? '2px solid rgba(201,168,76,0.65)' : '2px solid transparent',
+              marginBottom: -1, letterSpacing: activeTab === tab.id ? '0.06em' : '0.02em', transition: 'color 0.15s',
             }}>
             {tab.label}
           </button>
@@ -269,11 +273,11 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
             <p style={{ ...S.label, marginBottom: 12 }}>Veritabanı İçerik Durumu</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
               {Object.entries(initialCounts).map(([table, data]) => (
-                <div key={table} style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 6 }}>
+                <div key={table} style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.055)' }}>
+                  <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(160,160,184,0.3)', marginBottom: 6 }}>
                     {table}
                   </p>
-                  <p style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>{data.total}</p>
+                  <p style={{ fontSize: 18, fontWeight: 700, color: 'rgba(242,242,244,0.88)' }}>{data.total}</p>
                   <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                     <span style={{ fontSize: 10, color: 'rgba(16,185,129,0.7)' }}>{data.published} yayında</span>
                     {data.missing_seo > 0 && (
@@ -283,7 +287,7 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
                 </div>
               ))}
             </div>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 10 }}>
+            <p style={{ fontSize: 11, color: 'rgba(160,160,184,0.25)', marginTop: 10 }}>
               * Supabase migration v2 çalıştırılmadıysa sayılar 0 görünür.
             </p>
           </div>
@@ -295,15 +299,15 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
               {[
                 { url: 'https://msgko.net/sitemap.xml', label: 'Ana Sitemap', pages: totalIndexable },
               ].map((sm) => (
-                <div key={sm.url} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div key={sm.url} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.055)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <CheckCircle2 size={14} color="rgba(16,185,129,0.8)" />
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>{sm.label}</span>
+                    <span style={{ fontSize: 12, color: 'rgba(160,160,184,0.6)' }}>{sm.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{sm.pages} URL</span>
+                    <span style={{ fontSize: 11, color: 'rgba(160,160,184,0.3)' }}>{sm.pages} URL</span>
                     <a href={sm.url} target="_blank" rel="noopener noreferrer"
-                      style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(124,58,237,0.6)', textDecoration: 'none' }}>
+                      style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(201,168,76,0.55)', textDecoration: 'none' }}>
                       <ExternalLink size={11} />
                       Görüntüle
                     </a>
@@ -326,10 +330,10 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
                 <a key={action.label} href={action.href} target="_blank" rel="noopener noreferrer"
                   style={{
                     display: 'flex', alignItems: 'center', gap: 6,
-                    fontSize: 12, color: 'rgba(124,58,237,0.7)',
+                    fontSize: 12, color: 'rgba(201,168,76,0.65)',
                     textDecoration: 'none', padding: '7px 14px',
-                    border: '1px solid rgba(124,58,237,0.2)',
-                    background: 'rgba(124,58,237,0.05)',
+                    border: '1px solid rgba(201,168,76,0.2)',
+                    background: 'rgba(201,168,76,0.05)',
                   }}>
                   {action.label}
                   <ExternalLink size={10} />
@@ -347,23 +351,23 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
           {Object.entries(groupedPages).map(([section, pages]) => (
             <div key={section} style={S.card}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <span style={{ color: 'rgba(124,58,237,0.7)' }}>{SECTION_ICONS[section]}</span>
+                <span style={{ color: 'rgba(201,168,76,0.65)' }}>{SECTION_ICONS[section]}</span>
                 <p style={{ ...S.label, marginBottom: 0 }}>{SECTION_LABELS[section]} ({pages.length})</p>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {pages.map((page) => (
                   <div key={page.path} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '7px 10px', background: 'rgba(255,255,255,0.02)',
+                    padding: '7px 10px', background: 'rgba(255,255,255,0.025)',
                     border: '1px solid rgba(255,255,255,0.04)',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <CheckCircle2 size={12} color="rgba(16,185,129,0.6)" />
-                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>{page.title}</span>
-                      <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>{page.path}</span>
+                      <span style={{ fontSize: 12, color: 'rgba(160,160,184,0.55)' }}>{page.title}</span>
+                      <span style={{ fontSize: 10, color: 'rgba(160,160,184,0.22)' }}>{page.path}</span>
                     </div>
                     <a href={`https://msgko.net${page.path}`} target="_blank" rel="noopener noreferrer"
-                      style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'rgba(124,58,237,0.5)', textDecoration: 'none' }}>
+                      style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'rgba(201,168,76,0.45)', textDecoration: 'none' }}>
                       <ExternalLink size={10} />
                     </a>
                   </div>
@@ -384,7 +388,7 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
                 background: 'rgba(245,158,11,0.04)', border: '1px solid rgba(245,158,11,0.12)',
               }}>
                 <span style={{ fontSize: 12, color: 'rgba(245,158,11,0.7)' }}>{page.path}</span>
-                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>{page.reason}</span>
+                <span style={{ fontSize: 10, color: 'rgba(160,160,184,0.3)' }}>{page.reason}</span>
               </div>
             ))}
           </div>
@@ -407,8 +411,8 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
                 : <AlertCircle  size={16} color="rgba(245,158,11,0.8)" style={{ flexShrink: 0, marginTop: 2 }} />
               }
               <div>
-                <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 3 }}>{rule.label}</p>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>{rule.description}</p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(242,242,244,0.88)', marginBottom: 3 }}>{rule.label}</p>
+                <p style={{ fontSize: 12, color: 'rgba(160,160,184,0.4)', marginBottom: 4 }}>{rule.description}</p>
                 <p style={{ fontSize: 11, color: rule.status === 'ok' ? 'rgba(16,185,129,0.7)' : 'rgba(245,158,11,0.7)' }}>
                   {rule.check}
                 </p>
@@ -431,19 +435,19 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
               ].map((r) => (
                 <div key={r.from} style={{
                   display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '8px 12px', background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.05)',
+                  padding: '8px 12px', background: 'rgba(255,255,255,0.025)',
+                  border: '1px solid rgba(255,255,255,0.055)',
                 }}>
                   <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', background: 'rgba(16,185,129,0.1)', color: 'rgba(16,185,129,0.8)' }}>
                     {r.code}
                   </span>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{r.from}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(160,160,184,0.4)' }}>{r.from}</span>
                   <ArrowRight size={12} color="rgba(255,255,255,0.2)" />
-                  <span style={{ fontSize: 12, color: 'rgba(124,58,237,0.7)' }}>{r.to}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(201,168,76,0.65)' }}>{r.to}</span>
                 </div>
               ))}
             </div>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 10 }}>
+            <p style={{ fontSize: 11, color: 'rgba(160,160,184,0.25)', marginTop: 10 }}>
               Ek redirect&#39;ler Supabase seo_redirects tablosundan veya next.config.ts&#39;den yönetilir.
             </p>
           </div>

@@ -1,27 +1,62 @@
 @import "tailwindcss";
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* ═══════════════════════════════════════════════════════════
+   MSGKO ADMIN — Obsidian Elite System
+═══════════════════════════════════════════════════════════ */
+
+:root {
+  --void:      #040406;
+  --bg:        #07070C;
+  --surface:   #0C0C13;
+  --elevated:  #111119;
+  --border:    rgba(255,255,255,0.055);
+  --border-md: rgba(255,255,255,0.09);
+
+  --gold:      #C9A84C;
+  --gold-dim:  rgba(201,168,76,0.18);
+  --gold-glow: rgba(201,168,76,0.12);
+
+  --text:      rgba(242,242,244,0.92);
+  --text-sub:  rgba(160,160,184,0.6);
+  --text-muted:rgba(100,100,120,0.7);
+
+  --green:  #22c55e;
+  --red:    #ef4444;
+  --amber:  #f59e0b;
 }
 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  background: #09090f;
-  color: rgba(255,255,255,0.9);
-  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(124,58,237,0.7); }
-
-input, textarea, button, a {
-  font-family: inherit;
-}
-
-button { cursor: pointer; }
+input, textarea, button, select, a { font-family: inherit; }
 a { text-decoration: none; color: inherit; }
+button { cursor: pointer; }
+
+::-webkit-scrollbar       { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.22); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.45); }
+
+:focus-visible { outline: 1px solid rgba(201,168,76,0.5); outline-offset: 2px; }
+
+/* ── Utilities ── */
+.surface   { background: var(--surface); border: 1px solid var(--border); }
+.elevated  { background: var(--elevated); border: 1px solid var(--border); }
+.gold-line { height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); }
+.label     { font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(201,168,76,0.55); }
+.value     { font-size: 26px; font-weight: 800; color: var(--text); line-height: 1.1; }
+
+/* ── Animations ── */
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
+
+@media (max-width: 375px) { body { font-size: 13px; } }

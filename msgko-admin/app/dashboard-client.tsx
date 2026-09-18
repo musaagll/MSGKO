@@ -1,142 +1,186 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Image, Video, Activity, ExternalLink, Users, Eye, Download, MousePointer, TrendingUp, Calendar } from 'lucide-react'
+import { Image, Video, MousePointer, Download, Users, Eye, TrendingUp, Calendar, ExternalLink, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 
 interface WallpaperStat { id: number; label: string; click_count: number; download_count: number }
-
 interface Stats {
-  wallpaperCount: number
-  videoCount: number
-  views: {
-    total: number
-    today: number
-    week: number
-    month: number
-  }
-  wallpaperStats: {
-    totalClicks: number
-    totalDownloads: number
-    topWallpapers: WallpaperStat[]
-  }
+  wallpaperCount: number; videoCount: number
+  views: { total: number; today: number; week: number; month: number }
+  wallpaperStats: { totalClicks: number; totalDownloads: number; topWallpapers: WallpaperStat[] }
   lastUpdated: string
 }
 
-const card: React.CSSProperties = {
-  padding: 20,
-  background: 'rgba(255,255,255,0.03)',
-  border: '1px solid rgba(255,255,255,0.07)',
-  borderRadius: 2,
+/* ── Shared styles ── */
+const CARD: React.CSSProperties = {
+  padding: '18px 20px',
+  background: 'var(--surface)',
+  border: '1px solid var(--border)',
 }
 
-function StatCard({ label, value, icon: Icon, color, sub }: {
-  label: string; value: string | number; icon: React.ElementType; color: string; sub?: string
+const SECTION_LABEL: React.CSSProperties = {
+  fontSize: 9, fontWeight: 700, letterSpacing: '0.24em',
+  textTransform: 'uppercase', color: 'rgba(201,168,76,0.55)',
+  marginBottom: 12, display: 'block',
+}
+
+/* ── StatCard ── */
+function StatCard({ label, value, icon: Icon, color, badge }: {
+  label: string; value: string | number; icon: React.ElementType; color: string; badge?: string
 }) {
   return (
-    <div style={card}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <Icon size={16} color={color} />
-        {sub && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.06em' }}>{sub}</span>}
+    <div style={{ ...CARD, position: 'relative', overflow: 'hidden' }}>
+      {/* Faint icon watermark */}
+      <div style={{
+        position: 'absolute', right: 12, bottom: 10,
+        opacity: 0.05, color,
+      }}>
+        <Icon size={36} />
       </div>
-      <div style={{ fontSize: 28, fontWeight: 700, color: '#fff', lineHeight: 1, marginBottom: 4 }}>{value}</div>
-      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>{label}</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <Icon size={14} color={color} style={{ opacity: 0.8 }} />
+        {badge && (
+          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(160,160,184,0.35)' }}>
+            {badge}
+          </span>
+        )}
+      </div>
+      <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', lineHeight: 1, marginBottom: 5 }}>{value}</div>
+      <div style={{ fontSize: 11, color: 'rgba(160,160,184,0.45)' }}>{label}</div>
     </div>
   )
 }
 
 export default function DashboardClient() {
-  const [stats, setStats] = useState<Stats | null>(null)
+  const [stats,   setStats]   = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
 
   const load = () => {
     setLoading(true)
     fetch('/api/stats')
       .then(r => r.json())
-      .then(data => { setStats(data); setLoading(false) })
+      .then(d => { setStats(d); setLoading(false) })
       .catch(() => setLoading(false))
   }
-
   useEffect(() => { load() }, [])
 
   const fmt = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n)
 
   return (
-    <div style={{ padding: 24, maxWidth: 900 }}>
+    <div style={{ padding: '24px', maxWidth: 920 }}>
 
-      {/* Başlık */}
+      {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Dashboard</h1>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>MSGKO yönetim paneli</p>
+          <h1 style={{ fontSize: 16, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text)', marginBottom: 3 }}>
+            Dashboard
+          </h1>
+          <p style={{ fontSize: 11, color: 'rgba(160,160,184,0.38)' }}>MSGKO yönetim paneli</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {stats?.lastUpdated && (
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
+            <span style={{ fontSize: 10, color: 'rgba(160,160,184,0.22)' }}>
               {new Date(stats.lastUpdated).toLocaleTimeString('tr-TR')}
             </span>
           )}
           <button
             onClick={load}
-            style={{ fontSize: 12, color: 'rgba(167,139,250,0.7)', background: 'none', border: '1px solid rgba(139,92,246,0.2)', padding: '6px 12px', cursor: 'pointer' }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '6px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+              background: 'none', border: '1px solid var(--border-md)',
+              color: 'rgba(160,160,184,0.45)', cursor: 'pointer', transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(201,168,76,0.3)'
+              ;(e.currentTarget as HTMLButtonElement).style.color = 'rgba(201,168,76,0.7)'
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-md)'
+              ;(e.currentTarget as HTMLButtonElement).style.color = 'rgba(160,160,184,0.45)'
+            }}
           >
+            <RefreshCw size={10} />
             Yenile
           </button>
-          <a href="https://msgko.net" target="_blank" rel="noopener noreferrer"
-            style={{ fontSize: 12, color: 'rgba(167,139,250,0.7)', display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none', border: '1px solid rgba(139,92,246,0.2)', padding: '6px 12px' }}>
-            <ExternalLink size={11} /> msgko.net
+          <a
+            href="https://msgko.net"
+            target="_blank" rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '6px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+              border: '1px solid rgba(201,168,76,0.22)',
+              background: 'rgba(201,168,76,0.05)',
+              color: 'rgba(201,168,76,0.6)',
+              textDecoration: 'none', transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.5)'
+              ;(e.currentTarget as HTMLAnchorElement).style.color = 'rgba(201,168,76,1)'
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.22)'
+              ;(e.currentTarget as HTMLAnchorElement).style.color = 'rgba(201,168,76,0.6)'
+            }}
+          >
+            <ExternalLink size={10} />
+            msgko.net
           </a>
         </div>
       </div>
 
+      {/* ── Gold divider ── */}
+      <div className="gold-line" style={{ marginBottom: 24 }} />
+
       {loading ? (
-        <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, padding: '40px 0', textAlign: 'center' }}>
-          Yükleniyor...
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+          {[...Array(8)].map((_, i) => (
+            <div key={i} style={{ ...CARD, opacity: 0.4, animation: 'pulse 1.5s ease-in-out infinite' }} />
+          ))}
         </div>
       ) : (
         <>
-          {/* ── Ziyaretçi İstatistikleri ── */}
-          <div style={{ marginBottom: 10 }}>
-            <h2 style={{ fontSize: 12, fontWeight: 600, color: 'rgba(139,92,246,0.8)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
-              Site Ziyaretleri
-            </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
-              <StatCard label="Toplam Ziyaret"  value={fmt(stats?.views.total ?? 0)}  icon={Users}      color="#a78bfa" />
-              <StatCard label="Bugün"           value={fmt(stats?.views.today ?? 0)}  icon={Eye}        color="#34d399" sub="bugün" />
-              <StatCard label="Bu Hafta"        value={fmt(stats?.views.week ?? 0)}   icon={TrendingUp} color="#60a5fa" sub="7 gün" />
-              <StatCard label="Bu Ay"           value={fmt(stats?.views.month ?? 0)}  icon={Calendar}   color="#f472b6" sub="ay" />
+          {/* ── Ziyaret istatistikleri ── */}
+          <div style={{ marginBottom: 24 }}>
+            <span style={SECTION_LABEL}>Site Ziyaretleri</span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+              <StatCard label="Toplam Ziyaret"  value={fmt(stats?.views.total  ?? 0)} icon={Users}      color="rgba(201,168,76,0.8)"  />
+              <StatCard label="Bugün"           value={fmt(stats?.views.today  ?? 0)} icon={Eye}        color="rgba(52,211,153,0.7)"  badge="bugün" />
+              <StatCard label="Bu Hafta"        value={fmt(stats?.views.week   ?? 0)} icon={TrendingUp} color="rgba(96,165,250,0.7)"  badge="7 gün" />
+              <StatCard label="Bu Ay"           value={fmt(stats?.views.month  ?? 0)} icon={Calendar}   color="rgba(167,139,250,0.7)" badge="ay" />
             </div>
           </div>
 
-          {/* ── Wallpaper İstatistikleri ── */}
-          <div style={{ marginBottom: 10 }}>
-            <h2 style={{ fontSize: 12, fontWeight: 600, color: 'rgba(139,92,246,0.8)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
-              Wallpaper
-            </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
-              <StatCard label="Toplam Wallpaper"   value={stats?.wallpaperCount ?? 0}              icon={Image}        color="#a78bfa" />
-              <StatCard label="Toplam Görüntüleme" value={fmt(stats?.wallpaperStats.totalClicks ?? 0)}    icon={MousePointer} color="#fbbf24" />
-              <StatCard label="Toplam İndirme"     value={fmt(stats?.wallpaperStats.totalDownloads ?? 0)} icon={Download}     color="#34d399" />
-              <StatCard label="Video"              value={stats?.videoCount ?? 0}                  icon={Video}        color="#f87171" />
+          {/* ── Wallpaper istatistikleri ── */}
+          <div style={{ marginBottom: 24 }}>
+            <span style={SECTION_LABEL}>Wallpaper & İçerik</span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
+              <StatCard label="Toplam Wallpaper"   value={stats?.wallpaperCount ?? 0}                      icon={Image}        color="rgba(201,168,76,0.8)"  />
+              <StatCard label="Görüntüleme"        value={fmt(stats?.wallpaperStats.totalClicks ?? 0)}     icon={MousePointer} color="rgba(251,191,36,0.7)"  />
+              <StatCard label="İndirme"            value={fmt(stats?.wallpaperStats.totalDownloads ?? 0)}  icon={Download}     color="rgba(52,211,153,0.7)"  />
+              <StatCard label="Video"              value={stats?.videoCount ?? 0}                          icon={Video}        color="rgba(239,68,68,0.6)"   />
             </div>
 
-            {/* En çok indirilen wallpaperlar */}
+            {/* Top wallpapers */}
             {(stats?.wallpaperStats.topWallpapers?.length ?? 0) > 0 && (
-              <div style={{ ...card, marginBottom: 24 }}>
-                <h3 style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>
-                  En Çok İndirilen Wallpaperlar
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={CARD}>
+                <p style={{ ...SECTION_LABEL, marginBottom: 14 }}>En Çok İndirilen</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                   {stats!.wallpaperStats.topWallpapers.map((wp, i) => (
                     <div key={wp.id} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', width: 16, textAlign: 'right' }}>{i + 1}</span>
-                      <div style={{ flex: 1, fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>{wp.label}</div>
-                      <div style={{ display: 'flex', gap: 16 }}>
-                        <span style={{ fontSize: 12, color: 'rgba(251,191,36,0.7)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <MousePointer size={10} /> {wp.click_count ?? 0}
+                      <span style={{ fontSize: 10, color: 'rgba(160,160,184,0.22)', width: 14, textAlign: 'right', flexShrink: 0 }}>
+                        {i + 1}
+                      </span>
+                      <div style={{ flex: 1, fontSize: 12, color: 'rgba(242,242,244,0.65)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {wp.label}
+                      </div>
+                      <div style={{ display: 'flex', gap: 14, flexShrink: 0 }}>
+                        <span style={{ fontSize: 11, color: 'rgba(251,191,36,0.6)', display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <MousePointer size={9} /> {wp.click_count ?? 0}
                         </span>
-                        <span style={{ fontSize: 12, color: 'rgba(52,211,153,0.7)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Download size={10} /> {wp.download_count ?? 0}
+                        <span style={{ fontSize: 11, color: 'rgba(52,211,153,0.6)', display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <Download size={9} /> {wp.download_count ?? 0}
                         </span>
                       </div>
                     </div>
@@ -146,23 +190,44 @@ export default function DashboardClient() {
             )}
           </div>
 
-          {/* ── Hızlı Erişim ── */}
+          {/* ── Hızlı erişim ── */}
           <div>
-            <h2 style={{ fontSize: 12, fontWeight: 600, color: 'rgba(139,92,246,0.8)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
-              Hızlı Erişim
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={SECTION_LABEL}>Hızlı Erişim</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {[
-                { href: '/wallpapers', label: 'Wallpaper Yönet', color: '#a78bfa' },
-                { href: '/videos',     label: 'Video Yönet',     color: '#f87171' },
-                { href: '/ayarlar',    label: 'Ayarlar',          color: '#4ade80' },
+                { href: '/wallpapers', label: 'Wallpaper Yönet', color: 'rgba(201,168,76,0.6)' },
+                { href: '/videos',     label: 'Video Yönet',     color: 'rgba(239,68,68,0.55)' },
+                { href: '/ayarlar',    label: 'Ayarlar',         color: 'rgba(52,211,153,0.55)' },
               ].map(({ href, label, color }) => (
-                <Link key={href} href={href}
-                  style={{ ...card, display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'rgba(255,255,255,0.6)', textDecoration: 'none' } as React.CSSProperties}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.9)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.6)' }}
+                <Link
+                  key={href}
+                  href={href}
+                  style={{
+                    ...CARD,
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    fontSize: 12, color: 'rgba(160,160,184,0.5)',
+                    textDecoration: 'none', transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.background = 'rgba(255,255,255,0.035)'
+                    el.style.borderColor = 'var(--border-md)'
+                    el.style.color = 'rgba(242,242,244,0.8)'
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.background = 'var(--surface)'
+                    el.style.borderColor = 'var(--border)'
+                    el.style.color = 'rgba(160,160,184,0.5)'
+                  }}
                 >
-                  <Activity size={14} color={color} />{label}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 2, height: 14, background: color, borderRadius: 1 }} />
+                    {label}
+                  </div>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ opacity: 0.3 }}>
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
                 </Link>
               ))}
             </div>
