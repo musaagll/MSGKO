@@ -6,15 +6,15 @@ import Link from 'next/link'
 
 export function IletisimPage() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#07070B' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--void)' }}>
       <div className="fixed inset-0 pointer-events-none" style={{
         background: `
-          radial-gradient(ellipse 55% 45% at 15% 25%, rgba(139,92,246,0.08) 0%, transparent 60%),
+          radial-gradient(ellipse 55% 45% at 15% 25%, rgba(200,16,46,0.08) 0%, transparent 60%),
           radial-gradient(ellipse 45% 55% at 85% 75%, rgba(236,72,153,0.06) 0%, transparent 55%)
         `
       }} />
       <div className="fixed top-0 left-0 right-0 h-px pointer-events-none z-10"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.7), rgba(236,72,153,0.5), transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(200,16,46,0.7), rgba(236,72,153,0.5), transparent)' }}
       />
 
       {/* Header */}
@@ -30,7 +30,7 @@ export function IletisimPage() {
         </Link>
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
           <p className="text-[0.62rem] font-bold tracking-[0.3em] uppercase mb-0.5"
-            style={{ color: 'rgba(139,92,246,0.7)' }}>MSGKO.NET</p>
+            style={{ color: 'rgba(200,16,46,0.7)' }}>MSGKO.NET</p>
           <h1 className="text-[1.1rem] font-black tracking-[0.12em] uppercase text-white"
             style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>İletişim</h1>
         </div>
@@ -103,9 +103,9 @@ export function IletisimPage() {
               transition: 'border-color 0.25s, background 0.25s, box-shadow 0.25s',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(139,92,246,0.4)'
-              e.currentTarget.style.background = 'rgba(139,92,246,0.06)'
-              e.currentTarget.style.boxShadow = '0 0 24px rgba(139,92,246,0.1)'
+              e.currentTarget.style.borderColor = 'rgba(200,16,46,0.4)'
+              e.currentTarget.style.background = 'rgba(200,16,46,0.06)'
+              e.currentTarget.style.boxShadow = '0 0 24px rgba(200,16,46,0.1)'
             }}
             onMouseLeave={e => {
               e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'
@@ -114,7 +114,7 @@ export function IletisimPage() {
             }}
           >
             <div className="w-11 h-11 flex items-center justify-center flex-shrink-0"
-              style={{ background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: '10px' }}>
+              style={{ background: 'rgba(200,16,46,0.12)', border: '1px solid rgba(200,16,46,0.25)', borderRadius: '10px' }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                 <polyline points="22,6 12,13 2,6"/>
@@ -125,7 +125,7 @@ export function IletisimPage() {
               <p className="text-[0.92rem] font-semibold text-white/85 group-hover:text-white transition-colors truncate">imusaagll@gmail.com</p>
             </div>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-              className="text-white/20 group-hover:text-purple-400/60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 flex-shrink-0">
+              className="text-white/20 group-hover:section-label group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 flex-shrink-0">
               <path d="M7 17L17 7M17 7H7M17 7v10"/>
             </svg>
           </motion.a>
@@ -133,9 +133,9 @@ export function IletisimPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
             className="flex items-center justify-center gap-1.5 mt-2 pt-5"
             style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-            <div className="w-1 h-1 rounded-full" style={{ background: 'rgba(139,92,246,0.4)' }} />
-            <p className="text-[0.6rem] tracking-[0.1em] uppercase" style={{ color: 'rgba(139,92,246,0.4)' }}>MSGKO.NET</p>
-            <div className="w-1 h-1 rounded-full" style={{ background: 'rgba(139,92,246,0.4)' }} />
+            <div className="w-1 h-1 rounded-full" style={{ background: 'rgba(200,16,46,0.4)' }} />
+            <p className="text-[0.6rem] tracking-[0.1em] uppercase" style={{ color: 'rgba(200,16,46,0.4)' }}>MSGKO.NET</p>
+            <div className="w-1 h-1 rounded-full" style={{ background: 'rgba(200,16,46,0.4)' }} />
           </motion.div>
         </div>
       </div>

@@ -6,30 +6,28 @@ import { OkcuModal } from '@/components/ui/OkcuModal'
 import { AsasModal } from '@/components/ui/AsasModal'
 
 const STATS = [
-  { value: '120+', label: 'Eğitim Videosu' },
-  { value: '15K+', label: 'İzlenme' },
-  { value: '2026', label: 'Meta Güncel' },
+  { value: '120+', label: 'Eğitim Videosu', sub: 'büyüyor' },
+  { value: '15K+', label: 'Toplam İzlenme', sub: 'organik' },
+  { value: '2026', label: 'Meta Güncel',    sub: 'aktif sezon' },
 ]
 
 const TICKER_ITEMS = [
-  { text: 'Asas Rehberi',    img: '/assassian-icon.png' },
-  { text: 'Okçu Rehberi',    img: '/archer-icon.png' },
-  { text: 'Priest Rehberi',  img: '/dreadshield.png' },
-  { text: 'Mage Rehberi',    img: '/staffwoe.png' },
-  { text: 'WS Taktikleri',   img: null },
-  { text: 'Knight Online\'a Dair Her Şey', img: null },
-  { text: 'Asas Rehberi',    img: '/assassian-icon.png' },
-  { text: 'Okçu Rehberi',    img: '/archer-icon.png' },
-  { text: 'Priest Rehberi',  img: '/dreadshield.png' },
-  { text: 'Mage Rehberi',    img: '/staffwoe.png' },
-  { text: 'WS Taktikleri',   img: null },
-  { text: 'Knight Online\'a Dair Her Şey', img: null },
-  { text: 'Asas Rehberi',    img: '/assassian-icon.png' },
-  { text: 'Okçu Rehberi',    img: '/archer-icon.png' },
-  { text: 'Priest Rehberi',  img: '/dreadshield.png' },
-  { text: 'Mage Rehberi',    img: '/staffwoe.png' },
-  { text: 'WS Taktikleri',   img: null },
-  { text: 'Knight Online\'a Dair Her Şey', img: null },
+  { text: 'Asas Rehberi',   img: '/assassian-icon.png' },
+  { text: 'Okçu Rehberi',   img: '/archer-icon.png'   },
+  { text: 'Priest Rehberi', img: '/dreadshield.png'   },
+  { text: 'Mage Rehberi',   img: '/staffwoe.png'      },
+  { text: 'WS Taktikleri',  img: null },
+  { text: 'Farm Rotaları',  img: null },
+  { text: 'Boss Rehberleri',img: null },
+  { text: 'USKO Pazar',     img: null },
+  { text: 'Asas Rehberi',   img: '/assassian-icon.png' },
+  { text: 'Okçu Rehberi',   img: '/archer-icon.png'   },
+  { text: 'Priest Rehberi', img: '/dreadshield.png'   },
+  { text: 'Mage Rehberi',   img: '/staffwoe.png'      },
+  { text: 'WS Taktikleri',  img: null },
+  { text: 'Farm Rotaları',  img: null },
+  { text: 'Boss Rehberleri',img: null },
+  { text: 'USKO Pazar',     img: null },
 ]
 
 export function HeroSection() {
@@ -43,8 +41,8 @@ export function HeroSection() {
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
     mousePosRef.current = {
-      x: (e.clientX - rect.left) / rect.width - 0.5,
-      y: (e.clientY - rect.top) / rect.height - 0.5,
+      x: (e.clientX - rect.left) / rect.width  - 0.5,
+      y: (e.clientY - rect.top)  / rect.height - 0.5,
     }
     if (rafRef.current) return
     rafRef.current = requestAnimationFrame(() => {
@@ -54,345 +52,348 @@ export function HeroSection() {
   }, [])
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] })
-  const videoY   = useTransform(scrollYProgress, [0, 1], ['0%', '22%'])
-  const logoY    = useTransform(scrollYProgress, [0, 1], ['0%', '14%'])
-  const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '6%'])
+  const videoY   = useTransform(scrollYProgress, [0, 1], ['0%', '20%'])
+  const logoY    = useTransform(scrollYProgress, [0, 1], ['0%', '12%'])
+  const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '5%'])
 
   return (
     <>
       <section
         ref={sectionRef}
-        className="relative min-h-[96svh] md:min-h-[96vh] flex items-center overflow-hidden mt-[60px]"
+        className="relative overflow-hidden"
+        style={{ minHeight: '100svh', display: 'flex', alignItems: 'center', marginTop: 64 }}
         aria-label="Hero bölümü"
         onMouseMove={handleMouseMove}
       >
         {/* ── Zemin ── */}
-        <div className="absolute inset-0" style={{ background: 'var(--bg-void)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'var(--void)' }} />
 
         {/* ── Arka plan videosu ── */}
-        <motion.div className="absolute inset-0" style={{ y: videoY }}>
+        <motion.div style={{ position: 'absolute', inset: 0, y: videoY }}>
           <video
-            className="w-full h-full object-cover"
-            style={{ opacity: 0.15, mixBlendMode: 'luminosity' }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.18 }}
             src="/bg-video.mp4"
             autoPlay loop muted playsInline preload="metadata"
             aria-hidden="true"
           />
         </motion.div>
 
-        {/* ── Atmosferik gradyanlar ── */}
-        <div className="absolute inset-0 pointer-events-none" style={{
+        {/* ── Grid overlay ── */}
+        <div className="grid-overlay" />
+
+        {/* ── Scanlines ── */}
+        <div className="scanlines" />
+
+        {/* ── Kırmızı atmosfer ── */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
           background: `
-            radial-gradient(ellipse 55% 65% at 80% 50%, rgba(184,144,58,0.07) 0%, transparent 55%),
-            radial-gradient(ellipse 40% 50% at 20% 85%, rgba(212,168,83,0.04) 0%, transparent 50%),
-            radial-gradient(ellipse 80% 45% at 50% 0%,  rgba(6,6,8,0.9) 0%, transparent 50%)
-          `
+            radial-gradient(ellipse 60% 70% at 80% 50%, rgba(200,16,46,0.12) 0%, transparent 55%),
+            radial-gradient(ellipse 40% 60% at 20% 90%, rgba(255,77,28,0.06) 0%, transparent 50%),
+            radial-gradient(ellipse 80% 40% at 50% 0%, rgba(8,10,15,0.9) 0%, transparent 50%)
+          `,
         }} />
 
-        {/* ── Noise texture ── */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          opacity: 0.03,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '128px 128px',
+        {/* ── Dikey çizgi aksan ── */}
+        <div style={{
+          position: 'absolute', left: 'clamp(1.25rem, 4vw, 2.5rem)', top: 0, bottom: 0, width: 1,
+          background: 'linear-gradient(180deg, transparent, rgba(200,16,46,0.4) 20%, rgba(200,16,46,0.2) 80%, transparent)',
+          pointerEvents: 'none',
         }} />
 
-        {/* ── Logo — sağda, parallax ── */}
+        {/* ── Sol gradient (okunabilirlik) ── */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'linear-gradient(105deg, rgba(8,10,15,0.98) 25%, rgba(8,10,15,0.75) 55%, rgba(8,10,15,0.05) 100%)',
+        }} />
+
+        {/* ── Alt fade ── */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 200, pointerEvents: 'none',
+          background: 'linear-gradient(to top, var(--void) 0%, rgba(8,10,15,0.6) 60%, transparent 100%)',
+        }} />
+
+        {/* ── Logo (sağ, parallax + mouse) ── */}
         <motion.div
-          className="absolute right-[5%] md:right-[4%] top-1/2 w-[50%] md:w-[44%] max-w-[580px] pointer-events-none select-none"
-          style={{ y: logoY, translateY: '-50%', x: mousePos.x * -18 }}
+          style={{
+            position: 'absolute',
+            right: 'clamp(2%, 6%, 8%)',
+            top: '50%',
+            width: 'clamp(40%, 46%, 54%)',
+            maxWidth: 620,
+            y: logoY,
+            translateY: '-50%',
+            x: mousePos.x * -20,
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
           aria-hidden="true"
         >
           {/* Glow halo */}
-          <div className="absolute inset-0 scale-90 pointer-events-none"
-            style={{
-              background: 'radial-gradient(ellipse 65% 55% at 50% 50%, rgba(184,144,58,0.14) 0%, rgba(212,168,83,0.06) 40%, transparent 65%)',
-              filter: 'blur(50px)',
-            }}
-          />
+          <div style={{
+            position: 'absolute', inset: '-20%',
+            background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(200,16,46,0.2) 0%, rgba(255,77,28,0.1) 40%, transparent 65%)',
+            filter: 'blur(40px)',
+          }} />
           <motion.img
             src="/logo.png" alt=""
-            className="relative w-full h-auto"
             style={{
+              width: '100%', height: 'auto', position: 'relative',
               mixBlendMode: 'screen',
-              filter: 'brightness(1.25) contrast(1.05) drop-shadow(0 0 50px rgba(212,168,83,0.3)) drop-shadow(0 0 100px rgba(184,144,58,0.15))',
-              opacity: 0.45,
-              x: mousePos.x * -6,
-              y: mousePos.y * -6,
+              filter: 'brightness(1.3) contrast(1.1) drop-shadow(0 0 60px rgba(200,16,46,0.5)) drop-shadow(0 0 120px rgba(200,16,46,0.2))',
+              opacity: 0.5,
+              x: mousePos.x * -8,
+              y: mousePos.y * -8,
             }}
           />
         </motion.div>
 
-        {/* ── Sol gradient — okunabilirlik ── */}
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(105deg, rgba(6,6,8,0.98) 26%, rgba(6,6,8,0.82) 50%, rgba(6,6,8,0.1) 100%)' }}
-        />
-        {/* Alt fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
-          style={{ background: 'linear-gradient(to top, var(--bg-void) 0%, rgba(6,6,8,0.5) 60%, transparent 100%)' }}
-        />
-
-        {/* ── Üst çizgi aksan ── */}
-        <div className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-          style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(184,144,58,0.35) 35%, rgba(212,168,83,0.55) 50%, rgba(184,144,58,0.3) 65%, transparent 100%)' }}
-        />
-
         {/* ══════════════════════════════════════════════════
-            İÇERİK
+            CONTENT
         ══════════════════════════════════════════════════ */}
         <motion.div
-          className="relative z-10 w-full"
           style={{
-            y: contentY,
-            maxWidth: '1280px',
-            margin: '0 auto',
-            padding: 'clamp(5rem, 10vw, 7rem) clamp(1.25rem, 4vw, 2.5rem)',
+            position: 'relative', zIndex: 10, width: '100%', y: contentY,
+            maxWidth: 'var(--max-w)', margin: '0 auto',
+            padding: 'clamp(4rem, 8vw, 6rem) var(--page-px)',
           }}
         >
-          <div style={{ maxWidth: 580 }}>
+          <div style={{ maxWidth: 600 }}>
 
-            {/* ── Overline tag ── */}
+            {/* Overline */}
             <motion.div
-              initial={{ opacity: 0, x: -16 }}
+              initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center gap-3 mb-8"
+              style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}
             >
-              <div className="flex items-center gap-2 px-3 py-1.5"
-                style={{
-                  border: '1px solid rgba(212,168,83,0.22)',
-                  background: 'rgba(212,168,83,0.06)',
-                }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '6px 14px',
+                border: '1px solid var(--border-crimson)',
+                background: 'var(--crimson-subtle)',
+              }}>
                 <motion.div
-                  className="w-1.5 h-1.5 rounded-full"
-                  style={{ background: 'var(--gold-bright)' }}
-                  animate={{ scale: [1, 1.6, 1], opacity: [0.8, 0.3, 0.8] }}
-                  transition={{ repeat: Infinity, duration: 2.8 }}
+                  style={{
+                    width: 6, height: 6, borderRadius: '50%',
+                    background: 'var(--crimson-bright)',
+                    boxShadow: '0 0 8px var(--crimson-bright)',
+                  }}
+                  className="dot-pulse"
                 />
-                <span className="text-[0.6rem] font-bold tracking-[0.3em] uppercase"
-                  style={{ color: 'rgba(212,168,83,0.8)' }}>
+                <span style={{ fontSize: '0.58rem', fontWeight: 800, letterSpacing: '0.32em', textTransform: 'uppercase', color: 'var(--crimson-bright)' }}>
                   Knight Online
                 </span>
               </div>
-              <div className="h-px flex-1 max-w-[48px]"
-                style={{ background: 'linear-gradient(90deg, rgba(212,168,83,0.35), transparent)' }}
-              />
+              {/* Kırmızı çizgi */}
+              <div style={{ height: 1, width: 40, background: 'linear-gradient(90deg, var(--crimson), transparent)' }} />
             </motion.div>
 
-            {/* ── H1 (ekran okuyucu) ── */}
+            {/* H1 (SEO) */}
             <h1 className="sr-only">
               Knight Online Rehber ve Eğitim Sitesi — MSGKO.net | Asas, Okçu, Warrior Build, Farm ve PK Taktikleri
             </h1>
 
-            {/* ── Görsel başlık ── */}
-            <div className="mb-7" aria-hidden="true">
-              {/* KNIGHT ONLINE */}
+            {/* Görsel başlık */}
+            <div aria-hidden="true">
               <motion.div
-                initial={{ opacity: 0, y: 36 }}
+                initial={{ opacity: 0, y: 44 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span
-                  className="block uppercase leading-[0.88] tracking-[-0.01em]"
-                  style={{
-                    fontFamily: 'var(--font-rajdhani), sans-serif',
-                    fontSize: 'clamp(2.4rem, 5.5vw, 5.5rem)',
-                    fontWeight: 900,
-                    color: 'rgba(242,242,244,0.92)',
-                  }}
-                >
-                  Knight Online
+                <span style={{
+                  display: 'block',
+                  fontFamily: 'var(--font-rajdhani), sans-serif',
+                  fontSize: 'clamp(2.6rem, 6vw, 6rem)',
+                  fontWeight: 900,
+                  letterSpacing: '-0.01em',
+                  textTransform: 'uppercase',
+                  lineHeight: 0.9,
+                  color: 'var(--platinum)',
+                }}>
+                  Knight
                 </span>
               </motion.div>
 
-              {/* GELİŞİM REHBERİ — gold */}
               <motion.div
-                initial={{ opacity: 0, y: 36 }}
+                initial={{ opacity: 0, y: 44 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span
-                  className="block uppercase leading-[0.88] tracking-[-0.01em]"
-                  style={{
-                    fontFamily: 'var(--font-rajdhani), sans-serif',
-                    fontSize: 'clamp(2.4rem, 5.5vw, 5.5rem)',
-                    fontWeight: 900,
-                    background: 'linear-gradient(115deg, #E8C96A 0%, #D4A853 35%, #B8903A 60%, #D4A853 80%, #E8C96A 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                >
-                  Gelişim Rehberi
+                <span style={{
+                  display: 'block',
+                  fontFamily: 'var(--font-rajdhani), sans-serif',
+                  fontSize: 'clamp(2.6rem, 6vw, 6rem)',
+                  fontWeight: 900,
+                  letterSpacing: '-0.01em',
+                  textTransform: 'uppercase',
+                  lineHeight: 0.9,
+                  background: 'linear-gradient(115deg, #FF6B6B 0%, var(--crimson-bright) 30%, #C8102E 60%, #7B0A1C 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}>
+                  Online
                 </span>
               </motion.div>
 
-              {/* Accent çizgi */}
+              <motion.div
+                initial={{ opacity: 0, y: 44 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.33, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span style={{
+                  display: 'block',
+                  fontFamily: 'var(--font-rajdhani), sans-serif',
+                  fontSize: 'clamp(1.4rem, 3vw, 2.8rem)',
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  lineHeight: 1.2,
+                  color: 'var(--steel)',
+                  marginTop: 8,
+                }}>
+                  Gelişim Platformu
+                </span>
+              </motion.div>
+
+              {/* Accent line */}
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 0.7, delay: 0.72, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-4 h-px origin-left"
+                transition={{ duration: 0.7, delay: 0.75, ease: [0.22, 1, 0.36, 1] }}
                 style={{
-                  maxWidth: 320,
-                  background: 'linear-gradient(90deg, rgba(212,168,83,0.7), rgba(212,168,83,0.2), transparent)',
+                  marginTop: 16, height: 2, maxWidth: 280,
+                  background: 'linear-gradient(90deg, var(--crimson), var(--ember), transparent)',
+                  transformOrigin: 'left',
                 }}
               />
             </div>
 
-            {/* ── Açıklama ── */}
+            {/* Açıklama */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.34, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-10 max-w-[460px]"
+              transition={{ duration: 0.7, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
               style={{
-                fontSize: 'clamp(0.9rem, 1.5vw, 1.02rem)',
-                lineHeight: 1.82,
-                color: 'rgba(160,160,184,0.62)',
+                fontSize: 'clamp(0.88rem, 1.4vw, 1rem)',
+                lineHeight: 1.85,
+                color: 'var(--steel)',
+                maxWidth: 460,
+                marginTop: 24,
+                marginBottom: 36,
               }}
             >
-              Her savaş yeni bir deneyim, her eğitim daha büyük bir{' '}
-              <span style={{ color: 'rgba(212,168,83,0.85)', fontWeight: 600 }}>
-                gelişim fırsatıdır.
-              </span>{' '}
-              Ustalığa giden yolda ihtiyacın olan tüm bilgiler ve profesyonel
-              eğitim içerikleri burada seni bekliyor.
+              Türkiye'nin en kapsamlı Knight Online rehber platformu.
+              Asas, okçu, warrior, mage ve priest için{' '}
+              <span style={{ color: 'var(--platinum)', fontWeight: 600 }}>profesyonel build rehberleri</span>,
+              farm rotaları ve güncel meta analizleri.
             </motion.p>
 
-            {/* ── CTA Butonlar ── */}
+            {/* CTA Butonlar */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.46, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col sm:flex-row gap-3 mb-14"
+              transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 48 }}
             >
-              {/* Asas — primary gold */}
               <motion.button
                 onClick={() => setAsasOpen(true)}
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.97 }}
-                transition={{ type: 'spring', stiffness: 420, damping: 28 }}
-                className="group relative inline-flex items-center gap-3 sm:w-auto w-full justify-center overflow-hidden"
-                style={{
-                  padding: '0.875rem 1.75rem',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  color: 'rgba(6,6,8,0.95)',
-                  background: 'linear-gradient(120deg, #D4A853 0%, #E8C96A 45%, #D4A853 100%)',
-                  border: '1px solid rgba(212,168,83,0.5)',
-                  boxShadow: '0 4px 24px rgba(212,168,83,0.2), inset 0 1px 0 rgba(255,255,255,0.25)',
-                  transition: 'box-shadow 0.35s ease',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 40px rgba(212,168,83,0.4), inset 0 1px 0 rgba(255,255,255,0.3)'
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 24px rgba(212,168,83,0.2), inset 0 1px 0 rgba(255,255,255,0.25)'
-                }}
+                className="btn-primary"
+                style={{ position: 'relative', overflow: 'hidden' }}
               >
-                {/* Shimmer */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{ background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%)' }} />
-                <img src="/assassian-icon.png" alt="" className="relative w-6 h-6 object-contain flex-shrink-0"
-                  style={{ filter: 'brightness(0.2) contrast(2)' }} />
-                <span className="relative z-10">Asas Eğitimleri</span>
-                <svg className="relative z-10 w-3 h-3 opacity-50 group-hover:opacity-80 group-hover:translate-x-0.5 transition-all duration-200"
-                  viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <img src="/assassian-icon.png" alt="" style={{ width: 20, height: 20, objectFit: 'contain', mixBlendMode: 'screen', filter: 'brightness(2) contrast(1.2)' }} />
+                Asas Eğitimleri
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </motion.button>
 
-              {/* Okçu — secondary outline */}
               <motion.button
                 onClick={() => setOkcuOpen(true)}
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.97 }}
-                transition={{ type: 'spring', stiffness: 420, damping: 28 }}
-                className="group relative inline-flex items-center gap-3 sm:w-auto w-full justify-center overflow-hidden"
-                style={{
-                  padding: '0.875rem 1.75rem',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  color: 'rgba(212,168,83,0.8)',
-                  background: 'rgba(212,168,83,0.05)',
-                  border: '1px solid rgba(212,168,83,0.28)',
-                  transition: 'border-color 0.3s ease, background 0.3s ease, color 0.3s ease',
-                }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.borderColor = 'rgba(212,168,83,0.65)'
-                  el.style.background  = 'rgba(212,168,83,0.1)'
-                  el.style.color       = 'rgba(240,208,128,1)'
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.borderColor = 'rgba(212,168,83,0.28)'
-                  el.style.background  = 'rgba(212,168,83,0.05)'
-                  el.style.color       = 'rgba(212,168,83,0.8)'
-                }}
+                className="btn-secondary"
               >
-                <img src="/archer-icon.png" alt="" className="relative w-6 h-6 object-contain flex-shrink-0"
-                  style={{ filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.6)) sepia(0.4) hue-rotate(15deg) brightness(1.2)' }} />
-                <span className="relative z-10">Okçu Eğitimleri</span>
-                <svg className="relative z-10 w-3 h-3 opacity-40 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all duration-200"
-                  viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <img src="/archer-icon.png" alt="" style={{ width: 20, height: 20, objectFit: 'contain', filter: 'drop-shadow(0 0 4px rgba(200,16,46,0.4))' }} />
+                Okçu Eğitimleri
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </motion.button>
+
+              <motion.a
+                href="/rehber"
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '0.75rem 1.5rem',
+                  fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
+                  color: 'var(--iron)',
+                  border: 'none', background: 'none',
+                  textDecoration: 'none',
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--steel)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--iron)' }}
+              >
+                Tüm Rehberler
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </motion.a>
             </motion.div>
 
-            {/* ── Stats ── */}
+            {/* Stats */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.62, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center flex-wrap"
-              style={{ gap: 'clamp(1.5rem, 3vw, 2.5rem)' }}
+              transition={{ duration: 0.7, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 'clamp(20px, 3vw, 36px)' }}
             >
               {STATS.map((stat, i) => (
-                <div key={i} className="cursor-default">
-                  <div
-                    className="font-black leading-none tracking-tight"
-                    style={{
-                      fontFamily: 'var(--font-rajdhani), sans-serif',
-                      fontSize: 'clamp(1.65rem, 3vw, 2.1rem)',
-                      background: 'linear-gradient(135deg, rgba(242,242,244,0.95) 0%, rgba(212,168,83,0.7) 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
+                <div key={i} style={{ cursor: 'default' }}>
+                  <div style={{
+                    fontFamily: 'var(--font-rajdhani), sans-serif',
+                    fontSize: 'clamp(1.6rem, 3vw, 2.2rem)',
+                    fontWeight: 900,
+                    letterSpacing: '-0.02em',
+                    background: 'linear-gradient(135deg, var(--platinum) 0%, rgba(200,16,46,0.7) 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    lineHeight: 1,
+                  }}>
                     {stat.value}
                   </div>
-                  <p className="text-[0.66rem] font-semibold tracking-[0.1em] mt-0.5 leading-none"
-                    style={{ color: 'rgba(160,160,184,0.45)' }}>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.07em', color: 'var(--steel)', marginTop: 3 }}>
                     {stat.label}
-                  </p>
+                  </div>
+                  <div style={{ fontSize: '0.55rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--crimson-dim)', marginTop: 1 }}>
+                    {stat.sub}
+                  </div>
                 </div>
               ))}
 
-              <div className="hidden sm:block w-px h-10" style={{ background: 'rgba(255,255,255,0.06)' }} />
+              {/* Divider */}
+              <div style={{ width: 1, height: 48, background: 'var(--border)' }} className="hidden sm:block" />
 
-              {/* Canlı göstergesi */}
-              <div className="flex items-center gap-2 px-2.5 py-1.5"
-                style={{
-                  border: '1px solid rgba(255,255,255,0.07)',
-                  background: 'rgba(255,255,255,0.025)',
-                }}>
+              {/* Live badge */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 7,
+                padding: '6px 12px',
+                border: '1px solid rgba(16,185,129,0.2)',
+                background: 'rgba(16,185,129,0.05)',
+              }}>
                 <motion.div
-                  className="w-1.5 h-1.5 rounded-full"
-                  style={{ background: 'rgba(212,168,83,0.9)', boxShadow: '0 0 6px rgba(212,168,83,0.6)' }}
-                  animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
-                  transition={{ repeat: Infinity, duration: 2.5 }}
+                  style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px rgba(16,185,129,0.8)' }}
+                  className="dot-pulse"
                 />
-                <span className="text-[0.6rem] font-bold tracking-[0.15em] uppercase"
-                  style={{ color: 'rgba(212,168,83,0.7)' }}>
-                  Aktif
+                <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#10B981' }}>
+                  Aktif Platform
                 </span>
               </div>
             </motion.div>
@@ -400,80 +401,62 @@ export function HeroSection() {
 
           {/* Scroll indicator */}
           <motion.div
-            className="absolute bottom-10 left-0 hidden md:flex flex-col items-center gap-2"
-            style={{ paddingLeft: 'clamp(1.25rem, 4vw, 2.5rem)' }}
+            style={{
+              position: 'absolute', bottom: 32,
+              left: 'var(--page-px)',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.4 }}
+            transition={{ delay: 1.5 }}
+            className="hidden md:flex"
           >
+            <span style={{ fontSize: '0.5rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--iron)', writingMode: 'vertical-rl' }}>
+              Scroll
+            </span>
             <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-            >
-              <div className="w-px h-10"
-                style={{ background: 'linear-gradient(to bottom, transparent, rgba(212,168,83,0.3), transparent)' }} />
-            </motion.div>
+              animate={{ y: [0, 10, 0] }}
+              transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
+              style={{ width: 1, height: 40, background: 'linear-gradient(to bottom, var(--crimson), transparent)' }}
+            />
           </motion.div>
         </motion.div>
       </section>
 
-      {/* ══════════════════════════════════════════════════
-          TICKER BANDI
-      ══════════════════════════════════════════════════ */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 1.1 }}
+      {/* ── Ticker ── */}
+      <div
         className="relative overflow-hidden"
         style={{
-          background: 'rgba(6,6,8,0.98)',
-          borderTop: '1px solid rgba(212,168,83,0.1)',
-          borderBottom: '1px solid rgba(255,255,255,0.04)',
+          background: 'var(--abyss)',
+          borderTop: '1px solid var(--border-crimson)',
+          borderBottom: '1px solid var(--border)',
         }}
-        aria-label="İçerik kategorileri"
         aria-hidden="true"
       >
         {/* Fade kenarlar */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(90deg, rgba(6,6,8,1), transparent)' }} />
-        <div className="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(270deg, rgba(6,6,8,1), transparent)' }} />
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 80, background: 'linear-gradient(90deg, var(--abyss), transparent)', zIndex: 10, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 80, background: 'linear-gradient(270deg, var(--abyss), transparent)', zIndex: 10, pointerEvents: 'none' }} />
 
-        <div className="flex overflow-hidden">
-          <div
-            className="flex items-center shrink-0 ticker-track"
-            style={{ willChange: 'transform' }}
-          >
+        <div style={{ overflow: 'hidden' }}>
+          <div className="ticker-track" style={{ display: 'flex', alignItems: 'center', willChange: 'transform' }}>
             {TICKER_ITEMS.map((item, i) => (
-              <div key={i} className="flex items-center shrink-0">
-                <div className="flex items-center gap-2.5 px-7 py-3.5">
-                  {item.img ? (
-                    <img
-                      src={item.img} alt=""
-                      className="w-3.5 h-3.5 object-contain shrink-0"
-                      style={{
-                        mixBlendMode: 'screen',
-                        filter: 'brightness(1.1) sepia(0.5) hue-rotate(15deg)',
-                      }}
-                    />
-                  ) : (
-                    <div className="w-1 h-1 rounded-full flex-shrink-0"
-                      style={{ background: 'rgba(212,168,83,0.4)' }} />
-                  )}
-                  <span
-                    className="text-[0.72rem] font-semibold tracking-[0.1em] uppercase whitespace-nowrap"
-                    style={{ color: 'rgba(160,160,184,0.4)' }}
-                  >
+              <div key={i} style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 28px' }}>
+                  {item.img
+                    ? <img src={item.img} alt="" style={{ width: 14, height: 14, objectFit: 'contain', mixBlendMode: 'screen', filter: 'brightness(1.2) sepia(0.3)' }} />
+                    : <div style={{ width: 4, height: 4, background: 'var(--crimson)', transform: 'rotate(45deg)', opacity: 0.6 }} />
+                  }
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--iron)', whiteSpace: 'nowrap' }}>
                     {item.text}
                   </span>
                 </div>
                 {/* Ayırıcı */}
-                <div className="w-px h-3" style={{ background: 'rgba(212,168,83,0.15)' }} />
+                <div style={{ width: 4, height: 4, background: 'var(--crimson-dim)', transform: 'rotate(45deg)', margin: '0 4px', flexShrink: 0 }} />
               </div>
             ))}
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <OkcuModal isOpen={okcuOpen} onClose={() => setOkcuOpen(false)} />
       <AsasModal isOpen={asasOpen} onClose={() => setAsasOpen(false)} />

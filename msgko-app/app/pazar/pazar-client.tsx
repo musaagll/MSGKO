@@ -157,7 +157,12 @@ export function PazarClient() {
   const allTotal = CHANNELS.reduce((s, c) => s + (counts[c.key] ?? 0), 0)
 
   return (
-    <div className="min-h-screen" style={{ background: '#07070f' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--void)', color: 'var(--platinum)' }}>
+
+      {/* Arka plan */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 55% 45% at 15% 20%, rgba(200,16,46,0.05) 0%, transparent 50%)' }} />
+      <div className="grid-overlay" style={{ position: 'fixed' }} />
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 2, zIndex: 10, background: 'linear-gradient(90deg, transparent, var(--crimson), var(--ember), transparent)' }} />
 
       {/* ══ HEADER ══════════════════════════════════════════════════════════════ */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-5">

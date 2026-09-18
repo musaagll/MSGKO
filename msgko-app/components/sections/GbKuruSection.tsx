@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 interface Sunucu { sunucu: string; alisFiyati: number; satisFiyati: number }
 interface GbKuruData { guncellendi: string; sunucular: Sunucu[] }
@@ -9,13 +10,12 @@ const SUNUCU_MAP: Record<string, string> = {
   Zero: 'zero', Agartha: 'agartha', Pandora: 'pandora', Destan: 'destan', Oreads: 'oreads',
 }
 
-/* Her sunucu için farklı bir nüans — hepsi neutral/gold tonu */
-const SUNUCU_DOT: Record<string, string> = {
-  Zero:    'rgba(212,168,83,0.9)',
-  Agartha: 'rgba(232,196,106,0.9)',
-  Pandora: 'rgba(196,196,208,0.7)',
-  Destan:  'rgba(180,144,100,0.9)',
-  Oreads:  'rgba(242,242,244,0.55)',
+const SUNUCU_COLOR: Record<string, string> = {
+  Zero:    '#60a5fa',
+  Agartha: '#fbbf24',
+  Pandora: '#34d399',
+  Destan:  '#a78bfa',
+  Oreads:  '#fb923c',
 }
 
 export function GbKuruSection() {
@@ -37,80 +37,82 @@ export function GbKuruSection() {
   const sunucular = data?.sunucular.filter(s => SUNUCU_MAP[s.sunucu]) ?? []
 
   return (
-    <section
-      className="w-full"
+    <div
       style={{
-        background: 'rgba(6,6,8,0.98)',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
+        background: 'rgba(8,10,15,0.98)',
+        borderBottom: '1px solid var(--border)',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
+      {/* Sol kırmızı aksan */}
+      <div style={{
+        position: 'absolute', left: 0, top: 0, bottom: 0, width: 2,
+        background: 'linear-gradient(180deg, transparent, var(--crimson), transparent)',
+        opacity: 0.6,
+      }} />
+
       <div
-        className="max-w-[1280px] mx-auto flex flex-wrap items-center gap-x-8 gap-y-2"
-        style={{ padding: '0.65rem clamp(1.25rem, 4vw, 2.5rem)' }}
+        style={{
+          maxWidth: 'var(--max-w)', margin: '0 auto',
+          padding: '0 var(--page-px)',
+          display: 'flex', flexWrap: 'wrap', alignItems: 'center',
+          gap: '8px 28px', minHeight: 40,
+        }}
       >
-        {/* Etiket */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <div className="w-1 h-3" style={{ background: 'rgba(212,168,83,0.5)' }} />
-          <span className="text-[0.58rem] font-bold tracking-[0.28em] uppercase"
-            style={{ color: 'rgba(212,168,83,0.55)' }}>
+        {/* Label */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <div style={{
+            width: 5, height: 5, background: 'var(--crimson)', transform: 'rotate(45deg)',
+            animation: 'dotPulse 2s infinite',
+          }} />
+          <span style={{ fontSize: '0.55rem', fontWeight: 800, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--crimson-bright)', opacity: 0.8 }}>
             GB Kuru
           </span>
-          <span className="text-[0.55rem]" style={{ color: 'rgba(160,160,184,0.2)' }}>
-            · canlı
-          </span>
+          <span style={{ fontSize: '0.52rem', color: 'var(--iron)' }}>· canlı</span>
         </div>
 
-        {/* Veri */}
+        {/* Veriler */}
         {loading ? (
-          <div className="flex gap-5">
+          <div style={{ display: 'flex', gap: 16 }}>
             {[1,2,3,4,5].map(i => (
-              <div key={i} className="h-3 rounded-sm animate-pulse"
-                style={{ width: 72, background: 'rgba(255,255,255,0.05)' }} />
+              <div key={i} style={{ height: 12, width: 72, background: 'rgba(255,255,255,0.05)', borderRadius: 2 }} />
             ))}
           </div>
         ) : (
-          <div className="flex flex-wrap gap-x-6 gap-y-1">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 20px' }}>
             {sunucular.map(s => (
-              <div key={s.sunucu} className="flex items-center gap-2 text-[0.71rem]">
-                <span
-                  className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                  style={{ background: SUNUCU_DOT[s.sunucu] ?? 'rgba(160,160,184,0.5)' }}
-                />
-                <span className="font-medium" style={{ color: 'rgba(160,160,184,0.45)' }}>
-                  {s.sunucu}
-                </span>
-                <span className="font-bold tabular-nums" style={{ color: 'rgba(212,168,83,0.85)' }}>
+              <div key={s.sunucu} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: '0.68rem' }}>
+                <div style={{ width: 5, height: 5, borderRadius: '50%', background: SUNUCU_COLOR[s.sunucu] ?? 'var(--iron)', flexShrink: 0 }} />
+                <span style={{ color: 'var(--steel)', fontWeight: 500 }}>{s.sunucu}</span>
+                <span style={{ color: 'var(--platinum)', fontWeight: 800, fontFamily: 'var(--font-rajdhani), monospace' }}>
                   {s.satisFiyati}₺
                 </span>
-                <span className="text-[0.6rem] tabular-nums" style={{ color: 'rgba(160,160,184,0.25)' }}>
-                  /{s.alisFiyati}₺
-                </span>
+                <span style={{ color: 'var(--iron)', fontSize: '0.58rem' }}>/{s.alisFiyati}₺</span>
               </div>
             ))}
           </div>
         )}
 
-        {/* Sağ — link */}
-        <Link_GB />
+        {/* Sağ link */}
+        <Link
+          href="/gb-fiyatlari"
+          style={{
+            marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5,
+            fontSize: '0.58rem', fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase',
+            color: 'var(--crimson-bright)', opacity: 0.6,
+            textDecoration: 'none', flexShrink: 0,
+            transition: 'opacity 0.2s',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.6' }}
+        >
+          Karşılaştır
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </Link>
       </div>
-    </section>
-  )
-}
-
-/* Ayrı client component olmadan basit anchor */
-function Link_GB() {
-  return (
-    <a
-      href="/gb-fiyatlari"
-      className="ml-auto hidden sm:flex items-center gap-1.5 text-[0.62rem] font-bold tracking-[0.14em] uppercase transition-colors duration-200 flex-shrink-0"
-      style={{ color: 'rgba(212,168,83,0.35)' }}
-      onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(212,168,83,0.75)' }}
-      onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(212,168,83,0.35)' }}
-    >
-      Tüm fiyatlar
-      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-        <path d="M5 12h14M12 5l7 7-7 7"/>
-      </svg>
-    </a>
+    </div>
   )
 }

@@ -135,49 +135,57 @@ export function GbFiyatlariClient() {
   const sc = SERVER_COLOR[activeServer] ?? SERVER_COLOR['Minark']
 
   return (
-    <div className="min-h-screen" style={{ background: '#06060e' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--void)' }}>
 
-      {/* ── Üst şerit — canlı güncelleme bildirimi ── */}
-      <div className="w-full border-b border-white/[0.05]"
-        style={{ background: 'rgba(74,222,128,0.04)' }}>
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-2 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-[0.68rem] text-green-400/60">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"
-              style={{ boxShadow: '0 0 6px #4ade80' }} />
-            Canlı • Her 5 dakikada güncellenir
+      {/* Arka plan */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 55% 45% at 10% 20%, rgba(200,16,46,0.06) 0%, transparent 55%)' }} />
+      <div className="grid-overlay" style={{ position: 'fixed' }} />
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 2, zIndex: 10, background: 'linear-gradient(90deg, transparent, var(--crimson), var(--ember), transparent)' }} />
+
+      {/* ── Canlı şerit ── */}
+      <div style={{ background: 'rgba(16,185,129,0.04)', borderBottom: '1px solid rgba(16,185,129,0.12)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '8px clamp(1rem, 3vw, 1.5rem)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.65rem', color: 'rgba(16,185,129,0.7)', fontWeight: 600, letterSpacing: '0.06em' }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 6px rgba(16,185,129,0.8)', display: 'inline-block', animation: 'dotPulse 2s infinite' }} />
+            Canlı · Her 5 dakikada güncellenir
           </div>
           {updatedAt && (
-            <span className="text-[0.65rem] text-white/20">
-              Son güncelleme: <span className="text-white/40">{timeAgo(updatedAt)}</span>
+            <span style={{ fontSize: '0.6rem', color: 'var(--iron)' }}>
+              Son güncelleme: <span style={{ color: 'var(--steel)' }}>{timeAgo(updatedAt)}</span>
             </span>
           )}
         </div>
       </div>
 
       {/* ── Header ── */}
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8">
-        <nav className="mb-5">
-          <ol className="flex items-center gap-2 text-[0.68rem] text-white/20">
-            <li><Link href="/" className="hover:text-white/50 transition-colors">Ana Sayfa</Link></li>
-            <li>/</li>
-            <li className="text-white/40">GB Fiyatları</li>
+      <div style={{ position: 'relative', maxWidth: 1200, margin: '0 auto', padding: 'clamp(4rem, 6vw, 6rem) clamp(1rem, 3vw, 1.5rem) 2rem' }}>
+        <nav style={{ marginBottom: 20 }}>
+          <ol style={{ display: 'flex', gap: 8, fontSize: '0.65rem', color: 'var(--iron)', listStyle: 'none' }}>
+            <li><Link href="/" style={{ color: 'var(--iron)', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--steel)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--iron)' }}>
+              Ana Sayfa</Link></li>
+            <li style={{ opacity: 0.4 }}>/</li>
+            <li style={{ color: 'var(--steel)' }}>GB Fiyatları</li>
           </ol>
         </nav>
 
-        <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, marginBottom: 32 }}>
           <div>
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white">
-              GB <span style={{ color: '#4ade80' }}>Fiyatları</span>
+            <p className="section-label" style={{ marginBottom: 10 }}>Anlık Fiyatlar</p>
+            <h1 style={{ fontFamily: 'var(--font-rajdhani), sans-serif', fontSize: 'clamp(2rem, 4vw, 3.5rem)', fontWeight: 900, letterSpacing: '0.02em', color: 'var(--platinum)', lineHeight: 1 }}>
+              GB <span style={{ color: '#10B981' }}>Fiyatları</span>
             </h1>
-            <p className="text-[0.8rem] text-white/35 mt-2">
-              Knight Online Gold Bar — 9 site karşılaştırması · Anlık fiyatlar
+            <p style={{ fontSize: '0.78rem', color: 'var(--iron)', marginTop: 8 }}>
+              Knight Online Gold Bar — 9 site karşılaştırması · Anlık veriler
             </p>
           </div>
           <button onClick={fetchPrices}
-            className="flex items-center gap-2 px-4 py-2 rounded text-[0.76rem] font-semibold
-              border border-white/[0.08] text-white/40 hover:border-green-500/40
-              hover:text-green-400 transition-all">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', background: 'none', border: '1px solid var(--border-md)', color: 'var(--iron)', cursor: 'pointer', transition: 'all 0.2s' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(16,185,129,0.4)'; (e.currentTarget as HTMLButtonElement).style.color = '#10B981' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-md)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--iron)' }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M21 12a9 9 0 11-6.219-8.56"/>
             </svg>
             Yenile
@@ -185,14 +193,14 @@ export function GbFiyatlariClient() {
         </div>
 
         {/* ── Sunucu kartları ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-8">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 28 }}
+          className="sm:grid-cols-4 lg:grid-cols-8">
           {summary.map(({ server, minSell, maxBuy }) => {
             const active = activeServer === server
             const c = SERVER_COLOR[server] ?? SERVER_COLOR['Minark']
             return (
               <button key={server} onClick={() => setActive(server)}
-                className="flex flex-col items-start p-3 rounded-lg transition-all duration-150 text-left relative overflow-hidden"
-                style={{
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: 12, cursor: 'pointer', textAlign: 'left', position: 'relative', overflow: 'hidden', transition: 'all 0.15s',
                   background:  active ? c.bg   : 'rgba(255,255,255,0.02)',
                   border:      `1px solid ${active ? c.text + '50' : 'rgba(255,255,255,0.06)'}`,
                   boxShadow:   active ? `0 4px 24px ${c.glow}` : 'none',
@@ -225,7 +233,7 @@ export function GbFiyatlariClient() {
         {/* ── Mod seçici ── */}
         <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
           <div className="flex items-center gap-3">
-            <div className="w-2.5 h-2.5 rounded-full"
+            <div className="w-2.5 h-2.5 full"
               style={{ background: sc.text, boxShadow: `0 0 8px ${sc.glow}` }} />
             <h2 className="text-[1rem] font-bold" style={{ color: sc.text }}>
               {activeServer} Sunucusu
@@ -234,7 +242,7 @@ export function GbFiyatlariClient() {
               {serverPrices.length} site listelendi
             </span>
           </div>
-          <div className="flex rounded-lg overflow-hidden border border-white/[0.07]">
+          <div className="flex  overflow-hidden border border-white/[0.07]">
             {(['sell', 'buy'] as const).map(m => (
               <button key={m} onClick={() => setMode(m)}
                 className="px-5 py-2 text-[0.72rem] font-bold tracking-wider uppercase transition-all"
@@ -251,11 +259,11 @@ export function GbFiyatlariClient() {
       </div>
 
       {/* ── Fiyat listesi ── */}
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 pb-24">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
         {loading ? (
-          <div className="space-y-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[...Array(7)].map((_, i) => (
-              <div key={i} className="h-20 rounded-xl animate-pulse"
+              <div key={i} className="h-20  animate-pulse"
                 style={{ background: 'rgba(255,255,255,0.03)', animationDelay: `${i*0.07}s` }} />
             ))}
           </div>
@@ -264,7 +272,7 @@ export function GbFiyatlariClient() {
             <p className="text-white/25">Bu sunucu için fiyat bulunamadı</p>
           </div>
         ) : (
-          <div className="space-y-2.5">
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {serverPrices.map((s, idx) => {
               const isBestSell = s.sell !== null && s.sell === bestSell
               const isBestBuy  = s.buy  !== null && s.buy  === bestBuy
@@ -273,7 +281,7 @@ export function GbFiyatlariClient() {
 
               return (
                 <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer"
-                  className="group flex items-center gap-4 px-5 py-4 rounded-xl
+                  className="group flex items-center gap-4 px-5 py-4 
                     transition-all duration-200 cursor-pointer"
                   style={{
                     background: idx === 0 && isBestSell
@@ -302,7 +310,7 @@ export function GbFiyatlariClient() {
                   </span>
 
                   {/* Logo */}
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden"
+                  <div className="flex-shrink-0 w-12 h-12  flex items-center justify-center overflow-hidden"
                     style={{ background: meta.bg, border: `1px solid ${meta.color}30` }}>
                     <Image
                       src={logoUrl(s.key, domain)}
@@ -339,13 +347,13 @@ export function GbFiyatlariClient() {
                   {/* En ucuz / en yüksek badge */}
                   <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
                     {isBestSell && mode === 'sell' && (
-                      <span className="text-[0.62rem] font-black px-2 py-1 rounded-md
+                      <span className="text-[0.62rem] font-black px-2 py-1 
                         bg-green-500/15 text-green-400 border border-green-500/30 tracking-wider">
                         ★ EN UCUZ
                       </span>
                     )}
                     {isBestBuy && mode === 'buy' && (
-                      <span className="text-[0.62rem] font-black px-2 py-1 rounded-md
+                      <span className="text-[0.62rem] font-black px-2 py-1 
                         bg-blue-500/15 text-blue-400 border border-blue-500/30 tracking-wider">
                         ★ EN YÜKSEK
                       </span>
@@ -397,15 +405,7 @@ export function GbFiyatlariClient() {
           </div>
         )}
 
-        {/* Kaynak */}
-        <div className="flex items-center justify-center gap-2 mt-8 text-[0.62rem] text-white/15">
-          <span>Veriler</span>
-          <a href="https://ucuzagb.com" target="_blank" rel="noopener noreferrer"
-            className="text-white/30 hover:text-white/60 transition-colors underline underline-offset-2">
-            ucuzagb.com
-          </a>
-          <span>üzerinden 5dk'da bir güncellenir.</span>
-        </div>
+
       </div>
     </div>
   )

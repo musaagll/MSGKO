@@ -85,7 +85,7 @@ export function InstagramPage() {
   const [activeReel, setActiveReel] = useState<string | null>(null)
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#07070B' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--void)' }}>
       {/* Mesh arka plan */}
       <div className="fixed inset-0 pointer-events-none" style={{
         background: `
@@ -136,7 +136,7 @@ export function InstagramPage() {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full flex-shrink-0 p-[2px]"
             style={{ background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)' }}>
-            <div className="w-full h-full rounded-full bg-[#07070B] flex items-center justify-center overflow-hidden">
+            <div className="w-full h-full rounded-full bg-[var(--void)] flex items-center justify-center overflow-hidden">
               <Image src="/logo.png" alt="msgclip" width={26} height={26}
                 className="object-contain" style={{ mixBlendMode: 'screen' }} />
             </div>

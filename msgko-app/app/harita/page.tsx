@@ -33,7 +33,7 @@ const MAP_TYPE_LABELS: Record<string, string> = {
 const MAP_TYPE_COLORS: Record<string, string> = {
   pvp: 'rgba(239,68,68,0.8)',
   pve: 'rgba(16,185,129,0.8)',
-  dungeon: 'rgba(139,92,246,0.8)',
+  dungeon: 'rgba(200,16,46,0.8)',
   town: 'rgba(59,130,246,0.8)',
   event: 'rgba(245,158,11,0.8)',
 }
@@ -63,7 +63,7 @@ export default function HaritaIndexPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
 
-      <main className="min-h-screen" style={{ background: '#07070B' }}>
+      <main className="min-h-screen" style={{ background: 'var(--void)' }}>
         <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
           <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
             <li><Link href="/" className="hover:text-white/60 transition-colors">Ana Sayfa</Link></li>
@@ -73,7 +73,7 @@ export default function HaritaIndexPage() {
         </nav>
 
         <header className="max-w-[1280px] mx-auto px-6 sm:px-8 py-10">
-          <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase text-purple-400/60 mb-3">HARİTA MERKEZİ</p>
+          <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase section-label mb-3">HARİTA MERKEZİ</p>
           <h1 className="text-3xl md:text-4xl font-black tracking-[0.04em] uppercase text-white mb-4"
             style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
             Knight Online Haritalar
@@ -107,7 +107,7 @@ export default function HaritaIndexPage() {
                       <span className="text-[0.6rem] px-1.5 py-0.5 text-red-400/60" title="Savaş Bölgesi">⚔</span>
                     )}
                     {map.has_dungeon && (
-                      <span className="text-[0.6rem] px-1.5 py-0.5 text-purple-400/60" title="Dungeon">🏰</span>
+                      <span className="text-[0.6rem] px-1.5 py-0.5 section-label" title="Dungeon">🏰</span>
                     )}
                   </div>
                 </div>

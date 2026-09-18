@@ -54,7 +54,7 @@ export default function BossIndexPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
 
-      <main className="min-h-screen" style={{ background: '#07070B' }}>
+      <main className="min-h-screen" style={{ background: 'var(--void)' }}>
         {/* Breadcrumb */}
         <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
           <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
@@ -66,7 +66,7 @@ export default function BossIndexPage() {
 
         {/* Header */}
         <header className="max-w-[1280px] mx-auto px-6 sm:px-8 py-10">
-          <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase text-purple-400/60 mb-3">
+          <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase section-label mb-3">
             BOSS MERKEZİ
           </p>
           <h1 className="text-3xl md:text-4xl font-black tracking-[0.04em] uppercase text-white mb-4"

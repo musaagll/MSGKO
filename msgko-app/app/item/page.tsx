@@ -38,7 +38,7 @@ const ITEM_TYPE_LABELS: Record<string, string> = {
 const GRADE_COLORS: Record<string, string> = {
   normal: 'rgba(255,255,255,0.4)',
   unique: 'rgba(245,158,11,0.8)',
-  legendary: 'rgba(139,92,246,0.9)',
+  legendary: 'rgba(200,16,46,0.9)',
 }
 
 export default function ItemIndexPage() {
@@ -66,7 +66,7 @@ export default function ItemIndexPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
 
-      <main className="min-h-screen" style={{ background: '#07070B' }}>
+      <main className="min-h-screen" style={{ background: 'var(--void)' }}>
         <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
           <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
             <li><Link href="/" className="hover:text-white/60 transition-colors">Ana Sayfa</Link></li>
@@ -76,7 +76,7 @@ export default function ItemIndexPage() {
         </nav>
 
         <header className="max-w-[1280px] mx-auto px-6 sm:px-8 py-10">
-          <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase text-purple-400/60 mb-3">ITEM VERİTABANI</p>
+          <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase section-label mb-3">ITEM VERİTABANI</p>
           <h1 className="text-3xl md:text-4xl font-black tracking-[0.04em] uppercase text-white mb-4"
             style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
             Knight Online Item Veritabanı

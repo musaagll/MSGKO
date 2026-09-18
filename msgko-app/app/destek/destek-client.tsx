@@ -19,9 +19,9 @@ const PLATFORMS = [
     name: 'BYNOGAME',
     url: 'https://donate.bynogame.com/musaagll',
     accent: '#8b5cf6',
-    accentDim: 'rgba(139,92,246,0.10)',
-    accentBorder: 'rgba(139,92,246,0.22)',
-    accentGlow: 'rgba(139,92,246,0.12)',
+    accentDim: 'rgba(200,16,46,0.10)',
+    accentBorder: 'rgba(200,16,46,0.22)',
+    accentGlow: 'rgba(200,16,46,0.12)',
   },
   {
     id: 'knightpin',
@@ -36,12 +36,12 @@ const PLATFORMS = [
 
 export function DestekClient() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#07070B' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--void)' }}>
 
       {/* Mesh arka plan */}
       <div className="fixed inset-0 pointer-events-none" style={{
         background: `
-          radial-gradient(ellipse 55% 45% at 15% 25%, rgba(139,92,246,0.08) 0%, transparent 65%),
+          radial-gradient(ellipse 55% 45% at 15% 25%, rgba(200,16,46,0.08) 0%, transparent 65%),
           radial-gradient(ellipse 45% 55% at 85% 75%, rgba(236,72,153,0.06) 0%, transparent 60%),
           radial-gradient(ellipse 70% 35% at 50% 100%, rgba(245,158,11,0.04) 0%, transparent 50%)
         `
@@ -60,7 +60,7 @@ export function DestekClient() {
 
       {/* Top accent line */}
       <div className="fixed top-0 left-0 right-0 h-px pointer-events-none z-10"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.7), rgba(236,72,153,0.5), transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(200,16,46,0.7), rgba(236,72,153,0.5), transparent)' }}
       />
 
       {/* ── Header ── */}
@@ -81,7 +81,7 @@ export function DestekClient() {
 
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
           <p className="text-[0.62rem] font-bold tracking-[0.3em] uppercase mb-0.5"
-            style={{ color: 'rgba(139,92,246,0.7)' }}>
+            style={{ color: 'rgba(200,16,46,0.7)' }}>
             MSGKO.NET
           </p>
           <h1 className="text-[1.1rem] font-black tracking-[0.12em] uppercase text-white"
@@ -107,15 +107,15 @@ export function DestekClient() {
           >
             <div className="relative">
               <div className="absolute inset-0 blur-2xl opacity-40 scale-150"
-                style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.6), rgba(139,92,246,0.4))' }}
+                style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.6), rgba(200,16,46,0.4))' }}
               />
               <motion.div
                 animate={{ scale: [1, 1.08, 1] }}
                 transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}
                 className="relative w-14 h-14 flex items-center justify-center"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.15))',
-                  border: '1px solid rgba(139,92,246,0.25)',
+                  background: 'linear-gradient(135deg, rgba(200,16,46,0.15), rgba(236,72,153,0.15))',
+                  border: '1px solid rgba(200,16,46,0.25)',
                 }}
               >
                 <Heart size={24} className="text-pink-400" fill="rgba(236,72,153,0.4)" />
@@ -133,7 +133,7 @@ export function DestekClient() {
               </p>
             </div>
 
-            <div className="w-16 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.5), transparent)' }} />
+            <div className="w-16 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(200,16,46,0.5), transparent)' }} />
           </motion.div>
 
           {/* Platform kartları */}

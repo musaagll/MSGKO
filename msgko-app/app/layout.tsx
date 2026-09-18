@@ -337,7 +337,7 @@ export default function RootLayout({
           />
         ))}
       </head>
-      <body className="bg-[#07070B] text-white antialiased">
+      <body className="bg-[var(--void)] text-white antialiased">
         <ParticleBackground />
         <Navbar />
         {children}

@@ -3,75 +3,48 @@
 import { useState, useEffect } from 'react'
 
 interface Etkinlik {
-  ad: string
-  kisa: string
-  tur: 'gunluk' | 'haftalik'
-  gunler: number[] | null
-  saatler: string[]
-  simge: string
-  minLevel?: number
-  sureDk?: number
-  not?: string
-  dogrulanmadi?: boolean
+  ad: string; kisa: string; tur: 'gunluk' | 'haftalik'
+  gunler: number[] | null; saatler: string[]; simge: string
+  minLevel?: number; sureDk?: number; not?: string; dogrulanmadi?: boolean
 }
-
 interface EtkinlikData { etkinlikler: Etkinlik[] }
 
-const GUN_ADLARI = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt']
+const GUN: string[] = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt']
 
-function nextOccurrence(etkinlik: Etkinlik): { label: string; msDiff: number } {
+function nextOccurrence(e: Etkinlik): { label: string; msDiff: number; urgent: boolean } {
   const now     = new Date()
-  const trOffset = 3 * 60
-  const trNow   = new Date(now.getTime() + (trOffset + now.getTimezoneOffset()) * 60000)
-  let bestMs    = Infinity
-  let bestLabel = ''
-  const days    = etkinlik.gunler ?? [0,1,2,3,4,5,6]
-
+  const trNow   = new Date(now.getTime() + (3 * 60 + now.getTimezoneOffset()) * 60000)
+  let bestMs    = Infinity, bestLabel = ''
+  const days    = e.gunler ?? [0,1,2,3,4,5,6]
   for (const gun of days) {
-    for (const saat of etkinlik.saatler) {
+    for (const saat of e.saatler) {
       const [hh, mm] = saat.split(':').map(Number)
       const diff     = (gun - trNow.getDay() + 7) % 7
-      const candidate = new Date(trNow)
-      candidate.setDate(candidate.getDate() + diff)
-      candidate.setHours(hh, mm, 0, 0)
-      let ms = candidate.getTime() - trNow.getTime()
+      const c        = new Date(trNow)
+      c.setDate(c.getDate() + diff); c.setHours(hh, mm, 0, 0)
+      let ms = c.getTime() - trNow.getTime()
       if (ms <= 0) ms += 7 * 24 * 3600000
       if (ms < bestMs) {
         bestMs = ms
-        const inHrs  = Math.floor(ms / 3600000)
-        const inMins = Math.floor((ms % 3600000) / 60000)
-        if (inHrs < 24) {
-          bestLabel = inHrs > 0 ? `${inHrs}sa ${inMins}dk` : `${inMins}dk`
-        } else {
-          bestLabel = `${Math.floor(inHrs / 24)}g ${inHrs % 24}sa`
-        }
+        const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000)
+        bestLabel = h < 24 ? (h > 0 ? `${h}sa ${m}dk` : `${m}dk`) : `${Math.floor(h/24)}g ${h%24}sa`
       }
     }
   }
-  return { label: bestLabel, msDiff: bestMs }
+  return { label: bestLabel, msDiff: bestMs, urgent: bestMs < 3600000 }
 }
 
-/* Simge → minimal SVG yerine tek karakter emoji haritası — temiz görünür */
 const SIMGE_MAP: Record<string, string> = {
-  'bi-fire': '🔥', 'bi-shield-shaded': '🛡', 'bi-puzzle': '◈',
-  'bi-shield-slash': '⚔', 'bi-bug': '🏛', 'bi-gem': '◆',
-  'bi-moon-stars': '◉', 'bi-flag': '⚑', 'bi-door-open': '▶',
-  'bi-wrench': '⊕',
-}
-
-/* Renk kategorisi — msDiff'e göre: 0-1sa kırmızı, 1-6sa sarı, diğer nötr */
-function urgencyStyle(msDiff: number): { color: string; label: string } {
-  const hrs = msDiff / 3600000
-  if (hrs < 1)  return { color: 'rgba(239,68,68,0.85)',  label: 'rgba(239,68,68,0.85)' }
-  if (hrs < 6)  return { color: 'rgba(212,168,83,0.9)',   label: 'rgba(212,168,83,0.9)' }
-  return             { color: 'rgba(160,160,184,0.45)',   label: 'rgba(160,160,184,0.45)' }
+  'bi-fire': '🔥', 'bi-shield-shaded': '⚔', 'bi-puzzle': '◈',
+  'bi-shield-slash': '⚔', 'bi-bug': '⚑', 'bi-gem': '◆',
+  'bi-moon-stars': '◉', 'bi-flag': '⚑', 'bi-door-open': '▶', 'bi-wrench': '⊕',
 }
 
 export function EtkinlikSection() {
   const [data,    setData]    = useState<EtkinlikData | null>(null)
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(false)
-  const [, setTick] = useState(0)
+  const [, setTick]           = useState(0)
 
   useEffect(() => {
     fetch('/api/gb-fiyatlari?etkinlik=1')
@@ -96,133 +69,119 @@ export function EtkinlikSection() {
 
   return (
     <section
-      className="w-full"
-      style={{ background: 'var(--bg-void)', borderTop: '1px solid rgba(255,255,255,0.04)' }}
+      style={{
+        padding: '3rem 0 4rem',
+        background: 'var(--abyss)',
+        borderTop: '1px solid var(--border)',
+      }}
     >
-      <div
-        className="max-w-[1280px] mx-auto"
-        style={{ padding: '2.5rem clamp(1.25rem, 4vw, 2.5rem) 3rem' }}
-      >
-        {/* ── Başlık ── */}
-        <div className="flex items-end justify-between mb-6">
+      <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '0 var(--page-px)' }}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
-            <p className="section-label mb-1.5">Etkinlik Takvimi</p>
-            <h2
-              style={{
-                fontFamily: 'var(--font-rajdhani), sans-serif',
-                fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-                fontWeight: 800,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                color: 'rgba(242,242,244,0.7)',
-              }}
-            >
+            <p className="section-label" style={{ marginBottom: 8 }}>Etkinlik Takvimi</p>
+            <h2 style={{
+              fontFamily: 'var(--font-rajdhani), sans-serif',
+              fontSize: 'clamp(1rem, 2vw, 1.3rem)',
+              fontWeight: 900, letterSpacing: '0.06em',
+              textTransform: 'uppercase', color: 'var(--steel)',
+            }}>
               Sıradaki Etkinlikler
             </h2>
           </div>
         </div>
 
-        {/* ── Gold divider ── */}
-        <div className="divider-gold mb-6" />
+        {/* Crimson divider */}
+        <div style={{ height: 1, background: 'linear-gradient(90deg, var(--crimson), var(--ember), transparent)', marginBottom: 24 }} />
 
-        {/* ── Kart grid ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-          {visible.map((etkinlik, idx) => {
-            const urg = urgencyStyle(etkinlik.next.msDiff)
-            const isUrgent = etkinlik.next.msDiff < 3600000
-            return (
-              <div
-                key={etkinlik.ad}
-                className="group relative flex items-start gap-3 transition-all duration-250"
-                style={{
-                  padding: '0.875rem 1rem',
-                  background: 'var(--bg-surface)',
-                  border: `1px solid ${isUrgent ? 'rgba(239,68,68,0.14)' : 'var(--border-subtle)'}`,
-                }}
-                title={etkinlik.not ?? ''}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLDivElement
-                  el.style.borderColor = isUrgent ? 'rgba(239,68,68,0.28)' : 'rgba(212,168,83,0.18)'
-                  el.style.background  = isUrgent ? 'rgba(239,68,68,0.025)' : 'rgba(212,168,83,0.025)'
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLDivElement
-                  el.style.borderColor = isUrgent ? 'rgba(239,68,68,0.14)' : 'var(--border-subtle)'
-                  el.style.background  = 'var(--bg-surface)'
-                }}
-              >
-                {/* Simge */}
-                <span
-                  className="flex-shrink-0 leading-none mt-0.5 select-none"
-                  style={{ fontSize: '1.1rem', opacity: 0.7 }}
-                  aria-hidden="true"
-                >
-                  {SIMGE_MAP[etkinlik.simge] ?? '◈'}
-                </span>
+        {/* Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 8 }}
+          className="sm:grid-cols-2 lg:grid-cols-5">
+          {visible.map((etkinlik, idx) => (
+            <div
+              key={etkinlik.ad}
+              className="card-gaming"
+              style={{
+                padding: '12px 14px',
+                display: 'flex', alignItems: 'flex-start', gap: 10,
+                borderColor: etkinlik.next.urgent ? 'rgba(200,16,46,0.25)' : undefined,
+                background: etkinlik.next.urgent ? 'rgba(200,16,46,0.04)' : undefined,
+                position: 'relative', overflow: 'hidden',
+              }}
+              title={etkinlik.not ?? ''}
+            >
+              {/* Urgent scan line */}
+              {etkinlik.next.urgent && (
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+                  background: 'var(--crimson)', opacity: 0.6,
+                }} />
+              )}
 
-                <div className="min-w-0 flex-1">
-                  {/* Ad */}
-                  <p
-                    className="truncate leading-snug"
-                    style={{ fontSize: '0.74rem', fontWeight: 600, color: 'rgba(242,242,244,0.72)' }}
-                  >
-                    {etkinlik.ad}
-                  </p>
+              {/* Simge */}
+              <span style={{ fontSize: '1rem', flexShrink: 0, marginTop: 1, opacity: 0.7, lineHeight: 1 }} aria-hidden="true">
+                {SIMGE_MAP[etkinlik.simge] ?? '◈'}
+              </span>
 
-                  {/* Saatler + gün */}
-                  <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                    <span style={{ fontSize: '0.6rem', color: 'rgba(160,160,184,0.35)' }}>
-                      {etkinlik.saatler.join(', ')}
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--steel)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {etkinlik.ad}
+                </p>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 8px', marginTop: 3 }}>
+                  <span style={{ fontSize: '0.58rem', color: 'var(--iron)' }}>
+                    {etkinlik.saatler.join(', ')}
+                  </span>
+                  {etkinlik.tur === 'haftalik' && etkinlik.gunler && (
+                    <span style={{ fontSize: '0.55rem', color: 'var(--crimson-bright)', fontWeight: 700, opacity: 0.7 }}>
+                      {etkinlik.gunler.map(g => GUN[g]).join('/')}
                     </span>
-                    {etkinlik.tur === 'haftalik' && etkinlik.gunler && (
-                      <span style={{ fontSize: '0.58rem', color: 'rgba(212,168,83,0.45)', fontWeight: 600 }}>
-                        {etkinlik.gunler.map(g => GUN_ADLARI[g]).join('/')}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Geri sayım */}
-                  <p
-                    className="mt-1.5 font-bold"
-                    style={{ fontSize: '0.65rem', color: urg.color }}
-                  >
-                    {etkinlik.next.label} kaldı
-                  </p>
+                  )}
                 </div>
 
-                {/* Sıra numarası — faint watermark */}
-                {idx < 3 && (
-                  <div
-                    className="absolute bottom-1 right-2 font-black leading-none pointer-events-none select-none"
-                    style={{
-                      fontFamily: 'var(--font-rajdhani), sans-serif',
-                      fontSize: '2.2rem',
-                      color: 'rgba(212,168,83,0.04)',
-                    }}
-                    aria-hidden="true"
-                  >
-                    {idx + 1}
-                  </div>
-                )}
+                <p style={{
+                  fontSize: '0.65rem', fontWeight: 800, marginTop: 6,
+                  color: etkinlik.next.urgent ? 'var(--crimson-bright)' :
+                         etkinlik.next.msDiff < 21600000 ? 'var(--ember)' : '#10B981',
+                }}>
+                  {etkinlik.next.label} kaldı
+                </p>
               </div>
-            )
-          })}
+
+              {/* Sıra numarası */}
+              {idx < 3 && (
+                <div style={{
+                  position: 'absolute', bottom: 0, right: 6,
+                  fontFamily: 'var(--font-rajdhani), sans-serif',
+                  fontSize: '2.5rem', fontWeight: 900, lineHeight: 1,
+                  color: 'var(--border)', pointerEvents: 'none', userSelect: 'none',
+                }} aria-hidden="true">
+                  {idx + 1}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* ── Tümünü göster ── */}
+        {/* Toggle */}
         {sorted.length > 5 && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="mt-5 flex items-center gap-1.5 transition-colors duration-200"
-            style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(160,160,184,0.28)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(212,168,83,0.6)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(160,160,184,0.28)' }}
+            style={{
+              marginTop: 16, display: 'flex', alignItems: 'center', gap: 6,
+              fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
+              color: 'var(--iron)', background: 'none', border: 'none', cursor: 'pointer',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--crimson-bright)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--iron)' }}
           >
             <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-              style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} aria-hidden="true">
+              style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
               <path d="M6 9l6 6 6-6"/>
             </svg>
-            {expanded ? 'Daha az göster' : `Tümünü göster (${sorted.length})`}
+            {expanded ? 'Daha az' : `Tümü (${sorted.length})`}
           </button>
         )}
       </div>
