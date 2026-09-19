@@ -35,7 +35,7 @@ export function YoutubePage() {
       {/* Arka plan */}
       <div style={{
         position: 'fixed', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 55% 45% at 15% 25%, rgba(200,150,12,0.08) 0%, transparent 55%)',
+        background: 'radial-gradient(ellipse 55% 45% at 15% 25%, rgba(212,168,50,0.08) 0%, transparent 55%)',
       }} />
       <div className="grid-overlay" style={{ position: 'fixed' }} />
 
@@ -206,9 +206,9 @@ export function YoutubePage() {
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(8,10,15,0.85) 0%, transparent 55%)' }} />
 
                   {/* Play */}
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.3s', background: 'rgba(200,150,12,0.15)' }}
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.3s', background: 'rgba(212,168,50,0.15)' }}
                     className="group-hover:opacity-100">
-                    <div style={{ width: 52, height: 52, background: 'var(--crimson)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 32px rgba(200,150,12,0.6)' }}>
+                    <div style={{ width: 52, height: 52, background: 'var(--crimson)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 32px rgba(212,168,50,0.6)' }}>
                       <Play size={20} fill="white" color="white" style={{ marginLeft: 3 }} />
                     </div>
                   </div>

@@ -239,7 +239,7 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
                   </div>
 
                   {/* Top accent line on hover */}
-                  <div className="absolute top-0 left-0 right-0 h-[2px] scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left"
+                  <div className="absolute top-0 left-0 right-0 h-[2px] scale-x-0 group-hover:scale-x-100 transition-transform duration-[400ms] origin-left"
                     style={{ background: 'linear-gradient(90deg, rgba(139,92,246,0.8), rgba(236,72,153,0.6))' }}
                   />
                 </motion.div>

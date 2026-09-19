@@ -105,8 +105,8 @@ export function EtkinlikSection() {
               style={{
                 padding: '12px 14px',
                 display: 'flex', alignItems: 'flex-start', gap: 10,
-                borderColor: etkinlik.next.urgent ? 'rgba(200,150,12,0.25)' : undefined,
-                background: etkinlik.next.urgent ? 'rgba(200,150,12,0.04)' : undefined,
+                borderColor: etkinlik.next.urgent ? 'rgba(212,168,50,0.25)' : undefined,
+                background: etkinlik.next.urgent ? 'rgba(212,168,50,0.04)' : undefined,
                 position: 'relative', overflow: 'hidden',
               }}
               title={etkinlik.not ?? ''}

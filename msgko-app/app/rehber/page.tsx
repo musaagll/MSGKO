@@ -66,7 +66,7 @@ export default function RehberIndexPage() {
         }}>
           <div style={{
             position: 'absolute', inset: 0, pointerEvents: 'none',
-            background: 'radial-gradient(ellipse 60% 80% at 50% 100%, rgba(200,150,12,0.08) 0%, transparent 55%)',
+            background: 'radial-gradient(ellipse 60% 80% at 50% 100%, rgba(212,168,50,0.08) 0%, transparent 55%)',
           }} />
 
           <div style={{ position: 'relative', maxWidth: '1320px', margin: '0 auto', padding: '2rem clamp(1.25rem,4vw,2.5rem) 3rem' }}>
@@ -86,8 +86,8 @@ export default function RehberIndexPage() {
 
             {/* Section label */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <div style={{ width: 20, height: 1, background: '#C8960C' }} />
-              <span style={{ fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.32em', textTransform: 'uppercase', color: '#E8B422', opacity: 0.85 }}>
+              <div style={{ width: 20, height: 1, background: '#D4A832' }} />
+              <span style={{ fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.32em', textTransform: 'uppercase', color: '#F0C050', opacity: 0.85 }}>
                 Rehber Merkezi
               </span>
             </div>
@@ -114,14 +114,14 @@ export default function RehberIndexPage() {
           </div>
 
           {/* Alt kırmızı çizgi */}
-          <div style={{ height: 1, background: 'linear-gradient(90deg, #C8960C, rgba(160,120,40,0.5), transparent)' }} />
+          <div style={{ height: 1, background: 'linear-gradient(90deg, #D4A832, rgba(212,168,50,0.3), transparent)' }} />
         </div>
 
         {/* ── Sınıf kartları ── */}
         <section style={{ maxWidth: '1320px', margin: '0 auto', padding: '3rem clamp(1.25rem,4vw,2.5rem) 5rem' }}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {KO_CLASSES.map(cls => {
-              const acc = CLASS_ACCENT[cls.slug] ?? { border: 'rgba(200,150,12,0.2)', bg: 'rgba(200,150,12,0.05)', label: '' }
+              const acc = CLASS_ACCENT[cls.slug] ?? { border: 'rgba(212,168,50,0.2)', bg: 'rgba(212,168,50,0.05)', label: '' }
               return (
                 <Link
                   key={cls.slug}

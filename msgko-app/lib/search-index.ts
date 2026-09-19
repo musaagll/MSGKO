@@ -428,7 +428,7 @@ export const SEARCH_INDEX: SearchItem[] = [
     title: 'Build Rehberleri',
     description: 'PvP, PvE ve farm build\'leri — stat dağılımı ve skill tree',
     action: 'link',
-    href: '/build',
+    href: '/rehber',
     keywords: [
       'build', 'build rehberi', 'pvp build', 'pve build', 'farm build',
       'stat dağılımı', 'skill tree', 'knight online build',
@@ -444,7 +444,7 @@ export const SEARCH_INDEX: SearchItem[] = [
     title: 'Farm Rehberleri',
     description: 'Exp, item ve noah farm rotaları',
     action: 'link',
-    href: '/farm',
+    href: '/rehber',
     keywords: [
       'farm', 'exp farm', 'item farm', 'farm rotası', 'farm bölgesi',
       'exp', 'leveling', 'noah farm', 'ws farm', 'en iyi farm yeri',
@@ -461,7 +461,7 @@ export const SEARCH_INDEX: SearchItem[] = [
     title: 'Knight Online Haberler',
     description: 'Güncel güncellemeler, patch notları ve etkinlikler',
     action: 'link',
-    href: '/haber',
+    href: '/youtube',
     keywords: [
       'haber', 'güncelleme', 'patch', 'etkinlik', 'bakım', 'duyuru',
       'knight online haber', 'knight online güncelleme', 'son haberler',

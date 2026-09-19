@@ -88,16 +88,16 @@ export function HeroSection() {
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
           background: `
-            radial-gradient(ellipse 60% 70% at 80% 50%, rgba(200,150,12,0.12) 0%, transparent 55%),
-            radial-gradient(ellipse 40% 60% at 20% 90%, rgba(160,120,40,0.06) 0%, transparent 50%),
-            radial-gradient(ellipse 80% 40% at 50% 0%, rgba(8,10,15,0.9) 0%, transparent 50%)
+            radial-gradient(ellipse 60% 70% at 80% 50%, rgba(212,168,50,0.12) 0%, transparent 55%),
+            radial-gradient(ellipse 40% 60% at 20% 90%, rgba(58,74,107,0.08) 0%, transparent 50%),
+            radial-gradient(ellipse 80% 40% at 50% 0%, rgba(6,8,15,0.9) 0%, transparent 50%)
           `,
         }} />
 
         {/* ── Dikey çizgi aksan ── */}
         <div style={{
           position: 'absolute', left: 'clamp(1.25rem, 4vw, 2.5rem)', top: 0, bottom: 0, width: 1,
-          background: 'linear-gradient(180deg, transparent, rgba(200,150,12,0.4) 20%, rgba(200,150,12,0.2) 80%, transparent)',
+          background: 'linear-gradient(180deg, transparent, rgba(212,168,50,0.4) 20%, rgba(212,168,50,0.2) 80%, transparent)',
           pointerEvents: 'none',
         }} />
 
@@ -132,7 +132,7 @@ export function HeroSection() {
           {/* Glow halo */}
           <div style={{
             position: 'absolute', inset: '-20%',
-            background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(200,150,12,0.2) 0%, rgba(160,120,40,0.1) 40%, transparent 65%)',
+            background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(212,168,50,0.2) 0%, rgba(58,74,107,0.1) 40%, transparent 65%)',
             filter: 'blur(40px)',
           }} />
           <motion.img
@@ -140,7 +140,7 @@ export function HeroSection() {
             style={{
               width: '100%', height: 'auto', position: 'relative',
               mixBlendMode: 'screen',
-              filter: 'brightness(1.3) contrast(1.1) drop-shadow(0 0 60px rgba(200,150,12,0.5)) drop-shadow(0 0 120px rgba(200,150,12,0.2))',
+              filter: 'brightness(1.3) contrast(1.1) drop-shadow(0 0 60px rgba(212,168,50,0.5)) drop-shadow(0 0 120px rgba(212,168,50,0.2))',
               opacity: 0.5,
               x: mousePos.x * -8,
               y: mousePos.y * -8,
@@ -228,7 +228,7 @@ export function HeroSection() {
                   letterSpacing: '-0.01em',
                   textTransform: 'uppercase',
                   lineHeight: 0.9,
-                  background: 'linear-gradient(115deg, #F5E6B0 0%, var(--crimson-bright) 30%, #C8960C 60%, #6B4F08 100%)',
+                  background: 'linear-gradient(115deg, #F5E8B8 0%, var(--crimson-bright) 30%, #D4A832 60%, #7A5A10 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
@@ -317,7 +317,7 @@ export function HeroSection() {
                 whileTap={{ scale: 0.97 }}
                 className="btn-secondary"
               >
-                <img src="/archer-icon.png" alt="" style={{ width: 20, height: 20, objectFit: 'contain', filter: 'drop-shadow(0 0 4px rgba(200,150,12,0.4))' }} />
+                <img src="/archer-icon.png" alt="" style={{ width: 20, height: 20, objectFit: 'contain', filter: 'drop-shadow(0 0 4px rgba(212,168,50,0.4))' }} />
                 Okçu Eğitimleri
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -361,7 +361,7 @@ export function HeroSection() {
                     fontSize: 'clamp(1.6rem, 3vw, 2.2rem)',
                     fontWeight: 900,
                     letterSpacing: '-0.02em',
-                    background: 'linear-gradient(135deg, var(--platinum) 0%, rgba(200,150,12,0.7) 100%)',
+                    background: 'linear-gradient(135deg, var(--platinum) 0%, rgba(212,168,50,0.7) 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',

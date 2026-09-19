@@ -33,7 +33,7 @@ const MAP_TYPE_LABELS: Record<string, string> = {
 const MAP_TYPE_COLORS: Record<string, string> = {
   pvp: 'rgba(239,68,68,0.8)',
   pve: 'rgba(16,185,129,0.8)',
-  dungeon: 'rgba(200,150,12,0.8)',
+  dungeon: 'rgba(212,168,50,0.8)',
   town: 'rgba(59,130,246,0.8)',
   event: 'rgba(245,158,11,0.8)',
 }

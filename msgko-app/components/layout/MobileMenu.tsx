@@ -207,15 +207,39 @@ export function MobileMenu({ isOpen, onClose, onYoutubeOpen, onInstagramOpen, on
                   Daha Fazla
                 </p>
                 {[
-                  { label: 'YouTube Kanalı', icon: null, color: 'var(--crimson-bright)', action: () => { onYoutubeOpen(); onClose() } },
-                  { label: 'Instagram',      icon: null, color: '#E1306C',               action: () => { onInstagramOpen(); onClose() } },
-                  { label: 'İletişim',       icon: null, color: 'var(--steel)',           action: () => { onIletisimOpen(); onClose() } },
-                  { label: 'Destek',         icon: null, color: 'var(--steel)',           action: () => { onClose() } },
+                  { label: 'YouTube Kanalı', href: null,       color: 'var(--crimson-bright)', action: () => { onYoutubeOpen(); onClose() } },
+                  { label: 'Instagram',      href: null,       color: '#E1306C',               action: () => { onInstagramOpen(); onClose() } },
+                  { label: 'İletişim',       href: null,       color: 'var(--steel)',           action: () => { onIletisimOpen(); onClose() } },
+                  { label: 'Destek',         href: '/destek',  color: 'var(--crimson-bright)', action: null },
                 ].map((item, i) => (
+                  item.href ? (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 + 0.4 }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={onClose}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                          padding: '9px 20px',
+                          fontSize: '0.8rem', fontWeight: 500, color: 'var(--steel)',
+                          textDecoration: 'none', transition: 'color 0.15s',
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--platinum)' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--steel)' }}
+                      >
+                        <div style={{ width: 4, height: 4, background: item.color, transform: 'rotate(45deg)', flexShrink: 0, opacity: 0.6 }} />
+                        {item.label}
+                      </Link>
+                    </motion.div>
+                  ) : (
                   <motion.button
                     key={item.label}
                     type="button"
-                    onClick={item.action}
+                    onClick={item.action!}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 + 0.4 }}
@@ -232,6 +256,7 @@ export function MobileMenu({ isOpen, onClose, onYoutubeOpen, onInstagramOpen, on
                     <div style={{ width: 4, height: 4, background: item.color, transform: 'rotate(45deg)', flexShrink: 0, opacity: 0.6 }} />
                     {item.label}
                   </motion.button>
+                  )
                 ))}
               </div>
             </div>

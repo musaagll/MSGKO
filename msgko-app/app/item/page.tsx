@@ -38,7 +38,7 @@ const ITEM_TYPE_LABELS: Record<string, string> = {
 const GRADE_COLORS: Record<string, string> = {
   normal: 'rgba(255,255,255,0.4)',
   unique: 'rgba(245,158,11,0.8)',
-  legendary: 'rgba(200,150,12,0.9)',
+  legendary: 'rgba(212,168,50,0.9)',
 }
 
 export default function ItemIndexPage() {

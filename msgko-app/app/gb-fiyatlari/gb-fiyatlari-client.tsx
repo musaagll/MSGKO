@@ -138,7 +138,7 @@ export function GbFiyatlariClient() {
     <div style={{ minHeight: '100vh', background: 'var(--void)' }}>
 
       {/* Arka plan */}
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 55% 45% at 10% 20%, rgba(200,150,12,0.06) 0%, transparent 55%)' }} />
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 55% 45% at 10% 20%, rgba(212,168,50,0.06) 0%, transparent 55%)' }} />
       <div className="grid-overlay" style={{ position: 'fixed' }} />
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 2, zIndex: 10, background: 'linear-gradient(90deg, transparent, var(--crimson), var(--ember), transparent)' }} />
 

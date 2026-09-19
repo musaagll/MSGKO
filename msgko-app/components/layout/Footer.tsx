@@ -72,7 +72,7 @@ export function Footer() {
       {/* Arka plan efektleri */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 60% 50% at 0% 100%, rgba(200,150,12,0.05) 0%, transparent 55%)',
+        background: 'radial-gradient(ellipse 60% 50% at 0% 100%, rgba(212,168,50,0.05) 0%, transparent 55%)',
       }} />
       <div className="grid-overlay" />
 
@@ -89,7 +89,7 @@ export function Footer() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
               <Image src="/logo.png" alt="MSGKO" width={48} height={48}
-                style={{ mixBlendMode: 'screen', filter: 'brightness(1.3) drop-shadow(0 0 8px rgba(200,150,12,0.4))' }} />
+                style={{ mixBlendMode: 'screen', filter: 'brightness(1.3) drop-shadow(0 0 8px rgba(212,168,50,0.4))' }} />
               <div>
                 <div style={{ fontSize: '0.85rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--platinum)', fontFamily: 'var(--font-rajdhani), sans-serif' }}>
                   MSG<span style={{ color: 'var(--crimson-bright)' }}>KO</span>

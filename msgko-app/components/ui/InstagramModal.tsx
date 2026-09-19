@@ -211,7 +211,7 @@ export function InstagramModal({ isOpen, onClose }: InstagramModalProps) {
                     </div>
 
                     {/* Top accent on hover */}
-                    <div className="absolute top-0 left-0 right-0 h-[2px] scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left"
+                    <div className="absolute top-0 left-0 right-0 h-[2px] scale-x-0 group-hover:scale-x-100 transition-transform duration-[400ms] origin-left"
                       style={{ background: 'linear-gradient(90deg, #833ab4, #fd1d1d)' }}
                     />
                   </div>

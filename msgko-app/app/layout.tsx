@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Rajdhani } from 'next/font/google'
 import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
@@ -320,6 +320,13 @@ const jsonLd = [
 
 // JSON-LD string'leri build-time'da hesapla — her request'te stringify yapma
 const jsonLdStrings = jsonLd.map(schema => JSON.stringify(schema))
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#06080F',
+}
 
 export default function RootLayout({
   children,
