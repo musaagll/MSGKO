@@ -32,7 +32,7 @@ export function FeaturesSection() {
       {/* Arka plan */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 70% 50% at 50% 100%, rgba(200,16,46,0.06) 0%, transparent 55%)',
+        background: 'radial-gradient(ellipse 70% 50% at 50% 100%, rgba(200,150,12,0.06) 0%, transparent 55%)',
       }} />
       {/* Üst border */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, var(--border-md), transparent)' }} />

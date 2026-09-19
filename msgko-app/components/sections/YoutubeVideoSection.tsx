@@ -25,7 +25,7 @@ export function YoutubeVideoSection({ videos }: { videos: YTVideo[] }) {
       {/* Arka plan */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 70% 55% at 100% 0%, rgba(200,16,46,0.07) 0%, transparent 55%)',
+        background: 'radial-gradient(ellipse 70% 55% at 100% 0%, rgba(200,150,12,0.07) 0%, transparent 55%)',
       }} />
       <div className="grid-overlay" />
 
@@ -109,7 +109,7 @@ export function YoutubeVideoSection({ videos }: { videos: YTVideo[] }) {
                   width: 64, height: 64,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: 'var(--crimson)',
-                  boxShadow: '0 0 40px rgba(200,16,46,0.6)',
+                  boxShadow: '0 0 40px rgba(200,150,12,0.6)',
                 }}>
                   <Play size={24} fill="white" color="white" style={{ marginLeft: 3 }} />
                 </div>
@@ -189,7 +189,7 @@ export function YoutubeVideoSection({ videos }: { videos: YTVideo[] }) {
                     <Image src={video.thumbnail} alt={video.title} fill sizes="112px"
                       className="object-cover transition-transform duration-500 group-hover:scale-[1.08]" />
                   )}
-                  <div style={{ position: 'absolute', inset: 0, opacity: 0, transition: 'opacity 0.25s', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(200,16,46,0.3)' }}
+                  <div style={{ position: 'absolute', inset: 0, opacity: 0, transition: 'opacity 0.25s', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(200,150,12,0.3)' }}
                     className="group-hover:opacity-100">
                     <Play size={16} fill="white" color="white" style={{ marginLeft: 2 }} />
                   </div>

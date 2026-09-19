@@ -68,7 +68,7 @@ function RehberDropdown() {
               width: 480,
               background: 'var(--abyss)',
               border: '1px solid var(--border-md)',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(200,16,46,0.05) inset',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(200,150,12,0.05) inset',
               transformOrigin: 'top center',
               zIndex: 100,
             }}
@@ -86,14 +86,14 @@ function RehberDropdown() {
                   onClick={() => setOpen(false)}
                   className="group flex items-center gap-3 px-4 py-3 transition-all duration-150"
                   style={{ background: 'transparent' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(200,16,46,0.06)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(200,150,12,0.06)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                 >
                   <div style={{
                     width: 32, height: 32, flexShrink: 0,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: 'rgba(200,16,46,0.08)',
-                    border: '1px solid rgba(200,16,46,0.15)',
+                    background: 'rgba(200,150,12,0.08)',
+                    border: '1px solid rgba(200,150,12,0.15)',
                   }}>
                     {item.icon
                       ? <img src={item.icon} alt="" style={{ width: 18, height: 18, objectFit: 'contain', mixBlendMode: 'screen', filter: 'brightness(1.3)' }} />
@@ -221,7 +221,7 @@ export function Navbar() {
               {/* Glow halo */}
               <div style={{
                 position: 'absolute', inset: -4,
-                background: 'radial-gradient(circle, rgba(200,16,46,0.4) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(200,150,12,0.4) 0%, transparent 70%)',
                 filter: 'blur(8px)',
                 opacity: 0,
                 transition: 'opacity 0.4s ease',
@@ -231,7 +231,7 @@ export function Navbar() {
                 className="relative w-full h-full object-contain"
                 style={{
                   mixBlendMode: 'screen',
-                  filter: 'brightness(1.5) contrast(1.1) drop-shadow(0 0 12px rgba(200,16,46,0.5))',
+                  filter: 'brightness(1.5) contrast(1.1) drop-shadow(0 0 12px rgba(200,150,12,0.5))',
                   transition: 'filter 0.3s ease, transform 0.3s ease',
                 }}
                 priority

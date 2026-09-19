@@ -716,9 +716,22 @@ export const KO_CLASSES: ClassData[] = [
 
 // ─── Yardımcı Fonksiyonlar ─────────────────────────────────────────────────
 
-/** guideSlug'a göre sınıf verisini döndürür */
+/**
+ * Ek slug alias'ları — navbar dropdown gibi harici linklerde kullanılan
+ * kısa slug'ların gerçek sınıfa yönlendirilmesi için.
+ * okcu   → rogue (guideSlug: 'asas')
+ * battle-priest → priest
+ */
+const SLUG_ALIASES: Record<string, string> = {
+  okcu:          'asas',
+  'okcu-rehber': 'asas',
+  'battle-priest': 'priest',
+}
+
+/** guideSlug (veya alias) göre sınıf verisini döndürür */
 export function getClassBySlug(slug: string): ClassData | undefined {
-  return KO_CLASSES.find((c) => c.guideSlug === slug || c.slug === slug)
+  const resolved = SLUG_ALIASES[slug] ?? slug
+  return KO_CLASSES.find((c) => c.guideSlug === resolved || c.slug === resolved)
 }
 
 /** Alias'a göre sınıf verisini döndürür */
@@ -731,7 +744,9 @@ export function getClassByAlias(alias: string): ClassData | undefined {
   )
 }
 
-/** Tüm guide slug'larını döndürür */
+/** Tüm guide slug'larını döndürür (alias'lar dahil — static params için) */
 export function getAllClassSlugs(): string[] {
-  return KO_CLASSES.map((c) => c.guideSlug)
+  const base = KO_CLASSES.map((c) => c.guideSlug)
+  const aliases = Object.keys(SLUG_ALIASES)
+  return [...base, ...aliases]
 }

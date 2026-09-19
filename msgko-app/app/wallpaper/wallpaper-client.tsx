@@ -64,7 +64,7 @@ export function WallpaperClient() {
       {/* Arka plan */}
       <div style={{
         position: 'fixed', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 55% 50% at 10% 20%, rgba(200,16,46,0.07) 0%, transparent 55%)',
+        background: 'radial-gradient(ellipse 55% 50% at 10% 20%, rgba(200,150,12,0.07) 0%, transparent 55%)',
       }} />
       <div className="grid-overlay" style={{ position: 'fixed' }} />
 
@@ -145,7 +145,7 @@ export function WallpaperClient() {
               {t.label}
               <span style={{
                 fontSize: '0.6rem', padding: '2px 6px',
-                background: tab === t.id ? 'rgba(200,16,46,0.2)' : 'rgba(255,255,255,0.06)',
+                background: tab === t.id ? 'rgba(200,150,12,0.2)' : 'rgba(255,255,255,0.06)',
                 color: tab === t.id ? 'var(--crimson-bright)' : 'var(--iron)',
                 fontWeight: 700,
               }}>
@@ -228,7 +228,7 @@ export function WallpaperClient() {
                       <a
                         href={wp.src}
                         download={wp.label + '.png'}
-                        style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--crimson)', border: '1px solid rgba(200,16,46,0.5)', color: '#fff', textDecoration: 'none' }}
+                        style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--crimson)', border: '1px solid rgba(200,150,12,0.5)', color: '#0A0C14', textDecoration: 'none' }}
                         onClick={e => { e.stopPropagation(); track(wp.id, 'download') }}
                         aria-label={`${wp.label} indir`}
                       >

@@ -2,36 +2,38 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MSGKO — PREMIUM GAMING PLATFORM
-   Design Language: Dark · Cinematic · Gaming · Futuristic · Immersive
+   Design Language: Dark · Cinematic · Gaming · Obsidian · Imperial Gold
    ─────────────────────────────────────────────────────────────────────────
-   Renk Felsefesi:
-   - Void Black   → #080A0F  (zemin — uzay siyahı, saf değil)
-   - Abyss        → #0D1117  (kart yüzeyi)
-   - Crimson      → #C8102E  (ana vurgu — Knight Online kanı)
-   - Ember        → #FF4D1C  (ikincil — ateş, aksiyon)
-   - Steel        → #A0AEC0  (metalik gri tip)
-   - Platinum     → #E2E8F0  (başlık tipi)
+   Renk Felsefesi (zırh görseline dayalı):
+   - Void Black   → #080A0F  (zemin — koyu lacivert-siyah)
+   - Abyss        → #0A0C14  (kart yüzeyi — zırh gövde tonu)
+   - Surface      → #0E1020  (yükseltilmiş yüzey)
+   - Gold         → #C8960C  (ana vurgu — altın süsleme)
+   - Gold Bright  → #E8B422  (parlak altın — ışık noktaları)
+   - Bronze       → #8B6914  (bronz — derin gölge)
+   - Steel        → #8A9BB0  (metalik gri tip)
+   - Platinum     → #E8ECF0  (başlık tipi)
 ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ─── Design Tokens ─────────────────────────────────────────────────────── */
 :root {
   /* Zemin Hiyerarşisi */
   --void:         #080A0F;
-  --abyss:        #0D1117;
-  --surface:      #111827;
-  --elevated:     #1A2235;
+  --abyss:        #0A0C14;
+  --surface:      #0E1020;
+  --elevated:     #141828;
   --overlay:      rgba(8, 10, 15, 0.97);
 
-  /* Crimson Vurgu */
-  --crimson:      #C8102E;
-  --crimson-bright: #E8192F;
-  --crimson-dim:  #7B0A1C;
-  --crimson-glow: rgba(200, 16, 46, 0.35);
-  --crimson-subtle: rgba(200, 16, 46, 0.08);
+  /* Gold Ana Vurgu */
+  --crimson:        #C8960C;
+  --crimson-bright: #E8B422;
+  --crimson-dim:    #6B4F08;
+  --crimson-glow:   rgba(200, 150, 12, 0.35);
+  --crimson-subtle: rgba(200, 150, 12, 0.08);
 
-  /* Ember (ikincil) */
-  --ember:        #FF4D1C;
-  --ember-dim:    rgba(255, 77, 28, 0.2);
+  /* Bronze (ikincil) */
+  --ember:        #A07828;
+  --ember-dim:    rgba(160, 120, 40, 0.2);
 
   /* Metalik Tipler */
   --platinum:     #E8ECF0;
@@ -43,14 +45,14 @@
   --border:       rgba(255, 255, 255, 0.06);
   --border-md:    rgba(255, 255, 255, 0.10);
   --border-bright: rgba(255, 255, 255, 0.16);
-  --border-crimson: rgba(200, 16, 46, 0.30);
-  --border-crimson-bright: rgba(200, 16, 46, 0.60);
+  --border-crimson: rgba(200, 150, 12, 0.30);
+  --border-crimson-bright: rgba(200, 150, 12, 0.60);
 
   /* Gölgeler */
   --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.6);
   --shadow-md:    0 8px 32px rgba(0, 0, 0, 0.7);
   --shadow-lg:    0 24px 64px rgba(0, 0, 0, 0.8);
-  --shadow-crimson: 0 0 40px rgba(200, 16, 46, 0.25), 0 0 80px rgba(200, 16, 46, 0.08);
+  --shadow-crimson: 0 0 40px rgba(200, 150, 12, 0.2), 0 0 80px rgba(200, 150, 12, 0.07);
 
   /* Spacing */
   --section-pt: clamp(4rem, 8vw, 7rem);
@@ -119,7 +121,7 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 
 /* ── Gradient Başlıklar ── */
 .text-gradient-crimson {
-  background: linear-gradient(120deg, #FFFFFF 0%, #F0C0C8 35%, #C8102E 65%, #FF4D1C 100%);
+  background: linear-gradient(120deg, #FFFFFF 0%, #F5E6B0 35%, #E8B422 65%, #C8960C 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -133,7 +135,7 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 }
 
 .text-gradient-fire {
-  background: linear-gradient(120deg, #FF6B35 0%, #FF4D1C 35%, #C8102E 70%, #7B0A1C 100%);
+  background: linear-gradient(120deg, #F5E6B0 0%, #E8B422 35%, #C8960C 70%, #6B4F08 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -172,13 +174,13 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(200,16,46,0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(200,150,12,0.4), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 .card-gaming:hover {
   border-color: var(--border-crimson);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,16,46,0.08) inset;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,150,12,0.06) inset;
 }
 .card-gaming:hover::before { opacity: 1; }
 
@@ -192,9 +194,9 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #fff;
+  color: #0A0C14;
   background: var(--crimson);
-  border: 1px solid rgba(200,16,46,0.5);
+  border: 1px solid rgba(200,150,12,0.5);
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -204,13 +206,13 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%);
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
   transform: translateX(-100%);
   transition: transform 0.45s ease;
 }
 .btn-primary:hover {
   background: var(--crimson-bright);
-  box-shadow: 0 8px 32px rgba(200,16,46,0.4);
+  box-shadow: 0 8px 32px rgba(200,150,12,0.4);
   transform: translateY(-2px);
 }
 .btn-primary:hover::after { transform: translateX(100%); }
@@ -231,9 +233,9 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease, transform 0.2s ease;
 }
 .btn-secondary:hover {
-  border-color: var(--border-bright);
-  color: var(--platinum);
-  background: rgba(255,255,255,0.04);
+  border-color: var(--border-crimson);
+  color: var(--crimson-bright);
+  background: var(--crimson-subtle);
   transform: translateY(-2px);
 }
 
@@ -253,7 +255,7 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   transition: all 0.2s ease;
 }
 .btn-ghost:hover {
-  background: rgba(200,16,46,0.14);
+  background: rgba(200,150,12,0.14);
   border-color: var(--border-crimson-bright);
 }
 
@@ -282,7 +284,7 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 .badge-ember {
   color: var(--ember);
   background: var(--ember-dim);
-  border-color: rgba(255,77,28,0.3);
+  border-color: rgba(160,120,40,0.3);
 }
 .badge-green {
   color: #10B981;
@@ -307,10 +309,10 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.025;
+  opacity: 0.02;
   background-image:
-    linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+    linear-gradient(rgba(200,150,12,0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,150,12,0.4) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
@@ -319,7 +321,7 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   box-shadow: var(--shadow-crimson);
 }
 .glow-text-crimson {
-  text-shadow: 0 0 20px rgba(200,16,46,0.6), 0 0 60px rgba(200,16,46,0.2);
+  text-shadow: 0 0 20px rgba(200,150,12,0.6), 0 0 60px rgba(200,150,12,0.2);
 }
 
 /* ── Scanline Texture ── */
@@ -327,19 +329,19 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.03;
+  opacity: 0.025;
   background-image: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 2px,
-    rgba(255, 255, 255, 0.4) 2px,
-    rgba(255, 255, 255, 0.4) 4px
+    rgba(200, 150, 12, 0.15) 2px,
+    rgba(200, 150, 12, 0.15) 4px
   );
 }
 
 /* ── Glass ── */
 .glass {
-  background: rgba(13, 17, 23, 0.85);
+  background: rgba(10, 12, 20, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -365,8 +367,8 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 }
 
 @keyframes crimsonPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(200,16,46,0); }
-  50%       { box-shadow: 0 0 0 4px rgba(200,16,46,0.15); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,150,12,0); }
+  50%       { box-shadow: 0 0 0 4px rgba(200,150,12,0.15); }
 }
 .pulse-crimson { animation: crimsonPulse 2.5s ease-in-out infinite; }
 
@@ -381,7 +383,7 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   100% { background-position:  200% center; }
 }
 .shimmer {
-  background: linear-gradient(105deg, var(--crimson-dim) 0%, var(--crimson) 35%, #FF6B35 50%, var(--crimson) 65%, var(--crimson-dim) 100%);
+  background: linear-gradient(105deg, var(--crimson-dim) 0%, var(--crimson) 35%, #F5E6B0 50%, var(--crimson) 65%, var(--crimson-dim) 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -463,12 +465,12 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 
 /* Item rarity renkleri */
 .rarity-normal    { color: #A0AEC0; border-color: rgba(160,174,192,0.3); }
-.rarity-unique    { color: #F6AD55; border-color: rgba(246,173,85,0.4); }
-.rarity-legendary { color: #B794F4; border-color: rgba(183,148,244,0.4); }
+.rarity-unique    { color: #E8B422; border-color: rgba(232,180,34,0.4); }
+.rarity-legendary { color: #C8960C; border-color: rgba(200,150,12,0.5); }
 .rarity-epic      { color: #63B3ED; border-color: rgba(99,179,237,0.4); }
 
 /* Upgrade badge */
-.upgrade-plus { color: #F6AD55; }
+.upgrade-plus { color: #E8B422; }
 .upgrade-rare { color: #B794F4; }
 .upgrade-max  { color: var(--crimson-bright); }
 
