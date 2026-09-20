@@ -1,13 +1,24 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { KO_CLASSES } from '@/lib/ko-data/classes'
 
 const CLASS_COLORS: Record<string, { primary: string; bg: string; border: string; role: string }> = {
-  warrior: { primary: '#F87171', bg: 'rgba(248,113,113,0.06)', border: 'rgba(248,113,113,0.2)', role: 'DPS / Tank' },
-  rogue:   { primary: '#60A5FA', bg: 'rgba(96,165,250,0.06)',  border: 'rgba(96,165,250,0.2)',  role: 'DPS / Stealth' },
-  mage:    { primary: '#A78BFA', bg: 'rgba(167,139,250,0.06)', border: 'rgba(167,139,250,0.2)', role: 'Caster / AOE' },
-  priest:  { primary: '#34D399', bg: 'rgba(52,211,153,0.06)',  border: 'rgba(52,211,153,0.2)',  role: 'Heal / Support' },
+  warrior:  { primary: '#F87171', bg: 'rgba(248,113,113,0.06)', border: 'rgba(248,113,113,0.2)', role: 'DPS / Tank' },
+  assassin: { primary: '#60A5FA', bg: 'rgba(96,165,250,0.06)',  border: 'rgba(96,165,250,0.2)',  role: 'DPS / Stealth' },
+  archer:   { primary: '#06B6D4', bg: 'rgba(6,182,212,0.06)',   border: 'rgba(6,182,212,0.2)',   role: 'DPS / Menzil' },
+  mage:     { primary: '#A78BFA', bg: 'rgba(167,139,250,0.06)', border: 'rgba(167,139,250,0.2)', role: 'Caster / AOE' },
+  priest:   { primary: '#34D399', bg: 'rgba(52,211,153,0.06)',  border: 'rgba(52,211,153,0.2)',  role: 'Heal / Support' },
+}
+
+/** Oyun içi ikonlar — emoji yerine gerçek görsel */
+const CLASS_ICONS: Record<string, string> = {
+  warrior:  '/dreadshield.png',
+  assassin: '/assassin-icon.png',
+  archer:   '/archer-icon.png',
+  mage:     '/staffwoe.png',
+  priest:   '/dreadshield.png',
 }
 
 export function ClassGuideSection() {
@@ -97,17 +108,29 @@ export function ClassGuideSection() {
                 {/* Büyük faint arka plan ikonu */}
                 <div style={{
                   position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)',
-                  fontSize: '4.5rem', opacity: 0.04, pointerEvents: 'none', lineHeight: 1,
+                  width: '4.5rem', height: '4.5rem', opacity: 0.06, pointerEvents: 'none',
                 }} aria-hidden="true">
-                  {cls.icon}
+                  <Image
+                    src={CLASS_ICONS[cls.slug] ?? '/dreadshield.png'}
+                    alt=""
+                    width={72}
+                    height={72}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'screen' }}
+                  />
                 </div>
 
                 <div style={{ position: 'relative' }}>
                   {/* Header */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-                    <span style={{ fontSize: '2rem', lineHeight: 1, flexShrink: 0 }} aria-hidden="true">
-                      {cls.icon}
-                    </span>
+                    <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-hidden="true">
+                      <Image
+                        src={CLASS_ICONS[cls.slug] ?? '/dreadshield.png'}
+                        alt={cls.name}
+                        width={36}
+                        height={36}
+                        style={{ width: 36, height: 36, objectFit: 'contain', mixBlendMode: 'screen' }}
+                      />
+                    </div>
                     <div>
                       <h3 style={{
                         fontFamily: 'var(--font-rajdhani), sans-serif',

@@ -1,18 +1,19 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import Image from 'next/image'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { OkcuModal } from '@/components/ui/OkcuModal'
 import { AsasModal } from '@/components/ui/AsasModal'
 
 const STATS = [
-  { value: '120+', label: 'Eğitim Videosu', sub: 'büyüyor' },
-  { value: '15K+', label: 'Toplam İzlenme', sub: 'organik' },
-  { value: '2026', label: 'Meta Güncel',    sub: 'aktif sezon' },
+  { value: '4',    label: 'Sınıf Rehberi',    sub: 'tam içerik' },
+  { value: '120+', label: 'Eğitim Videosu',   sub: 'büyüyor' },
+  { value: '9',    label: 'GB Sitesi',         sub: 'karşılaştırmalı' },
 ]
 
 const TICKER_ITEMS = [
-  { text: 'Asas Rehberi',   img: '/assassian-icon.png' },
+  { text: 'Asas Rehberi',   img: '/assassin-icon.png' },
   { text: 'Okçu Rehberi',   img: '/archer-icon.png'   },
   { text: 'Priest Rehberi', img: '/dreadshield.png'   },
   { text: 'Mage Rehberi',   img: '/staffwoe.png'      },
@@ -20,7 +21,7 @@ const TICKER_ITEMS = [
   { text: 'Farm Rotaları',  img: null },
   { text: 'Boss Rehberleri',img: null },
   { text: 'USKO Pazar',     img: null },
-  { text: 'Asas Rehberi',   img: '/assassian-icon.png' },
+  { text: 'Asas Rehberi',   img: '/assassin-icon.png' },
   { text: 'Okçu Rehberi',   img: '/archer-icon.png'   },
   { text: 'Priest Rehberi', img: '/dreadshield.png'   },
   { text: 'Mage Rehberi',   img: '/staffwoe.png'      },
@@ -33,10 +34,15 @@ const TICKER_ITEMS = [
 export function HeroSection() {
   const [okcuOpen, setOkcuOpen]   = useState(false)
   const [asasOpen, setAsasOpen]   = useState(false)
+  const [isMobile, setIsMobile]   = useState(false)
   const sectionRef                = useRef<HTMLElement>(null)
   const mousePosRef               = useRef({ x: 0, y: 0 })
   const [mousePos, setMousePos]   = useState({ x: 0, y: 0 })
   const rafRef                    = useRef<number | null>(null)
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768)
+  }, [])
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -68,14 +74,22 @@ export function HeroSection() {
         {/* ── Zemin ── */}
         <div style={{ position: 'absolute', inset: 0, background: 'var(--void)' }} />
 
-        {/* ── Arka plan videosu ── */}
+        {/* ── Arka plan videosu — mobilde devre dışı ── */}
         <motion.div style={{ position: 'absolute', inset: 0, y: videoY }}>
-          <video
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.18 }}
-            src="/bg-video.mp4"
-            autoPlay loop muted playsInline preload="metadata"
-            aria-hidden="true"
-          />
+          {!isMobile ? (
+            <video
+              style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.18 }}
+              src="/bg-video.mp4"
+              poster="/logo.png"
+              autoPlay loop muted playsInline preload="metadata"
+              aria-hidden="true"
+            />
+          ) : (
+            <div style={{
+              width: '100%', height: '100%',
+              background: 'radial-gradient(ellipse 80% 60% at 60% 50%, rgba(59,130,246,0.06) 0%, transparent 60%)',
+            }} />
+          )}
         </motion.div>
 
         {/* ── Grid overlay ── */}
@@ -88,16 +102,16 @@ export function HeroSection() {
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
           background: `
-            radial-gradient(ellipse 60% 70% at 80% 50%, rgba(212,168,50,0.12) 0%, transparent 55%),
-            radial-gradient(ellipse 40% 60% at 20% 90%, rgba(58,74,107,0.08) 0%, transparent 50%),
-            radial-gradient(ellipse 80% 40% at 50% 0%, rgba(6,8,15,0.9) 0%, transparent 50%)
+            radial-gradient(ellipse 60% 70% at 80% 50%, rgba(59,130,246,0.10) 0%, transparent 55%),
+            radial-gradient(ellipse 40% 60% at 20% 90%, rgba(30,64,175,0.07) 0%, transparent 50%),
+            radial-gradient(ellipse 80% 40% at 50% 0%, rgba(6,9,18,0.9) 0%, transparent 50%)
           `,
         }} />
 
         {/* ── Dikey çizgi aksan ── */}
         <div style={{
           position: 'absolute', left: 'clamp(1.25rem, 4vw, 2.5rem)', top: 0, bottom: 0, width: 1,
-          background: 'linear-gradient(180deg, transparent, rgba(212,168,50,0.4) 20%, rgba(212,168,50,0.2) 80%, transparent)',
+          background: 'linear-gradient(180deg, transparent, rgba(59,130,246,0.35) 20%, rgba(59,130,246,0.15) 80%, transparent)',
           pointerEvents: 'none',
         }} />
 
@@ -132,20 +146,31 @@ export function HeroSection() {
           {/* Glow halo */}
           <div style={{
             position: 'absolute', inset: '-20%',
-            background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(212,168,50,0.2) 0%, rgba(58,74,107,0.1) 40%, transparent 65%)',
+            background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(59,130,246,0.18) 0%, rgba(30,64,175,0.08) 40%, transparent 65%)',
             filter: 'blur(40px)',
           }} />
-          <motion.img
-            src="/logo.png" alt=""
+
+          <motion.div
             style={{
-              width: '100%', height: 'auto', position: 'relative',
-              mixBlendMode: 'screen',
-              filter: 'brightness(1.3) contrast(1.1) drop-shadow(0 0 60px rgba(212,168,50,0.5)) drop-shadow(0 0 120px rgba(212,168,50,0.2))',
-              opacity: 0.5,
+              width: '100%', position: 'relative',
               x: mousePos.x * -8,
               y: mousePos.y * -8,
             }}
-          />
+          >
+            <Image
+              src="/logo.png"
+              alt=""
+              width={620}
+              height={620}
+              priority
+              style={{
+                width: '100%', height: 'auto',
+                mixBlendMode: 'screen',
+                filter: 'brightness(1.2) contrast(1.0) drop-shadow(0 0 60px rgba(59,130,246,0.5)) drop-shadow(0 0 120px rgba(59,130,246,0.2))',
+                opacity: 0.45,
+              }}
+            />
+          </motion.div>
         </motion.div>
 
         {/* ══════════════════════════════════════════════════
@@ -190,9 +215,7 @@ export function HeroSection() {
             </motion.div>
 
             {/* H1 (SEO) */}
-            <h1 className="sr-only">
-              Knight Online Rehber ve Eğitim Sitesi — MSGKO.net | Asas, Okçu, Warrior Build, Farm ve PK Taktikleri
-            </h1>
+            <h1 className="sr-only">Knight Online Gelişim Platformu — MSGKO</h1>
 
             {/* Görsel başlık */}
             <div aria-hidden="true">
@@ -228,7 +251,7 @@ export function HeroSection() {
                   letterSpacing: '-0.01em',
                   textTransform: 'uppercase',
                   lineHeight: 0.9,
-                  background: 'linear-gradient(115deg, #F5E8B8 0%, var(--crimson-bright) 30%, #D4A832 60%, #7A5A10 100%)',
+                  background: 'linear-gradient(115deg, #DBEAFE 0%, var(--crimson-bright) 30%, #3B82F6 60%, #1E3A8A 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
@@ -304,7 +327,7 @@ export function HeroSection() {
                 className="btn-primary"
                 style={{ position: 'relative', overflow: 'hidden' }}
               >
-                <img src="/assassian-icon.png" alt="" style={{ width: 20, height: 20, objectFit: 'contain', mixBlendMode: 'screen', filter: 'brightness(2) contrast(1.2)' }} />
+                <Image src="/assassin-icon.png" alt="" width={20} height={20} style={{ objectFit: 'contain', mixBlendMode: 'screen', filter: 'brightness(2) contrast(1.2)' }} />
                 Asas Eğitimleri
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -317,7 +340,7 @@ export function HeroSection() {
                 whileTap={{ scale: 0.97 }}
                 className="btn-secondary"
               >
-                <img src="/archer-icon.png" alt="" style={{ width: 20, height: 20, objectFit: 'contain', filter: 'drop-shadow(0 0 4px rgba(212,168,50,0.4))' }} />
+                <Image src="/archer-icon.png" alt="" width={20} height={20} style={{ objectFit: 'contain', filter: 'drop-shadow(0 0 4px rgba(59,130,246,0.4))' }} />
                 Okçu Eğitimleri
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -361,7 +384,7 @@ export function HeroSection() {
                     fontSize: 'clamp(1.6rem, 3vw, 2.2rem)',
                     fontWeight: 900,
                     letterSpacing: '-0.02em',
-                    background: 'linear-gradient(135deg, var(--platinum) 0%, rgba(212,168,50,0.7) 100%)',
+                    background: 'linear-gradient(135deg, var(--platinum) 0%, rgba(96,165,250,0.8) 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
@@ -443,7 +466,7 @@ export function HeroSection() {
               <div key={i} style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 28px' }}>
                   {item.img
-                    ? <img src={item.img} alt="" style={{ width: 14, height: 14, objectFit: 'contain', mixBlendMode: 'screen', filter: 'brightness(1.2) sepia(0.3)' }} />
+                    ? <Image src={item.img} alt="" width={14} height={14} style={{ objectFit: 'contain', mixBlendMode: 'screen', filter: 'brightness(1.2) sepia(0.3)' }} />
                     : <div style={{ width: 4, height: 4, background: 'var(--crimson)', transform: 'rotate(45deg)', opacity: 0.6 }} />
                   }
                   <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--iron)', whiteSpace: 'nowrap' }}>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import Script from 'next/script'
 import { KO_CLASSES } from '@/lib/ko-data/classes'
 import { buildMetadata, buildBreadcrumbSchema, buildItemListSchema, BASE_URL } from '@/lib/seo'
@@ -9,13 +10,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     'Knight Online tüm karakter sınıfları için kapsamlı rehberler. Warrior, Rogue (Assassin/Archer), Mage ve Priest — skill ağaçları, stat dağılımı ve Master açma rehberleri MSGKO\'da.',
   canonical: `${BASE_URL}/rehber`,
-  keywords: [
-    'knight online rehber', 'knight online karakter rehberi',
-    'knight online warrior rehberi', 'knight online rogue rehberi',
-    'knight online asas rehberi', 'knight online okçu rehberi',
-    'knight online mage rehberi', 'knight online priest rehberi',
-    'knight online skill', 'knight online master açma', 'knight online stat',
-  ],
+  keywords: [],
   ogType: 'website',
 })
 
@@ -38,12 +33,22 @@ const schemas = [
   }),
 ]
 
+/* Sınıf ikonu görselleri */
+const CLASS_ICON_MAP: Record<string, string> = {
+  warrior:  '/dreadshield.png',
+  assassin: '/assassin-icon.png',
+  archer:   '/archer-icon.png',
+  mage:     '/staffwoe.png',
+  priest:   '/dreadshield.png',
+}
+
 /* Sınıf vurgu renkleri — Server Component'ta inline style kullanılıyor */
 const CLASS_ACCENT: Record<string, { border: string; bg: string; label: string }> = {
-  warrior: { border: 'rgba(239,68,68,0.25)',   bg: 'rgba(239,68,68,0.06)',   label: 'DPS / Tank'     },
-  rogue:   { border: 'rgba(96,165,250,0.25)',  bg: 'rgba(96,165,250,0.06)',  label: 'DPS / Stealth'  },
-  mage:    { border: 'rgba(167,139,250,0.25)', bg: 'rgba(167,139,250,0.06)', label: 'Caster / AOE'   },
-  priest:  { border: 'rgba(52,211,153,0.25)',  bg: 'rgba(52,211,153,0.06)',  label: 'Heal / Support' },
+  warrior:  { border: 'rgba(239,68,68,0.25)',   bg: 'rgba(239,68,68,0.06)',   label: 'DPS / Tank'     },
+  assassin: { border: 'rgba(96,165,250,0.25)',  bg: 'rgba(96,165,250,0.06)',  label: 'DPS / Stealth'  },
+  archer:   { border: 'rgba(6,182,212,0.25)',   bg: 'rgba(6,182,212,0.06)',   label: 'DPS / Menzil'   },
+  mage:     { border: 'rgba(167,139,250,0.25)', bg: 'rgba(167,139,250,0.06)', label: 'Caster / AOE'   },
+  priest:   { border: 'rgba(52,211,153,0.25)',  bg: 'rgba(52,211,153,0.06)',  label: 'Heal / Support' },
 }
 
 export default function RehberIndexPage() {
@@ -115,17 +120,29 @@ export default function RehberIndexPage() {
                   <div style={{
                     position: 'absolute', right: 20, top: '50%',
                     transform: 'translateY(-50%)',
-                    fontSize: '5rem', opacity: 0.05,
-                    pointerEvents: 'none', lineHeight: 1,
+                    width: '5rem', height: '5rem', opacity: 0.05,
+                    pointerEvents: 'none',
                   }} aria-hidden="true">
-                    {cls.icon}
+                    <Image
+                      src={CLASS_ICON_MAP[cls.slug] ?? '/dreadshield.png'}
+                      alt=""
+                      width={80}
+                      height={80}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'screen' }}
+                    />
                   </div>
 
                   <div style={{ position: 'relative' }}>
                     {/* Header */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 16 }}>
-                      <div style={{ fontSize: '2.2rem', lineHeight: 1, flexShrink: 0 }} aria-hidden="true">
-                        {cls.icon}
+                      <div style={{ width: 40, height: 40, flexShrink: 0 }} aria-hidden="true">
+                        <Image
+                          src={CLASS_ICON_MAP[cls.slug] ?? '/dreadshield.png'}
+                          alt={cls.name}
+                          width={40}
+                          height={40}
+                          style={{ width: 40, height: 40, objectFit: 'contain', mixBlendMode: 'screen' }}
+                        />
                       </div>
                       <div>
                         <h2 style={{

@@ -27,59 +27,11 @@ const BASE_URL = 'https://msgko.net'
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: 'MSGKO.net — Knight Online Rehber ve Eğitim Sitesi',
-    template: '%s | MSGKO — Knight Online Rehber',
+    default: 'MSGKO — Knight Online Rehber Platformu',
+    template: '%s | MSGKO',
   },
   description:
     'MSGKO.net — Türkiye\'nin Knight Online rehber ve eğitim sitesi. Asas, okçu, warrior, mage, priest build rehberleri, farm rotaları, PK taktikleri ve güncel meta analizleri burada.',
-  keywords: [
-    // Marka
-    'msgko', 'msgko.net', 'MSG Knight Online', 'musaagll', 'msg ko', 'msg knight online',
-    'msgko rehber', 'msgko asas', 'msgko okçu',
-    // Ana oyun
-    'Knight Online', 'Knight Online Türkçe', 'Knight Online rehber',
-    'Knight Online eğitim', 'Knight Online 2025', 'Knight Online 2026',
-    'KO rehber', 'KO eğitim', 'knight online karakter rehberi',
-    'knight online pvp', 'knight online skill', 'knight online build',
-    'knight online stat dağılımı', 'knight online combo', 'knight online 2026 rehber',
-    'knight online türkçe rehber sitesi', 'knight online nasıl oynanır',
-    'knight online başlangıç rehberi', 'knight online strateji',
-    'knight online gelişim rehberi', 'knight online güncel meta',
-    // Asas / Rogue
-    'knight online asas', 'asas rehber', 'asas build', 'asas combo',
-    'asas skill dizilimi', 'asas pk', 'asas nasıl oynanır', 'asas taktikleri',
-    'asas teknikleri', 'asas eğitim', 'knight online rogue', 'rogue build',
-    'asas item rehberi', 'asas stat', 'asas pvp', 'asas karakter',
-    'rogue rehber', 'rogue combo', 'rogue pk', 'asas warrior pk',
-    'asas stat dağılımı', 'asas skill tree', 'en iyi asas build',
-    // Okçu / Archer
-    'knight online okçu', 'okçu rehber', 'okçu build', 'okçu combo',
-    'okçu skill dizilimi', 'okçu pk', 'okçu eğitim', 'knight online archer',
-    'okçu item', 'okçu stat', 'archer rehber', 'archer build', 'archer pk',
-    'okçu nasıl oynanır', 'okçu karakter', 'en iyi okçu build',
-    'okçu stat dağılımı', 'okçu skill tree',
-    // Warrior
-    'knight online warrior', 'warrior rehber', 'warrior build',
-    'warrior stat', 'warrior pk', 'warrior combo', 'tank warrior',
-    'warrior nasıl oynanır', 'warrior eğitim', 'warrior skill dizilimi',
-    // Mage
-    'knight online mage', 'mage rehber', 'mage build',
-    'mage stat', 'mage pk', 'mage combo', 'aoe mage', 'mage eğitim',
-    'mage nasıl oynanır', 'mage skill dizilimi', 'int mage build',
-    // Priest
-    'knight online priest', 'priest rehber', 'priest build',
-    'priest stat', 'heal priest', 'attack priest', 'priest eğitim',
-    'priest nasıl oynanır', 'priest skill dizilimi', 'priest hp build',
-    // Farm & genel
-    'knight online farm', 'knight online farm rotası', 'knight online exp farm',
-    'knight online pk taktikleri', 'knight online ws', 'knight online skill kombo',
-    'knight online item rehberi', 'knight online guardian of 7 keys',
-    'anahtar görevi human', 'knight online görev', 'knight online noah farm',
-    'knight online exp rotası', 'knight online lvl alma', 'knight online boss',
-    // Video
-    'knight online video', 'knight online youtube', 'knight online türkçe video',
-    'knight online eğitim videosu', 'knight online gameplay',
-  ],
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -212,7 +164,7 @@ const jsonLd = [
       },
       {
         '@type': 'Question',
-        name: 'Knight Online asas build 2025-2026 nedir?',
+        name: 'Knight Online asas build nedir?',
         acceptedAnswer: {
           '@type': 'Answer',
           text: 'Güncel asas build için STR/DEX dengesi önemlidir. Detaylı stat dağılımı, item önerileri ve skill dizilimi için msgko.net rehberlerini inceleyebilirsin.',

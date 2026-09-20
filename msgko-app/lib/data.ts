@@ -11,27 +11,27 @@ export const NAV_ITEMS: NavItem[] = [
 export const FEATURES: Feature[] = [
   {
     id: '1',
-    icon: '✕',
-    title: 'Güncel İçerik',
-    description: "Knight Online'ın en güncel bilgileri ve taktikleri.",
+    icon: '⚔',
+    title: '4 Sınıf Rehberi',
+    description: 'Warrior, Rogue, Mage ve Priest için skill ağaçları, stat dağılımı ve Master açma rehberleri — hepsi tek platformda.',
   },
   {
     id: '2',
     icon: '▶',
-    title: 'Detaylı Anlatım',
-    description: 'Adım adım, anlaşılır ve uygulamalı anlatımlar.',
+    title: '120+ Video',
+    description: 'Asas combo\'dan farm rotasına, PK taktiklerinden boss öldürmeye kadar gerçek oyun görüntülü içerik.',
   },
   {
     id: '3',
     icon: '◎',
-    title: 'Profesyonel Taktikler',
-    description: 'Deneyimli oyunculardan özel taktikler ve ipuçları.',
+    title: '9 Site GB Karşılaştırma',
+    description: 'KnightPin, ByNoGame, KoPazar dahil 9 platformun anlık GB kurunu tek ekranda karşılaştır.',
   },
   {
     id: '4',
     icon: '◈',
-    title: 'Kaliteli İçerik',
-    description: 'Yüksek kaliteli ve düzenli eğitim videoları.',
+    title: 'Canlı USKO Pazar',
+    description: 'Zero, Destan, Pandora ve Agartha sunucularından anlık pazar ilanları — fiyat, +level ve satıcı filtresiyle.',
   },
 ]
 

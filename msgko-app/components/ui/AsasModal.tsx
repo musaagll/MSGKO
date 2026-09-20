@@ -47,7 +47,7 @@ export function AsasModal({ isOpen, onClose }: AsasModalProps) {
             <div className="px-10 py-12 flex flex-col items-center text-center">
               <div className="w-16 h-16 border border-white/[0.08] bg-[#2A2A2A] flex items-center justify-center mb-6">
                 <img
-                  src="/assassian-icon.png"
+                  src="/assassin-icon.png"
                   alt="Asas"
                   className="w-10 h-10 object-contain"
                   style={{ mixBlendMode: 'screen', filter: 'brightness(1.3) contrast(1.1)' }}

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import Script from 'next/script'
 import { KO_CLASSES, getAllClassSlugs, getClassBySlug } from '@/lib/ko-data/classes'
 import {
@@ -11,6 +12,14 @@ import {
   buildFAQSchema,
   buildClassFAQs,
 } from '@/lib/seo'
+
+const CLASS_ICONS: Record<string, string> = {
+  warrior:  '/dreadshield.png',
+  assassin: '/assassin-icon.png',
+  archer:   '/archer-icon.png',
+  mage:     '/staffwoe.png',
+  priest:   '/dreadshield.png',
+}
 
 export async function generateStaticParams() {
   return getAllClassSlugs().map((slug) => ({ slug }))
@@ -60,7 +69,7 @@ export default async function RehberDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
 
-      <main className="min-h-screen" style={{ background: '#07070B' }}>
+      <main className="min-h-screen" style={{ background: 'var(--void)' }}>
         {/* Breadcrumb */}
         <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
           <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
@@ -80,9 +89,15 @@ export default async function RehberDetailPage({
         {/* Header */}
         <header className="max-w-[1280px] mx-auto px-6 sm:px-8 py-8">
           <div className="flex flex-col md:flex-row md:items-start gap-6">
-            <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center text-4xl
+            <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center
               border border-white/[0.08]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-              <span aria-hidden="true">{cls.icon}</span>
+              <Image
+                src={CLASS_ICONS[cls.slug] ?? '/dreadshield.png'}
+                alt={cls.name}
+                width={40}
+                height={40}
+                style={{ objectFit: 'contain', mixBlendMode: 'screen' }}
+              />
             </div>
             <div className="flex-1">
               <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase text-purple-400/60 mb-2">
@@ -374,7 +389,13 @@ export default async function RehberDetailPage({
                         <Link href={`/rehber/${c.guideSlug}`}
                           className="flex items-center gap-2.5 text-[0.78rem] text-white/40
                             hover:text-white/80 transition-colors duration-200 py-1">
-                          <span aria-hidden="true">{c.icon}</span>
+                          <Image
+                            src={CLASS_ICONS[c.slug] ?? '/dreadshield.png'}
+                            alt={c.name}
+                            width={16}
+                            height={16}
+                            style={{ objectFit: 'contain', mixBlendMode: 'screen', opacity: 0.7 }}
+                          />
                           <span>{c.name} Rehberi</span>
                         </Link>
                       </li>

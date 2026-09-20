@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, ChevronDown, Swords, ShoppingBag, Map, Sword, Zap, BookOpen } from 'lucide-react'
+import { Menu, ChevronDown, Swords, ShoppingBag, Map, Zap, BookOpen } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useScrollDetect } from '@/hooks/useScrollDetect'
@@ -20,7 +20,7 @@ import { WallpaperModal } from '@/components/ui/WallpaperModal'
 /* ─── Nav Yapısı ──────────────────────────────────────────────────────────── */
 
 const REHBER_ITEMS = [
-  { label: 'Asas Rehberi',    href: '/rehber/asas',          icon: '/assassian-icon.png', desc: 'STR/DEX build, combo, PK taktikleri' },
+  { label: 'Asas Rehberi',    href: '/rehber/asas',          icon: '/assassin-icon.png', desc: 'STR/DEX build, combo, PK taktikleri' },
   { label: 'Okçu Rehberi',    href: '/rehber/okcu',          icon: '/archer-icon.png',    desc: 'DEX build, uzun menzil taktikleri' },
   { label: 'Warrior Rehberi', href: '/rehber/warrior',       icon: null,                  desc: 'Tank ve DPS build rehberleri' },
   { label: 'Mage Rehberi',    href: '/rehber/mage',          icon: '/staffwoe.png',       desc: 'INT build, AOE taktikleri' },
@@ -31,7 +31,6 @@ const REHBER_ITEMS = [
 const OYUN_ITEMS = [
   { label: 'USKO Pazar',      href: '/pazar',       icon: ShoppingBag, desc: 'Canlı market ilanları',    badge: 'Canlı' },
   { label: 'GB Fiyatları',    href: '/gb-fiyatlari', icon: Zap,         desc: '9 site GB karşılaştırma',  badge: null },
-  { label: 'Item Veritabanı', href: '/item',         icon: Sword,       desc: 'Tüm itemlar ve statlar',   badge: null },
   { label: 'Boss Rehberleri', href: '/boss',         icon: Swords,      desc: 'Spawn, drop ve taktikler', badge: null },
   { label: 'Harita Rehberi',  href: '/harita',       icon: Map,         desc: 'Farm bölgeleri ve rotalar', badge: null },
   { label: 'Videolar',        href: '/youtube',      icon: BookOpen,    desc: 'Eğitim ve PK videoları',   badge: null },
@@ -296,7 +295,7 @@ export function Navbar() {
   /* Aktif ana bölüm tespiti */
   const isHome    = pathname === '/'
   const isRehber  = pathname.startsWith('/rehber')
-  const isOyun    = ['/pazar', '/gb-fiyatlari', '/item', '/boss', '/harita', '/youtube'].some(p => pathname.startsWith(p))
+  const isOyun    = ['/pazar', '/gb-fiyatlari', '/boss', '/harita', '/youtube'].some(p => pathname.startsWith(p))
 
   return (
     <>
@@ -428,7 +427,7 @@ export function Navbar() {
               style={{ color: 'var(--iron)', textDecoration: 'none' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--steel)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--iron)' }}>
-              WP
+              Wallpaper
             </Link>
 
             {/* İletişim */}

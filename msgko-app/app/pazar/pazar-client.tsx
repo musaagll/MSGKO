@@ -88,13 +88,13 @@ function activeGroupKey(serverParam: ServerParam): GroupKey | null {
 }
 
 // ── Ana Bileşen ────────────────────────────────────────────────────────────────
-export function PazarClient() {
+export function PazarClient({ initialData }: { initialData?: PazarResponse | null }) {
   const [server,  setServer]  = useState<ServerParam>('zero3')
   const [query,   setQuery]   = useState('')
   const [sort,    setSort]    = useState('price_asc')
   const [upgrade, setUpgrade] = useState('')
   const [page,    setPage]    = useState(1)
-  const [data,    setData]    = useState<PazarResponse | null>(null)
+  const [data,    setData]    = useState<PazarResponse | null>(initialData ?? null)
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState<string | null>(null)
   const [counts,  setCounts]  = useState<Record<string, number>>({})

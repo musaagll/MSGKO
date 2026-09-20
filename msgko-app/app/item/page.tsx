@@ -8,7 +8,7 @@ export const metadata: Metadata = buildMetadata({
   title: 'Knight Online Item Veritabanı | Silah, Zırh ve Aksesuar | MSGKO',
   description: 'Knight Online tüm itemlar için özellik, drop bilgisi ve upgrade rehberi. Raptor, Dual Blade, Chitin ve daha fazlası.',
   canonical: `${BASE_URL}/item`,
-  keywords: ['knight online item', 'knight online silah', 'knight online zırh', 'knight online item veritabanı', 'raptor', 'upgrade'],
+  keywords: [],
   ogType: 'website',
 })
 

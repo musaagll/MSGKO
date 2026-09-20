@@ -8,7 +8,7 @@ export const metadata: Metadata = buildMetadata({
   title: 'Knight Online Haritalar | CZ, FT, Ardream ve Tüm Haritalar | MSGKO',
   description: 'Knight Online tüm haritaları için farm rotaları, boss konumları ve rehberler. MSGKO\'da.',
   canonical: `${BASE_URL}/harita`,
-  keywords: ['knight online harita', 'knight online cz', 'ronark land', 'forgotten temple', 'ardream'],
+  keywords: [],
   ogType: 'website',
 })
 

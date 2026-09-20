@@ -45,51 +45,53 @@ export function SponsorAd() {
     <div
       style={{
         width: '100%',
+        maxWidth: 860,
+        margin: '0 auto',
         background: '#000',
-        borderTop: '2px solid #D4A832',
-        borderBottom: '2px solid #D4A832',
+        borderTop: '1px solid rgba(59,130,246,0.3)',
+        borderBottom: '1px solid rgba(59,130,246,0.3)',
         position: 'relative',
         overflow: 'hidden',
-        // Minimum yükseklik — video yüklenene kadar alan korunur
-        minHeight: loaded ? undefined : 120,
+        minHeight: loaded ? undefined : 80,
       }}
     >
       {/* SPONSOR etiketi */}
       <div style={{
-        position: 'absolute', top: 8, left: 12, zIndex: 5,
-        display: 'flex', alignItems: 'center', gap: 5,
-        padding: '2px 10px',
-        background: 'rgba(6,8,15,0.85)',
-        border: '1px solid #D4A832',
+        position: 'absolute', top: 6, left: 10, zIndex: 5,
+        display: 'flex', alignItems: 'center', gap: 4,
+        padding: '2px 8px',
+        background: 'rgba(6,9,18,0.85)',
+        border: '1px solid rgba(59,130,246,0.35)',
       }}>
         <div style={{
-          width: 5, height: 5, borderRadius: '50%',
-          background: '#F0C050',
+          width: 4, height: 4, borderRadius: '50%',
+          background: '#60A5FA',
           animation: 'dotPulse 2s infinite',
         }} />
         <span style={{
-          fontSize: '0.48rem', fontWeight: 800,
+          fontSize: '0.44rem', fontWeight: 800,
           letterSpacing: '0.3em', textTransform: 'uppercase',
-          color: '#F0C050',
+          color: '#60A5FA',
         }}>
           Sponsor
         </span>
       </div>
 
-      {/* Skeleton — video yüklenene kadar görünür */}
+      {/* Skeleton */}
       {!loaded && (
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(90deg, #0a0e1c 25%, #111827 50%, #0a0e1c 75%)',
+          background: 'linear-gradient(90deg, #090e1c 25%, #111827 50%, #090e1c 75%)',
           backgroundSize: '400px 100%',
           animation: 'skeleton-shimmer 1.6s infinite linear',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          minHeight: 80,
         }}>
           <div style={{ display: 'flex', gap: 6 }}>
             {[0,1,2].map(i => (
               <div key={i} style={{
-                width: 3, height: 24,
-                background: 'rgba(212,168,50,0.4)',
+                width: 3, height: 18,
+                background: 'rgba(59,130,246,0.3)',
                 borderRadius: 2,
                 animation: `skeleton-shimmer 0.8s ${i * 0.15}s ease-in-out infinite alternate`,
               }} />
@@ -98,7 +100,7 @@ export function SponsorAd() {
         </div>
       )}
 
-      {/* Video */}
+      {/* Video — max-height ile yükseklik sınırlandırıldı */}
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <video
         ref={videoRef}
@@ -111,11 +113,12 @@ export function SponsorAd() {
           display: 'block',
           width: '100%',
           height: 'auto',
-          // Görünürlük: yüklenene kadar hidden (alan hâlâ var, min-height sayesinde)
+          maxHeight: 180,
+          objectFit: 'cover',
           visibility: loaded ? 'visible' : 'hidden',
         }}
       >
-        <source src="/Reklam/RomaEliteGif.mp4" type="video/mp4" />
+        <source src="/ads/sponsor.mp4" type="video/mp4" />
       </video>
     </div>
   )

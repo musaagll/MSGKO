@@ -9,7 +9,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     'Knight Online tüm bossları için spawn yeri, drop listesi ve öldürme taktikleri. Felankor, Isiloon, Kundun ve daha fazlası MSGKO\'da.',
   canonical: `${BASE_URL}/boss`,
-  keywords: ['knight online boss', 'felankor', 'isiloon', 'knight online boss drop', 'boss rehberi'],
+  keywords: [],
   ogType: 'website',
 })
 

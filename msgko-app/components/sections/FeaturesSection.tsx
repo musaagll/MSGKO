@@ -61,7 +61,7 @@ export function FeaturesSection() {
               marginBottom: 12,
             }}
           >
-            Premium İçerik
+            Platform İçeriği
           </motion.h2>
           <motion.div
             initial={{ opacity: 0, scaleX: 0 }} whileInView={{ opacity: 1, scaleX: 1 }} viewport={{ once: true }}

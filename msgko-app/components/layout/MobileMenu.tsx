@@ -17,7 +17,7 @@ interface Props {
 }
 
 const CLASS_ITEMS = [
-  { label: 'Asas Eğitimleri',  href: null,          img: '/assassian-icon.png', onClick: 'asas' as const },
+  { label: 'Asas Eğitimleri',  href: null,          img: '/assassin-icon.png', onClick: 'asas' as const },
   { label: 'Okçu Rehberi',     href: '/rehber/okcu', img: '/archer-icon.png',   onClick: null },
   { label: 'Warrior Rehberi',  href: '/rehber/warrior', img: null,              onClick: null },
   { label: 'Mage Rehberi',     href: '/rehber/mage', img: '/staffwoe.png',      onClick: null },

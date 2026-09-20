@@ -46,7 +46,6 @@ export function buildMetadata(cfg: SeoConfig): Metadata {
   return {
     title,
     description,
-    keywords: keywords ?? [],
     authors: [{ name: author ?? DEFAULT_AUTHOR, url: BASE_URL }],
     creator: DEFAULT_AUTHOR,
     publisher: SUFFIX,
@@ -384,15 +383,7 @@ export function buildGuideMetadata(classData: ClassData): Metadata {
     title,
     description,
     canonical,
-    keywords: [
-      `knight online ${classData.name.toLowerCase()} rehberi`,
-      `${classData.name.toLowerCase()} build`,
-      `${classData.name.toLowerCase()} stat dağılımı`,
-      `${classData.name.toLowerCase()} skill`,
-      `${classData.name.toLowerCase()} master açma`,
-      `knight online ${classData.name.toLowerCase()}`,
-      ...classData.aliases.slice(0, 5),
-    ],
+    keywords: [],
     ogType: 'article',
   })
 }
@@ -407,13 +398,7 @@ export function buildItemMetadata(item: ItemSeedData): Metadata {
     title,
     description,
     canonical,
-    keywords: item.seo_keywords ?? [
-      `knight online ${item.name.toLowerCase()}`,
-      `${item.name.toLowerCase()} drop`,
-      `${item.name.toLowerCase()} nereden düşer`,
-      `${item.name.toLowerCase()} özellikleri`,
-      `${item.name.toLowerCase()} upgrade`,
-    ],
+    keywords: [],
     ogType: 'article',
   })
 }
@@ -428,13 +413,7 @@ export function buildBossMetadata(boss: BossSeedData): Metadata {
     title,
     description,
     canonical,
-    keywords: boss.seo_keywords ?? [
-      `${boss.name.toLowerCase()}`,
-      `knight online ${boss.name.toLowerCase()}`,
-      `${boss.name.toLowerCase()} drop`,
-      `${boss.name.toLowerCase()} spawn`,
-      `${boss.name.toLowerCase()} nerede`,
-    ],
+    keywords: [],
     ogType: 'article',
   })
 }
@@ -449,11 +428,7 @@ export function buildMapMetadata(map: MapSeedData): Metadata {
     title,
     description,
     canonical,
-    keywords: map.seo_keywords ?? [
-      `knight online ${map.name.toLowerCase()}`,
-      `${map.slug} haritası`,
-      `${map.slug} farm`,
-    ],
+    keywords: [],
     ogType: 'article',
   })
 }

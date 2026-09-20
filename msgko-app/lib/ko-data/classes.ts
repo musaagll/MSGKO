@@ -4,7 +4,7 @@
  * Sadece kaynaktan alınan bilgiler yer almaktadır.
  */
 
-export type KOClassSlug = 'warrior' | 'rogue' | 'mage' | 'priest'
+export type KOClassSlug = 'warrior' | 'assassin' | 'archer' | 'mage' | 'priest'
 
 export interface SkillInfo {
   level: number | string
@@ -89,7 +89,7 @@ export const KO_CLASSES: ClassData[] = [
     masterTitle: { human: 'Blade Master', karus: 'Berserker Hero' },
     masterNPC: '[Warrior Master] Skaki — El Morad Castle / Luferson Castle',
     description:
-      `Warrior'lar, yakın dövüşteki ustalıklarıyla düşmanlarının korkulu rüyası ya da yüksek defansları ve sağlık puanlarıyla müttefiklerinin koruyucusu olabilirler. Warrior sınıfı, mevcut tüm sınıflardan ziyade savaş alanlarında savunması ve yüksek atak gücüyle nam salmıştır. Kendisi ve parti üyelerinin bonuslarını yükseltme, rakiplerinin hareketini engelleyebilmek için bacaklarını kırma ve onlarda şok etkisi yaratarak kilitleme başta olmak üzere birçok zorlayıcı becerisi bulunmaktadır.`,
+      `Warrior, yakın dövüşe odaklanmış savaş alanının en dayanıklı sınıfıdır. Yüksek HP ve savunma değerleriyle kalkan görevi üstlenebildiği gibi, güçlü saldırı build'leriyle düşmanlarını tek komboyla çökertebilir. Leg Cutting ile hedefi yerinde dondurur, Stun ile kilitleme yapar; bu yüzden hem 1v1 hem de parti savaşlarında kritik bir rol oynar. Fiziksel hasar odaklı yapısıyla ekip çatışmalarının ön saflarında yer alır.`,
     statBuilds: [
       {
         name: 'Berserker Warrior',
@@ -218,13 +218,13 @@ export const KO_CLASSES: ClassData[] = [
   },
 
   // ────────────────────────────────────────────────────────────────────────────
-  // ROGUE (Assassin + Archer)
+  // ASSASSIN (Asas)
   // ────────────────────────────────────────────────────────────────────────────
   {
-    slug: 'rogue',
+    slug: 'assassin',
     guideSlug: 'asas',
-    name: 'Asas / Okçu',
-    nameEn: 'Rogue (Assassin / Archer)',
+    name: 'Asas',
+    nameEn: 'Assassin',
     icon: '🗡️',
     color: '#3b82f6',
     primaryStat: 'Dexterity (DEX)',
@@ -232,7 +232,7 @@ export const KO_CLASSES: ClassData[] = [
     masterTitle: { human: 'Kasar Hood', karus: 'Shadow Vain' },
     masterNPC: '[Secret Agent] Clarence — Asga / Bellua Village',
     description:
-      `Rogue'lar, düşmanlarına gizlice yaklaşıp ölümcül hasarlar veren suikastçılar ya da yaylarıyla çok uzaktan saldırılar gerçekleştirebilen okçular olabilirler. Rogue sınıfı, diğer sınıflardaki birçok özelliğini kendisinde barındırır. Kendini iyileştirme, saldırı gücünü yükseltme, görünmez düşmanları görebilme, büyücülerin kendilerine yaptıkları hasarları düşürme, üzerilerindeki zarar verici özellikleri kaldırma gibi özel güçleri bulunan, görünmez olabilen, düşmanını kör edebilen ve yavaşlatabilen, kendi sınıfına ait karakterlerin görünmez olmalarını engelleyebilen ve çok hızlı hareket edebilme kabiliyetine sahip olan bir karakterdir.`,
+      `Asas, yakın mesafede hançer combolarıyla saniyeler içinde hasar oluşturan yüksek DPS sınıfıdır. Stealth ve Hide becerileri sayesinde savaş alanında öngörülemez bir tehdit haline gelirken Illusion ve Blinding gibi debufflarla düşmanın dövüş kapasitesini ciddi ölçüde kısar. Spike + Thrust combo zinciriyle tek vuruşluk burst hasarı oyunun en yükseklerindendir. Solo PK'da ezici avantajı olan, doğru zamanlama ve konumlanmayla çok daha güçlü sınıflara karşı bile üstünlük kurabilecek bir karakter tipidir.`,
     statBuilds: [],
     skillTrees: [
       {
@@ -240,58 +240,30 @@ export const KO_CLASSES: ClassData[] = [
         skills: [
           { level: 1,  name: 'Stroke',          description: '%70 hasar veren bir yakın menzil saldırısıdır.' },
           { level: 1,  name: 'Sprint',           description: 'Koşma hızınızı geçici olarak arttırır.' },
-          { level: 3,  name: 'Archery',          description: 'Ok atmak için bir yay kullanır.' },
           { level: 5,  name: 'Stab',             description: '%150 hasar veren bir hançer saldırısı.' },
           { level: 7,  name: 'Stab2',            description: 'Başarısızlık şansı olmadan %250 ve ek 50 hasar veren bir hançer saldırısı.' },
-          { level: 9,  name: 'Archery2',         description: '%120 hasar veren bir ok saldırısı.' },
           { level: 10, name: 'Swift',            description: 'Hedefin (ya da kendinizin) koşma hızını arttırır.' },
           { level: 30, name: 'Strength of Wolf', description: 'Parti üyelerinizin saldırı güçlerini arttırır.' },
         ],
       },
       {
-        name: 'Archery (Okçu)',
-        skills: [
-          { level: 0,  name: 'Through Shot',    description: '%150 hasar veren bir yay saldırısı.' },
-          { level: 5,  name: 'Fire Arrow',       description: 'Alevli oklar atan bir yay saldırısı.' },
-          { level: 10, name: 'Poison Arrow',     description: 'Zehirli oklar atan bir yay saldırısı.' },
-          { level: 15, name: 'Multiple Shot',    description: 'Aynı anda 3 ok atan bir yay saldırısı.' },
-          { level: 20, name: 'Guided Arrow',     description: 'Hedefini mutlaka vuran bir yay saldırısı.' },
-          { level: 25, name: 'Perfect Shot',     description: '%200 hasar veren bir yay saldırısı.' },
-          { level: 30, name: 'Fire Shot',        description: 'Ek alev hasarı veren bir yay saldırısı.' },
-          { level: 35, name: 'Poison Shot',      description: 'Ek zehir hasarı veren bir yay saldırısı.' },
-          { level: 40, name: 'Arc Shot',         description: '%250 hasar veren bir yay saldırısı.' },
-          { level: 45, name: 'Explosive Shot',   description: 'En güç alev saldırısı.' },
-          { level: 50, name: 'Viper',            description: 'En güçlü zehir saldırısı.' },
-          { level: 52, name: 'Counter Strike',   description: 'Kritik hasar veren yay saldırısı.' },
-          { level: 55, name: 'Arrow Shower',     description: 'Aynı anda 5 ok atan bir yay saldırısı.' },
-          { level: 57, name: 'Shadow Shot',      description: '%200 hasarla hedefini mutlaka vuran bir yay saldırısı.' },
-          { level: 60, name: 'Shadow Hunter',    description: '%300 hasarla hedefini mutlaka vuran bir yay saldırısı.' },
-          { level: 62, name: 'Ice Shot',         description: '%300 hasar veren ve düşmanı yavaşlatma şansı bulunan bir yay saldırısı.' },
-          { level: 66, name: 'Lighting Shot',    description: '%300 hasar veren ve 3 saniyeliğine sersemleten bir yay saldırısı.' },
-          { level: 70, name: 'Dark Pursuer',     description: '%350 hasarla hedefini mutlaka vuran bir yay saldırısı.' },
-          { level: 72, name: 'Blow Arrow',       description: 'Hareket ederken bir düşmana %200 hasarla ok saplama saldırısı.' },
-          { level: 75, name: 'Blinding Strafe',  description: 'Düşmana %400 hasar veren ve onu kör eden bir ok atar. Canavarlara işlemez.' },
-          { level: 80, name: 'Power Shot',       description: 'Büyük bir miktarda hasar veren bir yay saldırısı.' },
-        ],
-      },
-      {
-        name: 'Assassinate (Asas)',
+        name: 'Assassinate',
         skills: [
           { level: 0,  name: 'Jab',             description: 'Rakibin savunmasını yok sayan bir bıçaklama.' },
-          { level: 10, name: 'Blood Drain',     description: 'Düşmanın HP\'sinin %5\'ini alır. Dakikada bir defa kullanılabilir.' },
-          { level: 15, name: 'Pierce',          description: '%200 hasar veren bir hançer saldırısı.' },
-          { level: 20, name: 'Shock',           description: 'Rakibin savunmasını yok sayan bir bıçaklama.' },
-          { level: 30, name: 'Illusion',        description: 'Düşmanın saldırı isabetini 15 saniyeliğine düşürür.' },
-          { level: 35, name: 'Thrust',          description: '%400 hasar veren bir hançer saldırısı.' },
-          { level: 40, name: 'Cut',             description: 'Rakibin savunmasını yok sayan bir bıçaklama.' },
-          { level: 45, name: 'Stealth',         description: 'Saldırı yapana dek 80 saniyeliğine görünmezlik sağlar.' },
-          { level: 50, name: 'Vampiric Touch',  description: 'Düşmanın HP\'sinin %10\'unu alır. Dakikada bir defa kullanılabilir.' },
-          { level: 55, name: 'Spike',           description: '%600 hasar veren bir hançer saldırısı.' },
-          { level: 63, name: 'Throwing Knife',  description: '20 metre menzildeki bir düşmana %300 hasar veren bir bıçak fırlatır.' },
-          { level: 70, name: 'Bloody Beast',    description: 'Rakibin savunmasını yok sayan bir bıçaklama.' },
-          { level: 72, name: 'Blinding',        description: '%500 hasar verir ve düşmanı 2 saniyeliğine kör eder. Canavarlara uygulanamaz.' },
-          { level: 75, name: 'Beast Hiding',    description: '%300 hasar verir ve sizi 3 saniyeliğine görünmezlik sağlar. Canavarlara uygulanamaz.' },
-          { level: 80, name: 'Critical Point',  description: 'Kritik saldırılar gerçekleştirir. Canavarlara uygulanamaz.' },
+          { level: 10, name: 'Blood Drain',      description: 'Düşmanın HP\'sinin %5\'ini alır. Dakikada bir defa kullanılabilir.' },
+          { level: 15, name: 'Pierce',           description: '%200 hasar veren bir hançer saldırısı.' },
+          { level: 20, name: 'Shock',            description: 'Rakibin savunmasını yok sayan bir bıçaklama.' },
+          { level: 30, name: 'Illusion',         description: 'Düşmanın saldırı isabetini 15 saniyeliğine düşürür.' },
+          { level: 35, name: 'Thrust',           description: '%400 hasar veren bir hançer saldırısı.' },
+          { level: 40, name: 'Cut',              description: 'Rakibin savunmasını yok sayan bir bıçaklama.' },
+          { level: 45, name: 'Stealth',          description: 'Saldırı yapana dek 80 saniyeliğine görünmezlik sağlar.' },
+          { level: 50, name: 'Vampiric Touch',   description: 'Düşmanın HP\'sinin %10\'unu alır. Dakikada bir defa kullanılabilir.' },
+          { level: 55, name: 'Spike',            description: '%600 hasar veren bir hançer saldırısı.' },
+          { level: 63, name: 'Throwing Knife',   description: '20 metre menzildeki bir düşmana %300 hasar veren bir bıçak fırlatır.' },
+          { level: 70, name: 'Bloody Beast',     description: 'Rakibin savunmasını yok sayan bir bıçaklama.' },
+          { level: 72, name: 'Blinding',         description: '%500 hasar verir ve düşmanı 2 saniyeliğine kör eder. Canavarlara uygulanamaz.' },
+          { level: 75, name: 'Beast Hiding',     description: '%300 hasar verir ve sizi 3 saniyeliğine görünmezlik sağlar. Canavarlara uygulanamaz.' },
+          { level: 80, name: 'Critical Point',   description: 'Kritik saldırılar gerçekleştirir. Canavarlara uygulanamaz.' },
         ],
       },
       {
@@ -341,12 +313,118 @@ export const KO_CLASSES: ClassData[] = [
       level80: 15,
     },
     tips: [
-      // Assassin ipuçları (korehberi.com)
-      'Spike + Trust ile çok daha fazla hasar verebileceğiniz zayıf bir yaratıkta (Riote ya da Bach gibi) Drain kullanmayın.',
+      'Spike + Thrust ile çok daha fazla hasar verebileceğiniz zayıf bir yaratıkta (Riote ya da Bach gibi) Drain kullanmayın.',
       'Illusion kullanın. Partinizdeki arkadaşınızın başka bir assassin tarafından öldürülmesini engelleyebilir.',
       'BDW\'deyken bayrak taşıyıcınızı Minor Heal\'leyin.',
       'Juraid\'de, Priest\'iniz Deva\'yı Parasite\'lamadan onu Drain\'lemeyin.',
-      // Archer ipuçları (korehberi.com)
+    ],
+    aliases: [
+      'asas', 'assassin', 'rogue', 'ko asas', 'knight asas',
+      'knight online asas', 'asas rehber',
+    ],
+  },
+
+  // ARCHER (Okçu)
+  // ────────────────────────────────────────────────────────────────────────────
+  {
+    slug: 'archer',
+    guideSlug: 'okcu',
+    name: 'Okçu',
+    nameEn: 'Archer',
+    icon: '🏹',
+    color: '#06b6d4',
+    primaryStat: 'Dexterity (DEX)',
+    races: ['El Morad Male', 'El Morad Female', 'Tuarek'],
+    masterTitle: { human: 'Kasar Hood', karus: 'Shadow Vain' },
+    masterNPC: '[Secret Agent] Clarence — Asga / Bellua Village',
+    description:
+      `Okçu, güvenli uzak mesafeden yay saldırılarıyla sürekli baskı uygulayan bir sınıftır. Arrow Shower ve Multiple Shot ile aynı anda birden fazla hedefe hasar verirken Power Shot ve Dark Pursuer gibi high-damage skill'lerle tek hedefe burst uygulayabilir. Menzil avantajı sayesinde düşmanı kite ederek çarpışmayı kontrol altında tutar; ancak yakın mesafeye yakalandığında hayatta kalma şansı oldukça düşer. Grup savaşlarında archer, doğru konumlama yapıldığında en uzun süre hasar üretebilen sınıflardan biridir.`,
+    statBuilds: [],
+    skillTrees: [
+      {
+        name: 'Basic',
+        skills: [
+          { level: 1,  name: 'Stroke',          description: '%70 hasar veren bir yakın menzil saldırısıdır.' },
+          { level: 1,  name: 'Sprint',           description: 'Koşma hızınızı geçici olarak arttırır.' },
+          { level: 3,  name: 'Archery',          description: 'Ok atmak için bir yay kullanır.' },
+          { level: 9,  name: 'Archery2',         description: '%120 hasar veren bir ok saldırısı.' },
+          { level: 10, name: 'Swift',            description: 'Hedefin (ya da kendinizin) koşma hızını arttırır.' },
+          { level: 30, name: 'Strength of Wolf', description: 'Parti üyelerinizin saldırı güçlerini arttırır.' },
+        ],
+      },
+      {
+        name: 'Archery',
+        skills: [
+          { level: 0,  name: 'Through Shot',    description: '%150 hasar veren bir yay saldırısı.' },
+          { level: 5,  name: 'Fire Arrow',       description: 'Alevli oklar atan bir yay saldırısı.' },
+          { level: 10, name: 'Poison Arrow',     description: 'Zehirli oklar atan bir yay saldırısı.' },
+          { level: 15, name: 'Multiple Shot',    description: 'Aynı anda 3 ok atan bir yay saldırısı.' },
+          { level: 20, name: 'Guided Arrow',     description: 'Hedefini mutlaka vuran bir yay saldırısı.' },
+          { level: 25, name: 'Perfect Shot',     description: '%200 hasar veren bir yay saldırısı.' },
+          { level: 30, name: 'Fire Shot',        description: 'Ek alev hasarı veren bir yay saldırısı.' },
+          { level: 35, name: 'Poison Shot',      description: 'Ek zehir hasarı veren bir yay saldırısı.' },
+          { level: 40, name: 'Arc Shot',         description: '%250 hasar veren bir yay saldırısı.' },
+          { level: 45, name: 'Explosive Shot',   description: 'En güçlü alev saldırısı.' },
+          { level: 50, name: 'Viper',            description: 'En güçlü zehir saldırısı.' },
+          { level: 52, name: 'Counter Strike',   description: 'Kritik hasar veren yay saldırısı.' },
+          { level: 55, name: 'Arrow Shower',     description: 'Aynı anda 5 ok atan bir yay saldırısı.' },
+          { level: 57, name: 'Shadow Shot',      description: '%200 hasarla hedefini mutlaka vuran bir yay saldırısı.' },
+          { level: 60, name: 'Shadow Hunter',    description: '%300 hasarla hedefini mutlaka vuran bir yay saldırısı.' },
+          { level: 62, name: 'Ice Shot',         description: '%300 hasar veren ve düşmanı yavaşlatma şansı bulunan bir yay saldırısı.' },
+          { level: 66, name: 'Lighting Shot',    description: '%300 hasar veren ve 3 saniyeliğine sersemleten bir yay saldırısı.' },
+          { level: 70, name: 'Dark Pursuer',     description: '%350 hasarla hedefini mutlaka vuran bir yay saldırısı.' },
+          { level: 72, name: 'Blow Arrow',       description: 'Hareket ederken bir düşmana %200 hasarla ok saplama saldırısı.' },
+          { level: 75, name: 'Blinding Strafe',  description: 'Düşmana %400 hasar veren ve onu kör eden bir ok atar. Canavarlara işlemez.' },
+          { level: 80, name: 'Power Shot',       description: 'Büyük bir miktarda hasar veren bir yay saldırısı.' },
+        ],
+      },
+      {
+        name: 'Search',
+        skills: [
+          { level: 0,  name: 'Hide',            description: 'Hareket edene dek 40 saniyeliğine görünmezlik sağlar.' },
+          { level: 5,  name: 'Minor Healing',   description: '60 HP yeniler.' },
+          { level: 10, name: 'Evade',           description: '15 saniyeliğine AC\'yi 200 arttırır.' },
+          { level: 15, name: 'Cat\'s Eyes',     description: '50 saniye boyunca görünmez düşmanları görmenizi sağlar.' },
+          { level: 25, name: 'Light Feet',      description: 'Koşma hızınızı 10 saniyeliğine 2 katına çıkarır.' },
+          { level: 30, name: 'Safety',          description: '15 saniyeliğine AC\'yi 400 arttırır.' },
+          { level: 35, name: 'Lupine Eyes',     description: '50 saniye boyunca sizin ve parti üyelerinizin görünmez düşmanları görmesini sağlar.' },
+          { level: 36, name: 'Cure Curse',      description: 'Direnç düşüren tüm büyüleri bertaraf eder.' },
+          { level: 48, name: 'Cure Disease',    description: 'HP\'nizi düşüren tüm büyüleri bertaraf eder.' },
+          { level: 60, name: 'Scaled Skin',     description: '15 saniyeliğine AC\'yi 800 arttırır.' },
+          { level: 70, name: 'Wild Advent',     description: 'Kendinizden belirli mesafedeki bir düşmana ışınlar.' },
+          { level: 75, name: 'Concentration',   description: '15 saniye boyunca saldırıların başarısızlık şansını ortadan kaldırır.' },
+          { level: 80, name: 'Smoke Screen',    description: 'Bir alana duman atar, etraftaki herkesin hedefleme kabiliyetini devre dışı bırakır. Canavarlara uygulanamaz.' },
+        ],
+      },
+      {
+        name: 'Master',
+        skills: [
+          { level: 0,  name: 'Valor',              description: '[Pasif] HP\'niz %30 ya da altına indiğinde direncinizi 50 arttırır.' },
+          { level: 2,  name: 'Magic Shield',       description: 'Geçici olarak tüm direnç puanlarınızı arttırır.' },
+          { level: 5,  name: 'Absoluteness',       description: '[Pasif] Tüm saldırıların hasarını %10 düşürür.' },
+          { level: 10, name: 'Matchless',          description: '[Pasif] Alınan tüm hasarları %15 düşürür.' },
+          { level: 15, name: 'Source Marking',     description: 'Bir düşmanı işaretler, görünmez olmasını engeller. Canavarlara uygulanamaz.' },
+          { level: 20, name: 'Weapon Cancelation', description: 'Bir düşmanın kullandığı silahı iptal etme şansı verir. Canavarlara uygulanamaz.' },
+          { level: 23, name: 'Eskrima',            description: 'Kanatıcı lanetin yanı sıra düşmana hasar verir. Kanama laneti debuff\'ının etkisi altındaki düşmanın Hançer ve Yay savunmasını %10 düşürür.' },
+        ],
+      },
+    ],
+    masterRequirements: {
+      items: [
+        '1x Unstable Kentaraus\' Heart — Lunar Valley\'deki Centaur Faol\'lardan düşer',
+        '1x GaruKonga\'s Essence — [Field Boss] Garukonga\'dan düşer (Haunga / Kongau slotları)',
+        '1x Trethonz\'s Essence — [Field Boss] Trethorns\'dan düşer (Ancient / Treant slotları)',
+      ],
+      npcLocation: '[Secret Agent] Clarence — Asga / Bellua Village',
+      notes: 'Üç eşyayı topladıktan (ya da pazardan satın aldıktan) sonra Clarence\'a giderek 2nd Job Change görevini tamamlayarak Master skill\'lerinizi açabilirsiniz.',
+    },
+    highSkillRequirements: {
+      level70: 5,
+      level72: 7,
+      level75: 10,
+      level80: 15,
+    },
+    tips: [
       'Güvenli olduğundan ve 2 saniye içinde tek yemeyeceğinizden emin olmadan Arrow Shower / Multiple Shot menziline girmeyin. Archer\'lar her zaman göze batarlar.',
       'Hasar vermek için asla Blinding Strafe kullanmayın. Bir Archer\'ın kullanabileceği panik butonlarından biridir ve uzun cooldown\'ı bulunuyor.',
       'Karşınızdakinin town çekmesini engellemek istemediğiniz ya da birinin işini bitirmek istemediğiniz sürece Power Shot\'ı asla kullanmayın.',
@@ -361,9 +439,8 @@ export const KO_CLASSES: ClassData[] = [
       'Styx diye bir şey var farkında mısınız? Bazı Archer\'lar bunu kullanmıyorlar bile.',
     ],
     aliases: [
-      'asas', 'assassin', 'rogue', 'okçu', 'okcu', 'archer',
-      'ko asas', 'knight asas', 'ko archer', 'knight online asas',
-      'asas rehber', 'okçu rehber', 'rogue rehber',
+      'okçu', 'okcu', 'archer', 'ko okçu', 'knight okçu',
+      'knight online okçu', 'okçu rehber',
     ],
   },
 
@@ -382,7 +459,7 @@ export const KO_CLASSES: ClassData[] = [
     masterTitle: { human: 'Arch Mage', karus: 'Elemental Lord' },
     masterNPC: '[Archmage] Drake — Laiba / Linate Village',
     description:
-      `Büyücüler, doğadaki elementleri kullanarak saldırı ve savunma büyüleri yapabilirler.`,
+      `Mage, ateş, buz ve şimşek elementlerini silah olarak kullanan uzak menzilli bir hasar sınıfıdır. AOE (alan etkili) büyüleriyle kalabalık grupları anında eritebilir; tek hedefe odaklı kombosuyla da solo düşmanları hızla tasfiye eder. INT'e dayanan yapısı sayesinde büyü hasarını sürekli artırabilir, ancak düşük HP ve savunma değerleri nedeniyle konumlanma ve geri çekilme zamanlaması kritik önem taşır. Doğru build'de grup savaşlarının en belirleyici hasar kaynağıdır.`,
     statBuilds: [],
     skillTrees: [
       {
@@ -549,7 +626,7 @@ export const KO_CLASSES: ClassData[] = [
     masterTitle: { human: 'Paladin', karus: 'Shadow Knight' },
     masterNPC: '[Priest] Minerva — El Morad Castle / Luferson Castle',
     description:
-      `Priest'ler dostlarını iyileştirip büyüleri ile onları saldırılardan koruyabildikleri gibi, düşmanlarına onları güçsüz bırakan lanetler yağdırabilirler.`,
+      `Priest, partisinin omurgasıdır; iyileştirme büyüleriyle takım arkadaşlarını hayatta tutarken güçlü buff'larla onların savaş kapasitesini ikiye katlar. Heal ağırlıklı build'de arka safta hayat kurtarıcı bir destek görevi üstlenir; Battle Priest build'inde ise STR yatırımı sayesinde ön cepheye çıkıp rakiplere bizzat hasar verebilir. Düşmana Parasite ve Decrease HP gibi lanetler uyguladığında grup çatışmalarının seyrini tek başına değiştirebilir. Deneyimli bir Priest, hem PK hem de boss savaşlarında takımın en değerli üyesidir.`,
     statBuilds: [],
     skillTrees: [
       {
@@ -719,12 +796,9 @@ export const KO_CLASSES: ClassData[] = [
 /**
  * Ek slug alias'ları — navbar dropdown gibi harici linklerde kullanılan
  * kısa slug'ların gerçek sınıfa yönlendirilmesi için.
- * okcu   → rogue (guideSlug: 'asas')
  * battle-priest → priest
  */
 const SLUG_ALIASES: Record<string, string> = {
-  okcu:          'asas',
-  'okcu-rehber': 'asas',
   'battle-priest': 'priest',
 }
 

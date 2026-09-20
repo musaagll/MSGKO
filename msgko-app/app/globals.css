@@ -2,58 +2,57 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MSGKO — PREMIUM GAMING PLATFORM
-   Design Language: Dark · Cinematic · Gaming · Imperial · Obsidian Gold
+   Design Language: Dark · Cinematic · Gaming · Night Blue · White
    ─────────────────────────────────────────────────────────────────────────
-   Renk Felsefesi (MSG zırh görseline dayalı):
-   - Void Black    → #06080F  (zemin — siyah-lacivert, zırh arka planı)
-   - Abyss         → #0A0E1C  (kart — derin lacivert-siyah)
-   - Surface       → #0D1525  (yükseltilmiş yüzey — zırh plaka tonu)
-   - Royal Gold    → #D4A832  (ana vurgu — zırh süsleme altını)
-   - Bright Gold   → #F0C050  (parlak altın — ışık noktaları, hover)
-   - Deep Bronze   → #7A5A10  (koyu bronz — gölgeli altın)
-   - Steel Blue    → #3A4A6B  (zırh mavi parlaması — ikincil aksan)
-   - Platinum      → #E8ECF0  (başlık tipi)
-   - Steel         → #8A9BB0  (metalik gri tip)
+   Renk Felsefesi:
+   - Void Black    → #060912  (zemin — derin gece siyahı)
+   - Abyss         → #090E1C  (kart — koyu lacivert-siyah)
+   - Surface       → #0C1426  (yükseltilmiş yüzey)
+   - Accent Blue   → #3B82F6  (ana vurgu — canlı mavi)
+   - Bright Blue   → #60A5FA  (parlak mavi — hover, ışık)
+   - Dim Blue      → #1E3A8A  (koyu mavi — gölge)
+   - Platinum      → #F1F5F9  (başlık tipi — neredeyse beyaz)
+   - Steel         → #94A3B8  (metalik gri tip)
 ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ─── Design Tokens ─────────────────────────────────────────────────────── */
 :root {
   /* Zemin Hiyerarşisi */
-  --void:         #06080F;
-  --abyss:        #0A0E1C;
-  --surface:      #0D1525;
-  --elevated:     #121E30;
-  --overlay:      rgba(6, 8, 15, 0.97);
+  --void:         #060912;
+  --abyss:        #090E1C;
+  --surface:      #0C1426;
+  --elevated:     #111D35;
+  --overlay:      rgba(6, 9, 18, 0.97);
 
-  /* Royal Gold — Ana Vurgu */
-  --crimson:        #D4A832;
-  --crimson-bright: #F0C050;
-  --crimson-dim:    #7A5A10;
-  --crimson-glow:   rgba(212, 168, 50, 0.35);
-  --crimson-subtle: rgba(212, 168, 50, 0.08);
+  /* Night Blue — Ana Vurgu */
+  --crimson:        #3B82F6;
+  --crimson-bright: #60A5FA;
+  --crimson-dim:    #1E3A8A;
+  --crimson-glow:   rgba(59, 130, 246, 0.35);
+  --crimson-subtle: rgba(59, 130, 246, 0.08);
 
-  /* Steel Blue — İkincil Aksan */
-  --ember:        #3A4A6B;
-  --ember-dim:    rgba(58, 74, 107, 0.25);
+  /* İkincil Aksan — daha derin mavi */
+  --ember:        #1E40AF;
+  --ember-dim:    rgba(30, 64, 175, 0.25);
 
   /* Metalik Tipler */
-  --platinum:     #E8ECF0;
-  --steel:        #8A9BB0;
-  --iron:         #4A5568;
-  --rust:         #2D3748;
+  --platinum:     #F1F5F9;
+  --steel:        #94A3B8;
+  --iron:         #475569;
+  --rust:         #1E293B;
 
   /* Sınırlar */
   --border:       rgba(255, 255, 255, 0.06);
   --border-md:    rgba(255, 255, 255, 0.10);
   --border-bright: rgba(255, 255, 255, 0.16);
-  --border-crimson: rgba(212, 168, 50, 0.28);
-  --border-crimson-bright: rgba(212, 168, 50, 0.55);
+  --border-crimson: rgba(59, 130, 246, 0.28);
+  --border-crimson-bright: rgba(96, 165, 250, 0.55);
 
   /* Gölgeler */
   --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.7);
   --shadow-md:    0 8px 32px rgba(0, 0, 0, 0.8);
   --shadow-lg:    0 24px 64px rgba(0, 0, 0, 0.85);
-  --shadow-crimson: 0 0 40px rgba(212, 168, 50, 0.22), 0 0 80px rgba(212, 168, 50, 0.08);
+  --shadow-crimson: 0 0 40px rgba(59, 130, 246, 0.18), 0 0 80px rgba(59, 130, 246, 0.07);
 
   /* Spacing */
   --section-pt: clamp(4rem, 8vw, 7rem);
@@ -122,21 +121,21 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 
 /* ── Gradient Başlıklar ── */
 .text-gradient-crimson {
-  background: linear-gradient(120deg, #FFFFFF 0%, #F5E8B8 30%, #F0C050 60%, #D4A832 100%);
+  background: linear-gradient(120deg, #FFFFFF 0%, #DBEAFE 30%, #60A5FA 60%, #3B82F6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-steel {
-  background: linear-gradient(120deg, #FFFFFF 0%, #E2E8F0 40%, #A0AEC0 100%);
+  background: linear-gradient(120deg, #FFFFFF 0%, #E2E8F0 40%, #94A3B8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-fire {
-  background: linear-gradient(120deg, #F5E8B8 0%, #F0C050 35%, #D4A832 70%, #7A5A10 100%);
+  background: linear-gradient(120deg, #FFFFFF 0%, #DBEAFE 35%, #60A5FA 70%, #1E40AF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -175,13 +174,13 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(212,168,50,0.45), transparent);
+  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.45), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 .card-gaming:hover {
   border-color: var(--border-crimson);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,168,50,0.05) inset;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(59,130,246,0.05) inset;
 }
 .card-gaming:hover::before { opacity: 1; }
 
@@ -195,9 +194,9 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #06080F;
+  color: #F1F5F9;
   background: var(--crimson);
-  border: 1px solid rgba(212,168,50,0.5);
+  border: 1px solid rgba(59,130,246,0.5);
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -207,13 +206,13 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.22) 50%, transparent 70%);
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
   transform: translateX(-100%);
   transition: transform 0.45s ease;
 }
 .btn-primary:hover {
   background: var(--crimson-bright);
-  box-shadow: 0 8px 32px rgba(212,168,50,0.4);
+  box-shadow: 0 8px 32px rgba(59,130,246,0.4);
   transform: translateY(-2px);
 }
 .btn-primary:hover::after { transform: translateX(100%); }
@@ -310,10 +309,10 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.018;
+  opacity: 0.015;
   background-image:
-    linear-gradient(rgba(212,168,50,0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(212,168,50,0.5) 1px, transparent 1px);
+    linear-gradient(rgba(59,130,246,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.5) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
@@ -322,7 +321,7 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   box-shadow: var(--shadow-crimson);
 }
 .glow-text-crimson {
-  text-shadow: 0 0 20px rgba(212,168,50,0.6), 0 0 60px rgba(212,168,50,0.2);
+  text-shadow: 0 0 20px rgba(59,130,246,0.6), 0 0 60px rgba(59,130,246,0.2);
 }
 
 /* ── Scanline Texture ── */
@@ -330,13 +329,13 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.02;
+  opacity: 0.015;
   background-image: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 2px,
-    rgba(212, 168, 50, 0.12) 2px,
-    rgba(212, 168, 50, 0.12) 4px
+    rgba(59, 130, 246, 0.1) 2px,
+    rgba(59, 130, 246, 0.1) 4px
   );
 }
 
@@ -384,7 +383,7 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
   100% { background-position:  200% center; }
 }
 .shimmer {
-  background: linear-gradient(105deg, var(--crimson-dim) 0%, var(--crimson) 35%, #F5E8B8 50%, var(--crimson) 65%, var(--crimson-dim) 100%);
+  background: linear-gradient(105deg, var(--crimson-dim) 0%, var(--crimson) 35%, #DBEAFE 50%, var(--crimson) 65%, var(--crimson-dim) 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -465,14 +464,14 @@ a, button { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Item rarity renkleri */
-.rarity-normal    { color: #A0AEC0; border-color: rgba(160,174,192,0.3); }
-.rarity-unique    { color: #F0C050; border-color: rgba(240,192,80,0.4); }
-.rarity-legendary { color: #D4A832; border-color: rgba(212,168,50,0.5); }
-.rarity-epic      { color: #63B3ED; border-color: rgba(99,179,237,0.4); }
+.rarity-normal    { color: #94A3B8; border-color: rgba(148,163,184,0.3); }
+.rarity-unique    { color: #60A5FA; border-color: rgba(96,165,250,0.4); }
+.rarity-legendary { color: #3B82F6; border-color: rgba(59,130,246,0.5); }
+.rarity-epic      { color: #A78BFA; border-color: rgba(167,139,250,0.4); }
 
 /* Upgrade badge */
-.upgrade-plus { color: #F0C050; }
-.upgrade-rare { color: #B794F4; }
+.upgrade-plus { color: #60A5FA; }
+.upgrade-rare { color: #A78BFA; }
 .upgrade-max  { color: var(--crimson-bright); }
 
 /* HP/Stat bar */

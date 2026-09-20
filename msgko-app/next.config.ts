@@ -97,7 +97,7 @@ const nextConfig: NextConfig = {
       },
       {
         // Sponsor reklam videosu — doğru MIME type
-        source: '/Reklam/:path*',
+        source: '/ads/:path*',
         headers: [
           { key: 'Content-Type', value: 'video/mp4' },
           { key: 'Cache-Control', value: 'public, max-age=86400' },

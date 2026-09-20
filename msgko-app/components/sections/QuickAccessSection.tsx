@@ -39,18 +39,6 @@ const QUICK_ITEMS = [
     accentRgb: '240,192,80',
   },
   {
-    href: '/item',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
-      </svg>
-    ),
-    title: 'Item Veritabanı',
-    desc: 'Silah, zırh, aksesuar bilgileri',
-    accent: '#A78BFA',
-    accentRgb: '167,139,250',
-  },
-  {
     href: '/boss',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

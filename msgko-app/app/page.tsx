@@ -13,7 +13,9 @@ import type { YTVideo } from '@/lib/youtube'
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: 'MSGKO.net — Knight Online Rehber ve Eğitim Sitesi',
+  title: {
+    absolute: 'MSGKO — Knight Online Rehber Platformu',
+  },
   description:
     'MSGKO.net — Türkiye\'nin Knight Online rehber platformu. Asas, Okçu, Warrior, Mage, Priest build rehberleri, boss drop listesi, harita rehberleri, farm rotaları ve güncel içerikler.',
   alternates: {
@@ -37,9 +39,6 @@ export default async function HomePage() {
       {/* Cinematic hero */}
       <HeroSection />
 
-      {/* Sponsor reklam şeridi */}
-      <SponsorAd />
-
       {/* Hızlı erişim — Oyun Merkezi */}
       <QuickAccessSection />
 
@@ -48,6 +47,9 @@ export default async function HomePage() {
 
       {/* Karakter sınıfı rehberleri */}
       <ClassGuideSection />
+
+      {/* Sponsor reklam şeridi — içerik bölümleri arasında */}
+      <SponsorAd />
 
       {/* Platform özellikleri */}
       <FeaturesSection />
