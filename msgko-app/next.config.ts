@@ -96,6 +96,14 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // Sponsor reklam videosu — .mov için doğru MIME type
+        source: '/Reklam/:path*',
+        headers: [
+          { key: 'Content-Type', value: 'video/quicktime' },
+          { key: 'Cache-Control', value: 'public, max-age=86400' },
+        ],
+      },
+      {
         // Statik asset'ler için agresif önbellekleme
         source: '/_next/static/:path*',
         headers: [

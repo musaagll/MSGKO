@@ -4,6 +4,7 @@ import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ChatWidget } from '@/components/ui/ChatWidget'
+import { SponsorAd } from '@/components/ui/SponsorAd'
 import { ParticleBackground } from '@/components/ui/ParticleBackground'
 import { Analytics } from '@vercel/analytics/next'
 import { PageViewTracker } from '@/components/ui/PageViewTracker'
@@ -350,6 +351,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <ChatWidget />
+        <SponsorAd />
         <PageViewTracker />
         <Analytics />
       </body>
