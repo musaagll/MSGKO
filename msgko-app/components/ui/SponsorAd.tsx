@@ -1,99 +1,72 @@
 'use client'
 
-import { useState } from 'react'
-import { X } from 'lucide-react'
-
+/**
+ * Sponsor reklam şeridi — sayfaya gömülü, sürekli dönen video.
+ * Pencere/modal değil, sayfa içeriğinin parçası.
+ */
 export function SponsorAd() {
-  const [dismissed, setDismissed] = useState(false)
-
-  if (dismissed) return null
-
   return (
-    <div
+    <section
+      aria-label="Sponsor"
       style={{
-        position: 'sticky',
-        top: 64,
-        zIndex: 45,
         width: '100%',
-        borderBottom: '2px solid rgba(212,168,50,0.55)',
-        borderTop: '2px solid rgba(212,168,50,0.3)',
+        background: '#000',
+        borderTop: '2px solid rgba(212,168,50,0.4)',
+        borderBottom: '2px solid rgba(212,168,50,0.4)',
+        position: 'relative',
         overflow: 'hidden',
-        lineHeight: 0,          /* img altında boşluk olmasın */
-        flexShrink: 0,
       }}
-      role="complementary"
-      aria-label="Sponsor reklamı"
     >
-      {/* Video — tüm tarayıcılarda çalışır, döngü halinde */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        style={{
-          width: '100%',
-          height: 'auto',
-          display: 'block',
-          maxHeight: '200px',
-          objectFit: 'cover',
-        }}
-      >
-        <source src="/Reklam/RomaEliteGif.mp4" type="video/mp4" />
-      </video>
-
-      {/* "SPONSOR" etiketi — sol üst */}
+      {/* Sol/sağ altın parıltı */}
       <div style={{
-        position: 'absolute', top: 7, left: 12, zIndex: 5,
+        position: 'absolute', left: 0, top: 0, bottom: 0, width: 100, zIndex: 2,
+        background: 'linear-gradient(90deg, rgba(212,168,50,0.15) 0%, transparent 100%)',
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', right: 0, top: 0, bottom: 0, width: 100, zIndex: 2,
+        background: 'linear-gradient(270deg, rgba(212,168,50,0.15) 0%, transparent 100%)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* SPONSOR etiketi */}
+      <div style={{
+        position: 'absolute', top: 8, left: 12, zIndex: 5,
         display: 'flex', alignItems: 'center', gap: 5,
         padding: '2px 8px',
-        background: 'rgba(6,8,15,0.72)',
+        background: 'rgba(6,8,15,0.8)',
         border: '1px solid rgba(212,168,50,0.4)',
-        backdropFilter: 'blur(6px)',
       }}>
         <div style={{
-          width: 5, height: 5,
+          width: 5, height: 5, borderRadius: '50%',
           background: '#F0C050',
-          borderRadius: '50%',
           animation: 'dotPulse 2s infinite',
         }} />
         <span style={{
           fontSize: '0.48rem', fontWeight: 800,
           letterSpacing: '0.3em', textTransform: 'uppercase',
-          color: 'rgba(212,168,50,0.85)',
+          color: 'rgba(212,168,50,0.9)',
         }}>
           Sponsor
         </span>
       </div>
 
-      {/* Kapat (X) — sağ üst */}
-      <button
-        type="button"
-        onClick={() => setDismissed(true)}
-        aria-label="Reklamı kapat"
+      {/* Video — inline block, kendi boyutlarıyla */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        disablePictureInPicture
         style={{
-          position: 'absolute', top: 7, right: 12, zIndex: 5,
-          width: 24, height: 24,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(6,8,15,0.72)',
-          border: '1px solid rgba(255,255,255,0.15)',
-          backdropFilter: 'blur(6px)',
-          color: 'rgba(255,255,255,0.45)',
-          cursor: 'pointer',
-          transition: 'color 0.15s, border-color 0.15s',
-        }}
-        onMouseEnter={e => {
-          const el = e.currentTarget as HTMLButtonElement
-          el.style.color = '#fff'
-          el.style.borderColor = 'rgba(212,168,50,0.55)'
-        }}
-        onMouseLeave={e => {
-          const el = e.currentTarget as HTMLButtonElement
-          el.style.color = 'rgba(255,255,255,0.45)'
-          el.style.borderColor = 'rgba(255,255,255,0.15)'
+          display: 'block',
+          width: '100%',
+          height: '150px',
+          objectFit: 'cover',
         }}
       >
-        <X size={12} />
-      </button>
-    </div>
+        <source src="/Reklam/RomaEliteGif.mp4" type="video/mp4" />
+      </video>
+    </section>
   )
 }

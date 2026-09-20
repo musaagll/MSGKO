@@ -4,6 +4,7 @@ import { YoutubeVideoSection } from '@/components/sections/YoutubeVideoSection'
 import { FeaturesSection } from '@/components/sections/FeaturesSection'
 import { GbKuruSection } from '@/components/sections/GbKuruSection'
 import { EtkinlikSection } from '@/components/sections/EtkinlikSection'
+import { SponsorAd } from '@/components/ui/SponsorAd'
 import { getYoutubeVideos } from '@/lib/youtube'
 import type { YTVideo } from '@/lib/youtube'
 
@@ -30,6 +31,7 @@ export default async function HomePage() {
     <main>
       <GbKuruSection />
       <HeroSection />
+      <SponsorAd />
       <YoutubeVideoSection videos={videos} />
       <FeaturesSection />
       <EtkinlikSection />
