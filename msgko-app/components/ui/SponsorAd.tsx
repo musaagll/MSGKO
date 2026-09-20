@@ -4,9 +4,8 @@ import { useState } from 'react'
 import { X } from 'lucide-react'
 
 /**
- * Tam genişlik sponsor banner — Navbar'ın (height: 64px) hemen altında,
- * sticky konumda. Sayfa aşağı kaydırılınca Navbar ile birlikte görünür kalır.
- * Video sürekli döngü halinde otomatik oynar.
+ * Tam genişlik sponsor banner — Navbar'ın (height: 64px) hemen altında, sticky.
+ * GIF otomatik döngü halinde çalışır (tüm tarayıcılarda desteklenir).
  */
 export function SponsorAd() {
   const [dismissed, setDismissed] = useState(false)
@@ -17,12 +16,11 @@ export function SponsorAd() {
     <div
       style={{
         position: 'sticky',
-        top: 64,           /* fixed Navbar'ın tam altında */
+        top: 64,
         left: 0,
         right: 0,
         width: '100%',
-        zIndex: 45,        /* Navbar (z-50) altında ama içerikten (z-10) üstte */
-        /* Billboard yüksekliği — masaüstünde 160px, mobilde 90px */
+        zIndex: 45,
         height: 'clamp(90px, 14vw, 160px)',
         background: '#000',
         borderBottom: '2px solid rgba(212,168,50,0.55)',
@@ -33,12 +31,11 @@ export function SponsorAd() {
       role="complementary"
       aria-label="Sponsor reklamı"
     >
-      {/* Video — tam kapsıyor, döngü halinde */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
+      {/* GIF — tam kapsıyor, tüm tarayıcılarda döngü halinde çalışır */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/Reklam/Romaelit.GIF"
+        alt="Romaelit — Sponsor"
         style={{
           position: 'absolute',
           inset: 0,
@@ -47,21 +44,17 @@ export function SponsorAd() {
           objectFit: 'cover',
           display: 'block',
         }}
-      >
-        {/* .mp4 versiyonu varsa önce dene (Chrome/Firefox/Edge) — yoksa .mov (Safari) */}
-        <source src="/Reklam/romaelit-animation.mp4" type="video/mp4" />
-        <source src="/Reklam/romaelit-animation.mov" type="video/quicktime" />
-      </video>
+      />
 
       {/* Kenar solma efektleri */}
       <div style={{
         position: 'absolute', left: 0, top: 0, bottom: 0, width: 80,
-        background: 'linear-gradient(90deg, rgba(6,8,15,0.35), transparent)',
+        background: 'linear-gradient(90deg, rgba(6,8,15,0.3), transparent)',
         pointerEvents: 'none', zIndex: 2,
       }} />
       <div style={{
         position: 'absolute', right: 0, top: 0, bottom: 0, width: 80,
-        background: 'linear-gradient(270deg, rgba(6,8,15,0.35), transparent)',
+        background: 'linear-gradient(270deg, rgba(6,8,15,0.3), transparent)',
         pointerEvents: 'none', zIndex: 2,
       }} />
 
