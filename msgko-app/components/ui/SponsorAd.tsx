@@ -1,125 +1,123 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { X, Volume2, VolumeX } from 'lucide-react'
+import { useState } from 'react'
+import { X } from 'lucide-react'
 
+/**
+ * Tam genişlik sponsor banner — Navbar'ın (height: 64px) hemen altında,
+ * sticky konumda. Sayfa aşağı kaydırılınca Navbar ile birlikte görünür kalır.
+ * Video sürekli döngü halinde otomatik oynar.
+ */
 export function SponsorAd() {
   const [dismissed, setDismissed] = useState(false)
-  const [muted, setMuted] = useState(true)
-  const videoRef = useRef<HTMLVideoElement>(null)
 
   if (dismissed) return null
 
-  const toggleMute = () => {
-    if (!videoRef.current) return
-    videoRef.current.muted = !videoRef.current.muted
-    setMuted(videoRef.current.muted)
-  }
-
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, x: 40, scale: 0.92 }}
-        animate={{ opacity: 1, x: 0, scale: 1 }}
-        exit={{ opacity: 0, x: 40, scale: 0.92 }}
-        transition={{ duration: 0.45, delay: 1.5, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed bottom-6 right-6 z-[350]"
-        style={{ width: 'clamp(220px, 22vw, 280px)' }}
+    <div
+      style={{
+        position: 'sticky',
+        top: 64,           /* fixed Navbar'ın tam altında */
+        left: 0,
+        right: 0,
+        width: '100%',
+        zIndex: 45,        /* Navbar (z-50) altında ama içerikten (z-10) üstte */
+        /* Billboard yüksekliği — masaüstünde 160px, mobilde 90px */
+        height: 'clamp(90px, 14vw, 160px)',
+        background: '#000',
+        borderBottom: '2px solid rgba(212,168,50,0.55)',
+        borderTop: '2px solid rgba(212,168,50,0.3)',
+        overflow: 'hidden',
+        flexShrink: 0,
+      }}
+      role="complementary"
+      aria-label="Sponsor reklamı"
+    >
+      {/* Video — tam kapsıyor, döngü halinde */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: 'block',
+        }}
       >
-        {/* Kart */}
-        <div
-          style={{
-            background: 'rgba(10, 14, 28, 0.96)',
-            border: '1px solid rgba(212,168,50,0.25)',
-            boxShadow: '0 16px 48px rgba(0,0,0,0.8), 0 0 32px rgba(212,168,50,0.08)',
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
-          {/* Üst altın çizgi */}
-          <div style={{
-            height: 2,
-            background: 'linear-gradient(90deg, transparent, #D4A832, #F0C050, #D4A832, transparent)',
-          }} />
+        {/* .mp4 versiyonu varsa önce dene (Chrome/Firefox/Edge) — yoksa .mov (Safari) */}
+        <source src="/Reklam/romaelit-animation.mp4" type="video/mp4" />
+        <source src="/Reklam/romaelit-animation.mov" type="video/quicktime" />
+      </video>
 
-          {/* Header */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '6px 10px',
-            borderBottom: '1px solid rgba(212,168,50,0.08)',
-          }}>
-            <span style={{
-              fontSize: '0.52rem', fontWeight: 800, letterSpacing: '0.28em',
-              textTransform: 'uppercase', color: 'rgba(212,168,50,0.55)',
-            }}>
-              Sponsor
-            </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              {/* Ses toggle */}
-              <button
-                type="button"
-                onClick={toggleMute}
-                style={{
-                  width: 22, height: 22, display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', background: 'transparent', border: 'none',
-                  color: 'rgba(212,168,50,0.45)', cursor: 'pointer',
-                  transition: 'color 0.2s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(212,168,50,0.9)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(212,168,50,0.45)' }}
-                aria-label={muted ? 'Sesi aç' : 'Sesi kapat'}
-              >
-                {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
-              </button>
-              {/* Kapat */}
-              <button
-                type="button"
-                onClick={() => setDismissed(true)}
-                style={{
-                  width: 22, height: 22, display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', background: 'transparent', border: 'none',
-                  color: 'rgba(255,255,255,0.25)', cursor: 'pointer',
-                  transition: 'color 0.2s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.7)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.25)' }}
-                aria-label="Reklamı kapat"
-              >
-                <X size={12} />
-              </button>
-            </div>
-          </div>
+      {/* Kenar solma efektleri */}
+      <div style={{
+        position: 'absolute', left: 0, top: 0, bottom: 0, width: 80,
+        background: 'linear-gradient(90deg, rgba(6,8,15,0.35), transparent)',
+        pointerEvents: 'none', zIndex: 2,
+      }} />
+      <div style={{
+        position: 'absolute', right: 0, top: 0, bottom: 0, width: 80,
+        background: 'linear-gradient(270deg, rgba(6,8,15,0.35), transparent)',
+        pointerEvents: 'none', zIndex: 2,
+      }} />
 
-          {/* Video */}
-          <div style={{ position: 'relative', aspectRatio: '16/9', background: '#06080F' }}>
-            <video
-              ref={videoRef}
-              src="/Reklam/romaelit-animation.mov"
-              autoPlay
-              loop
-              muted
-              playsInline
-              style={{
-                width: '100%', height: '100%',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
-            {/* Altın kenarlık efekti */}
-            <div style={{
-              position: 'absolute', inset: 0, pointerEvents: 'none',
-              boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4)',
-            }} />
-          </div>
+      {/* "SPONSOR" etiketi — sol üst */}
+      <div style={{
+        position: 'absolute', top: 7, left: 12, zIndex: 5,
+        display: 'flex', alignItems: 'center', gap: 5,
+        padding: '2px 8px',
+        background: 'rgba(6,8,15,0.72)',
+        border: '1px solid rgba(212,168,50,0.4)',
+        backdropFilter: 'blur(6px)',
+      }}>
+        <div style={{
+          width: 5, height: 5,
+          background: '#F0C050',
+          borderRadius: '50%',
+          animation: 'dotPulse 2s infinite',
+        }} />
+        <span style={{
+          fontSize: '0.48rem', fontWeight: 800,
+          letterSpacing: '0.3em', textTransform: 'uppercase',
+          color: 'rgba(212,168,50,0.85)',
+        }}>
+          Sponsor
+        </span>
+      </div>
 
-          {/* Alt çizgi */}
-          <div style={{
-            height: 1,
-            background: 'linear-gradient(90deg, transparent, rgba(212,168,50,0.2), transparent)',
-          }} />
-        </div>
-      </motion.div>
-    </AnimatePresence>
+      {/* Kapat (X) — sağ üst */}
+      <button
+        type="button"
+        onClick={() => setDismissed(true)}
+        aria-label="Reklamı kapat"
+        style={{
+          position: 'absolute', top: 7, right: 12, zIndex: 5,
+          width: 24, height: 24,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'rgba(6,8,15,0.72)',
+          border: '1px solid rgba(255,255,255,0.15)',
+          backdropFilter: 'blur(6px)',
+          color: 'rgba(255,255,255,0.45)',
+          cursor: 'pointer',
+          transition: 'color 0.15s, border-color 0.15s',
+        }}
+        onMouseEnter={e => {
+          const el = e.currentTarget as HTMLButtonElement
+          el.style.color = '#fff'
+          el.style.borderColor = 'rgba(212,168,50,0.55)'
+        }}
+        onMouseLeave={e => {
+          const el = e.currentTarget as HTMLButtonElement
+          el.style.color = 'rgba(255,255,255,0.45)'
+          el.style.borderColor = 'rgba(255,255,255,0.15)'
+        }}
+      >
+        <X size={12} />
+      </button>
+    </div>
   )
 }

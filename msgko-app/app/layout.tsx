@@ -348,10 +348,10 @@ export default function RootLayout({
       <body className="bg-[var(--void)] text-white antialiased">
         <ParticleBackground />
         <Navbar />
+        <SponsorAd />
         {children}
         <Footer />
         <ChatWidget />
-        <SponsorAd />
         <PageViewTracker />
         <Analytics />
       </body>
