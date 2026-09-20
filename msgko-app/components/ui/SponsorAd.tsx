@@ -45,14 +45,14 @@ export function SponsorAd() {
     <div
       style={{
         width: '100%',
-        maxWidth: 860,
+        maxWidth: 560,
         margin: '0 auto',
         background: '#000',
         borderTop: '1px solid rgba(59,130,246,0.3)',
         borderBottom: '1px solid rgba(59,130,246,0.3)',
         position: 'relative',
         overflow: 'hidden',
-        minHeight: loaded ? undefined : 80,
+        minHeight: loaded ? undefined : 60,
       }}
     >
       {/* SPONSOR etiketi */}
