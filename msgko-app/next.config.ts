@@ -96,10 +96,10 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Sponsor reklam videosu — .mov için doğru MIME type
+        // Sponsor reklam videosu — doğru MIME type
         source: '/Reklam/:path*',
         headers: [
-          { key: 'Content-Type', value: 'video/quicktime' },
+          { key: 'Content-Type', value: 'video/mp4' },
           { key: 'Cache-Control', value: 'public, max-age=86400' },
         ],
       },
