@@ -58,67 +58,37 @@ export default function RehberIndexPage() {
       <main style={{ minHeight: '100vh', background: 'var(--void)' }}>
 
         {/* ── Hero header ── */}
-        <div style={{
-          position: 'relative', overflow: 'hidden',
-          background: 'var(--abyss)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          paddingTop: 96,
-        }}>
-          <div style={{
-            position: 'absolute', inset: 0, pointerEvents: 'none',
-            background: 'radial-gradient(ellipse 60% 80% at 50% 100%, rgba(212,168,50,0.08) 0%, transparent 55%)',
-          }} />
-
-          <div style={{ position: 'relative', maxWidth: '1320px', margin: '0 auto', padding: '2rem clamp(1.25rem,4vw,2.5rem) 3rem' }}>
+        <div className="page-header" style={{ paddingTop: 'clamp(5rem,8vw,6rem)' }}>
+          <div style={{ position: 'relative', maxWidth: '1320px', margin: '0 auto', padding: '0 var(--page-px) 2rem' }}>
 
             {/* Breadcrumb */}
             <nav aria-label="Sayfa konumu" style={{ marginBottom: 20 }}>
-              <ol style={{ display: 'flex', flexWrap: 'wrap', gap: 6, fontSize: '0.68rem', color: 'rgba(74,84,96,0.8)', listStyle: 'none', padding: 0, margin: 0 }}>
+              <ol className="breadcrumb">
                 <li>
-                  <Link href="/" style={{ color: 'rgba(100,100,120,0.7)', textDecoration: 'none' }}>
+                  <Link href="/" style={{ color: 'var(--iron)', textDecoration: 'none' }}>
                     Ana Sayfa
                   </Link>
                 </li>
-                <li style={{ opacity: 0.4 }}>/</li>
-                <li style={{ color: 'rgba(138,155,176,0.7)' }}>Karakter Rehberleri</li>
+                <li className="breadcrumb-sep">/</li>
+                <li className="breadcrumb-current">Karakter Rehberleri</li>
               </ol>
             </nav>
 
-            {/* Section label */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <div style={{ width: 20, height: 1, background: '#D4A832' }} />
-              <span style={{ fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.32em', textTransform: 'uppercase', color: '#F0C050', opacity: 0.85 }}>
-                Rehber Merkezi
-              </span>
-            </div>
-
-            <h1 style={{
-              fontFamily: 'var(--font-rajdhani), sans-serif',
-              fontSize: 'clamp(1.8rem, 4vw, 3rem)',
-              fontWeight: 900, letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: '#E8ECF0',
-              marginBottom: 12,
-            }}>
-              Karakter Rehberleri
-            </h1>
-
-            <p style={{ fontSize: '0.88rem', lineHeight: 1.8, color: 'rgba(100,100,120,0.8)', maxWidth: 600 }}>
+            <p className="page-header-eyebrow">Rehber Merkezi</p>
+            <h1 className="page-header-title">Karakter Rehberleri</h1>
+            <p className="page-header-desc">
               Knight Online&apos;da 4 temel sınıf bulunur:{' '}
-              <strong style={{ color: 'rgba(138,155,176,0.7)' }}>Warrior</strong>,{' '}
-              <strong style={{ color: 'rgba(138,155,176,0.7)' }}>Rogue</strong> (Assassin ve Archer),{' '}
-              <strong style={{ color: 'rgba(138,155,176,0.7)' }}>Mage</strong> ve{' '}
-              <strong style={{ color: 'rgba(138,155,176,0.7)' }}>Priest</strong>.
+              <strong style={{ color: 'var(--steel)' }}>Warrior</strong>,{' '}
+              <strong style={{ color: 'var(--steel)' }}>Rogue</strong> (Assassin ve Archer),{' '}
+              <strong style={{ color: 'var(--steel)' }}>Mage</strong> ve{' '}
+              <strong style={{ color: 'var(--steel)' }}>Priest</strong>.
               Her sınıf için skill ağaçları, stat dağılımı ve Master açma rehberleri burada.
             </p>
           </div>
-
-          {/* Alt kırmızı çizgi */}
-          <div style={{ height: 1, background: 'linear-gradient(90deg, #D4A832, rgba(212,168,50,0.3), transparent)' }} />
         </div>
 
         {/* ── Sınıf kartları ── */}
-        <section style={{ maxWidth: '1320px', margin: '0 auto', padding: '3rem clamp(1.25rem,4vw,2.5rem) 5rem' }}>
+        <section style={{ maxWidth: '1320px', margin: '0 auto', padding: 'clamp(2rem,4vw,3rem) var(--page-px) 5rem' }}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {KO_CLASSES.map(cls => {
               const acc = CLASS_ACCENT[cls.slug] ?? { border: 'rgba(212,168,50,0.2)', bg: 'rgba(212,168,50,0.05)', label: '' }

@@ -170,14 +170,14 @@ export function GbFiyatlariClient() {
           </ol>
         </nav>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, marginBottom: 32 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, marginBottom: 24 }}>
           <div>
-            <p className="section-label" style={{ marginBottom: 10 }}>Anlık Fiyatlar</p>
-            <h1 style={{ fontFamily: 'var(--font-rajdhani), sans-serif', fontSize: 'clamp(2rem, 4vw, 3.5rem)', fontWeight: 900, letterSpacing: '0.02em', color: 'var(--platinum)', lineHeight: 1 }}>
+            <p className="page-header-eyebrow" style={{ marginBottom: 8 }}>Anlık Fiyatlar</p>
+            <h1 style={{ fontFamily: 'var(--font-rajdhani), sans-serif', fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 900, letterSpacing: '0.02em', color: 'var(--platinum)', lineHeight: 1 }}>
               GB <span style={{ color: '#10B981' }}>Fiyatları</span>
             </h1>
             <p style={{ fontSize: '0.78rem', color: 'var(--iron)', marginTop: 8 }}>
-              Knight Online Gold Bar — 9 site karşılaştırması · Anlık veriler
+              Knight Online Gold Bar — 9 site karşılaştırması · Her 5 dakikada güncellenir
             </p>
           </div>
           <button onClick={fetchPrices}
@@ -191,6 +191,42 @@ export function GbFiyatlariClient() {
             Yenile
           </button>
         </div>
+
+        {/* ── Stat Cards — en ucuz/en yüksek özet ── */}
+        {!loading && serverPrices.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 8, marginBottom: 24 }}>
+            <div className="stat-card">
+              <div className="stat-card-value" style={{ color: '#10B981' }}>
+                {bestSell !== Infinity ? `${bestSell}₺` : '—'}
+              </div>
+              <div className="stat-card-label">En Ucuz Satış</div>
+              <div className="stat-card-sub">{activeServer} sunucusu</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-card-value" style={{ color: '#60A5FA' }}>
+                {bestBuy !== -Infinity ? `${bestBuy}₺` : '—'}
+              </div>
+              <div className="stat-card-label">En Yüksek Alış</div>
+              <div className="stat-card-sub">{activeServer} sunucusu</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-card-value" style={{ color: 'var(--crimson-bright)' }}>
+                {serverPrices.filter(s => s.sell !== null).length}
+              </div>
+              <div className="stat-card-label">Site Listeleniyor</div>
+              <div className="stat-card-sub">aktif kaynak</div>
+            </div>
+            {updatedAt && (
+              <div className="stat-card">
+                <div className="stat-card-value" style={{ fontSize: '1.1rem', color: 'var(--steel)' }}>
+                  {timeAgo(updatedAt)}
+                </div>
+                <div className="stat-card-label">Son Güncelleme</div>
+                <div className="stat-card-sub">otomatik yenileme</div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── Sunucu kartları ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 28 }}

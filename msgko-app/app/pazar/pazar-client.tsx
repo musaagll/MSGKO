@@ -185,14 +185,29 @@ export function PazarClient() {
             <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
               USKO <span style={{ color }}>{activeLabel}</span>
             </h1>
+            <p style={{ fontSize: '0.72rem', color: 'var(--iron)', marginTop: 6 }}>
+              Knight Online USKO market ilanları · Gerçek zamanlı veri
+            </p>
           </div>
-          {data?.last_scraped && (
-            <div className="flex items-center gap-2 text-[0.7rem] text-white/30 mt-1">
-              <span className="w-1.5 h-1.5 rounded-full"
-                style={{ background: '#22c55e', boxShadow: '0 0 4px #22c55e' }} />
-              <span>Güncellendi: <span className="text-white/50">{timeAgo(data.last_scraped)}</span></span>
-            </div>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            {data?.last_scraped && (
+              <div className="flex items-center gap-2 text-[0.7rem] text-white/30">
+                <span className="w-1.5 h-1.5 rounded-full"
+                  style={{ background: '#22c55e', boxShadow: '0 0 4px #22c55e' }} />
+                <span>Güncellendi: <span className="text-white/50">{timeAgo(data.last_scraped)}</span></span>
+              </div>
+            )}
+            {data && !loading && (
+              <div style={{
+                padding: '4px 12px',
+                background: `${color}10`,
+                border: `1px solid ${color}30`,
+                fontSize: '0.72rem', fontWeight: 700, color,
+              }}>
+                {data.total.toLocaleString('tr-TR')} ilan
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ── Sunucu Seçimi ──────────────────────────────────────────────────── */}
@@ -350,12 +365,18 @@ export function PazarClient() {
 
         {/* Hata */}
         {error && (
-          <div className="p-4 mb-4 rounded border border-red-500/20 text-[0.8rem]
-            text-red-400/70 bg-red-500/[0.05]">
-            {error} —{' '}
-            <button onClick={fetchData} className="underline underline-offset-2">
-              Tekrar dene
-            </button>
+          <div className="error-state mb-4">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0, color: 'rgba(252,165,165,0.8)' }}>
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <div>
+              <p style={{ fontWeight: 600, marginBottom: 2 }}>Veriler alınamadı</p>
+              <p style={{ fontSize: '0.72rem', opacity: 0.7 }}>{error} —{' '}
+                <button onClick={fetchData} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', textDecoration: 'underline', padding: 0 }}>
+                  Tekrar dene
+                </button>
+              </p>
+            </div>
           </div>
         )}
 

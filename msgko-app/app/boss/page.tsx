@@ -5,15 +5,11 @@ import { KO_BOSSES } from '@/lib/ko-data/bosses'
 import { buildMetadata, buildBreadcrumbSchema, buildItemListSchema, BASE_URL } from '@/lib/seo'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Knight Online Boss Rehberleri | Felankor, Isiloon ve Tüm Boss\'lar | MSGKO',
+  title: 'Knight Online Boss Rehberleri | Felankor, Isiloon ve Tüm Bosslar | MSGKO',
   description:
-    'Knight Online tüm boss\'ları için spawn yeri, drop listesi ve öldürme taktikleri. Felankor, Isiloon, Kundun ve daha fazlası MSGKO\'da.',
+    'Knight Online tüm bossları için spawn yeri, drop listesi ve öldürme taktikleri. Felankor, Isiloon, Kundun ve daha fazlası MSGKO\'da.',
   canonical: `${BASE_URL}/boss`,
-  keywords: [
-    'knight online boss', 'knight online boss listesi', 'felankor', 'isiloon',
-    'knight online boss drop', 'knight online boss spawn', 'knight online boss rehberi',
-    'cz boss', 'world boss knight online',
-  ],
+  keywords: ['knight online boss', 'felankor', 'isiloon', 'knight online boss drop', 'boss rehberi'],
   ogType: 'website',
 })
 
@@ -22,145 +18,177 @@ const breadcrumbs = [
   { label: 'Boss Rehberleri', href: '/boss' },
 ]
 
-const schemas = [
-  buildBreadcrumbSchema(breadcrumbs),
-  buildItemListSchema({
-    name: 'Knight Online Boss Rehberleri',
-    description: 'Tüm Knight Online boss\'ları için spawn, drop ve taktik bilgileri.',
-    url: '/boss',
-    items: KO_BOSSES.filter((b) => b.is_published).map((b) => ({
-      name: `Knight Online ${b.name}`,
-      url: `/boss/${b.slug}`,
-      description: b.description ?? '',
-    })),
-  }),
-]
-
-const BOSS_TYPE_LABELS: Record<string, string> = {
-  world: 'World Boss',
-  dungeon: 'Dungeon Boss',
-  event: 'Event Boss',
-  mini: 'Mini Boss',
+const BOSS_TYPE: Record<string, { label: string; color: string; bg: string }> = {
+  world:   { label: 'World Boss',   color: 'rgba(248,113,113,0.9)', bg: 'rgba(248,113,113,0.08)' },
+  dungeon: { label: 'Dungeon Boss', color: 'rgba(212,168,50,0.9)',  bg: 'rgba(212,168,50,0.06)'  },
+  event:   { label: 'Event Boss',   color: 'rgba(251,191,36,0.9)',  bg: 'rgba(251,191,36,0.06)'  },
+  mini:    { label: 'Mini Boss',    color: 'rgba(148,163,184,0.8)', bg: 'rgba(148,163,184,0.06)' },
 }
 
 export default function BossIndexPage() {
-  const publishedBosses = KO_BOSSES.filter((b) => b.is_published)
+  const bosses = KO_BOSSES.filter(b => b.is_published)
+
+  const schemas = [
+    buildBreadcrumbSchema(breadcrumbs),
+    buildItemListSchema({
+      name: 'Knight Online Boss Rehberleri',
+      description: 'Spawn, drop ve taktik bilgileri.',
+      url: '/boss',
+      items: bosses.map(b => ({ name: `Knight Online ${b.name}`, url: `/boss/${b.slug}`, description: b.description ?? '' })),
+    }),
+  ]
 
   return (
     <>
-      <Script
-        id="boss-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
-      />
+      <Script id="boss-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
 
-      <main className="min-h-screen" style={{ background: 'var(--void)' }}>
-        {/* Breadcrumb */}
-        <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
-          <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
-            <li><Link href="/" className="hover:text-white/60 transition-colors">Ana Sayfa</Link></li>
-            <li aria-hidden="true"><span>/</span></li>
-            <li className="text-white/60">Boss Rehberleri</li>
-          </ol>
-        </nav>
+      <main style={{ minHeight: '100vh', background: 'var(--void)' }}>
 
-        {/* Header */}
-        <header className="max-w-[1280px] mx-auto px-6 sm:px-8 py-10">
-          <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase section-label mb-3">
-            BOSS MERKEZİ
-          </p>
-          <h1 className="text-3xl md:text-4xl font-black tracking-[0.04em] uppercase text-white mb-4"
-            style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-            Knight Online Boss Rehberleri
-          </h1>
-          <p className="text-[0.9rem] leading-[1.8] text-white/50 max-w-2xl">
-            Knight Online dünyasındaki tüm boss&#39;ların spawn yeri, çıkma zamanı, drop listesi ve
-            öldürme taktiklerini burada bulabilirsin. Felankor&#39;dan Kundun&#39;a kadar her boss için rehber.
-          </p>
-        </header>
+        {/* ── Page Header ── */}
+        <div className="page-header" style={{ paddingTop: 'clamp(5rem,8vw,6rem)' }}>
+          <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+            {/* Breadcrumb */}
+            <nav aria-label="Konum" style={{ marginBottom: 20 }}>
+              <ol className="breadcrumb">
+                <li><Link href="/" className="breadcrumb-link">Ana Sayfa</Link></li>
+                <li className="breadcrumb-sep">/</li>
+                <li className="breadcrumb-current">Boss Rehberleri</li>
+              </ol>
+            </nav>
 
-        {/* Boss Listesi */}
-        <section className="max-w-[1280px] mx-auto px-6 sm:px-8 pb-20">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {publishedBosses.map((boss) => (
-              <Link
-                key={boss.slug}
-                href={`/boss/${boss.slug}`}
-                className="group p-6 border border-white/[0.07] hover:border-white/20
-                  transition-all duration-300 relative overflow-hidden"
-                style={{ background: 'rgba(255,255,255,0.015)' }}
-              >
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ background: 'rgba(239,68,68,0.06)' }} />
-                <div className="relative">
-                  {/* Tip badge */}
-                  <div className="flex items-start justify-between mb-4">
-                    <span className="text-[0.6rem] font-bold tracking-[0.15em] uppercase px-2 py-0.5 border"
-                      style={{ borderColor: 'rgba(239,68,68,0.3)', color: 'rgba(239,68,68,0.8)' }}>
-                      {BOSS_TYPE_LABELS[boss.boss_type] ?? boss.boss_type}
+            <p className="page-header-eyebrow">Boss Merkezi</p>
+            <h1 className="page-header-title">Knight Online<br/>Boss Rehberleri</h1>
+            <p className="page-header-desc">
+              Tüm boss&apos;ların spawn yeri, çıkma zamanı, drop listesi ve öldürme taktiklerini burada bulabilirsin.
+            </p>
+
+            {/* İstatistik özeti */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 24 }}>
+              {[
+                { label: 'World Boss', count: bosses.filter(b => b.boss_type === 'world').length, color: 'rgba(248,113,113,0.8)' },
+                { label: 'Dungeon Boss', count: bosses.filter(b => b.boss_type === 'dungeon').length, color: 'rgba(212,168,50,0.8)' },
+                { label: 'Event Boss', count: bosses.filter(b => b.boss_type === 'event').length, color: 'rgba(251,191,36,0.8)' },
+              ].map(s => (
+                <div key={s.label} style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '5px 14px',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid var(--border)',
+                }}>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 900, color: s.color, fontFamily: 'var(--font-rajdhani)' }}>{s.count}</span>
+                  <span style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--iron)' }}>{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Boss Listesi ── */}
+        <section style={{ maxWidth: 1280, margin: '0 auto', padding: 'clamp(2rem,4vw,3rem) clamp(1.5rem,4vw,2.5rem) 5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: 12 }}>
+            {bosses.map(boss => {
+              const type = BOSS_TYPE[boss.boss_type] ?? BOSS_TYPE['mini']
+              return (
+                <Link
+                  key={boss.slug}
+                  href={`/boss/${boss.slug}`}
+                  className="card-gaming group"
+                  style={{
+                    display: 'block', padding: '20px 22px',
+                    textDecoration: 'none', position: 'relative', overflow: 'hidden',
+                  }}
+                >
+                  {/* Üst çizgi */}
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${type.color}, transparent)`, opacity: 0.6 }} />
+
+                  {/* Tip + Level */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                    <span style={{
+                      fontSize: '0.58rem', fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase',
+                      padding: '2px 8px',
+                      background: type.bg,
+                      border: `1px solid ${type.color}40`,
+                      color: type.color,
+                    }}>
+                      {type.label}
                     </span>
                     {boss.level && (
-                      <span className="text-[0.6rem] tracking-[0.1em] text-white/30">
+                      <span style={{ fontSize: '0.6rem', color: 'var(--iron)', letterSpacing: '0.08em' }}>
                         Lv. {boss.level}
                       </span>
                     )}
                   </div>
 
-                  <h2 className="text-lg font-black tracking-[0.06em] uppercase text-white mb-1"
-                    style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
+                  {/* İsim */}
+                  <h2 style={{
+                    fontFamily: 'var(--font-rajdhani), sans-serif',
+                    fontSize: '1.1rem', fontWeight: 900, letterSpacing: '0.05em', textTransform: 'uppercase',
+                    color: 'var(--platinum)', marginBottom: 6, lineHeight: 1.15,
+                  }}>
                     {boss.name}
                   </h2>
 
                   {/* Konum */}
                   {boss.map_slug && (
-                    <p className="text-[0.68rem] tracking-[0.08em] uppercase text-white/30 mb-3">
-                      📍 {boss.map_slug.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                    <p style={{ fontSize: '0.65rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--iron)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+                      </svg>
+                      {boss.map_slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     </p>
                   )}
 
-                  {/* Drop önizleme */}
+                  {/* Drop listesi */}
                   {boss.drop_list.length > 0 && (
-                    <div className="mb-4">
-                      <p className="text-[0.62rem] tracking-[0.15em] uppercase text-white/25 mb-2">Drop</p>
-                      <div className="flex flex-wrap gap-1.5">
+                    <div style={{ marginBottom: 14 }}>
+                      <p style={{ fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--iron)', marginBottom: 7, opacity: 0.6 }}>Drop</p>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                         {boss.drop_list.slice(0, 3).map((drop, i) => (
-                          <span key={i} className="text-[0.62rem] px-2 py-0.5"
-                            style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.45)' }}>
+                          <span key={i} style={{
+                            fontSize: '0.62rem', padding: '2px 7px',
+                            background: 'rgba(255,255,255,0.03)',
+                            border: '1px solid rgba(255,255,255,0.07)',
+                            color: 'var(--steel)',
+                          }}>
                             {drop.item_name}
                           </span>
                         ))}
                         {boss.drop_list.length > 3 && (
-                          <span className="text-[0.62rem] px-2 py-0.5 text-white/25">
-                            +{boss.drop_list.length - 3} daha
-                          </span>
+                          <span style={{ fontSize: '0.62rem', color: 'var(--iron)' }}>+{boss.drop_list.length - 3}</span>
                         )}
                       </div>
                     </div>
                   )}
 
-                  <div className="flex items-center gap-2 text-[0.72rem] font-semibold tracking-[0.1em]
-                    uppercase text-white/30 group-hover:text-white/70 transition-colors duration-200 mt-2">
-                    <span>Boss Rehberini Oku</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                  {/* CTA */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--crimson-bright)', opacity: 0.8 }}>
+                      Rehberi Oku
+                    </span>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--crimson-bright)" strokeWidth="2.5">
                       <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              )
+            })}
           </div>
 
-          {/* Bilgi */}
-          <div className="mt-12 p-6 border border-white/[0.06]" style={{ background: 'rgba(239,68,68,0.03)' }}>
-            <h2 className="text-[0.8rem] font-black tracking-[0.15em] uppercase text-white/80 mb-3">
-              Knight Online Boss Sistemi Hakkında
+          {/* Bilgi kutusu */}
+          <div style={{
+            marginTop: 40, padding: '20px 24px',
+            background: 'rgba(248,113,113,0.03)',
+            border: '1px solid rgba(248,113,113,0.1)',
+            borderLeft: '3px solid rgba(248,113,113,0.4)',
+          }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--steel)', marginBottom: 10 }}>
+              Boss Sistemi Hakkında
             </h2>
-            <p className="text-[0.78rem] leading-[1.8] text-white/40">
-              Knight Online&#39;daki boss&#39;lar belirli aralıklarla spawn olur ve sunucu genelinde
-              duyuru yapılır. En değerli item&#39;lar bu boss&#39;lardan düşer. CZ&#39;nin en güçlü boss&#39;u olan{' '}
-              <Link href="/boss/felankor" className="text-red-400/70 hover:text-red-400 transition-colors">
-                Felankor
-              </Link>&#39;u öldürmek için güçlü ve organize bir grup gerekmektedir.
+            <p style={{ fontSize: '0.77rem', lineHeight: 1.8, color: 'var(--iron)' }}>
+              Knight Online&apos;daki boss&apos;lar belirli aralıklarla spawn olur ve sunucu genelinde duyuru yapılır.
+              En değerli itemlar bu boss&apos;lardan düşer. CZ&apos;nin en güçlü boss&apos;u olan{' '}
+              <Link href="/boss/felankor" style={{ color: 'rgba(248,113,113,0.8)', textDecoration: 'none' }}>Felankor</Link>&apos;u öldürmek
+              için güçlü ve organize bir grup gerekmektedir.
             </p>
           </div>
         </section>

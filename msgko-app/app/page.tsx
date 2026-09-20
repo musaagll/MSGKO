@@ -4,6 +4,8 @@ import { YoutubeVideoSection } from '@/components/sections/YoutubeVideoSection'
 import { FeaturesSection } from '@/components/sections/FeaturesSection'
 import { GbKuruSection } from '@/components/sections/GbKuruSection'
 import { EtkinlikSection } from '@/components/sections/EtkinlikSection'
+import { QuickAccessSection } from '@/components/sections/QuickAccessSection'
+import { ClassGuideSection } from '@/components/sections/ClassGuideSection'
 import { SponsorAd } from '@/components/ui/SponsorAd'
 import { getYoutubeVideos } from '@/lib/youtube'
 import type { YTVideo } from '@/lib/youtube'
@@ -29,11 +31,28 @@ export default async function HomePage() {
 
   return (
     <main>
+      {/* Canlı GB kuru ticker */}
       <GbKuruSection />
+
+      {/* Cinematic hero */}
       <HeroSection />
+
+      {/* Sponsor reklam şeridi */}
       <SponsorAd />
+
+      {/* Hızlı erişim — Oyun Merkezi */}
+      <QuickAccessSection />
+
+      {/* Son videolar */}
       <YoutubeVideoSection videos={videos} />
+
+      {/* Karakter sınıfı rehberleri */}
+      <ClassGuideSection />
+
+      {/* Platform özellikleri */}
       <FeaturesSection />
+
+      {/* Etkinlik takvimi */}
       <EtkinlikSection />
     </main>
   )
