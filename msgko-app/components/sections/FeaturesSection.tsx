@@ -70,9 +70,8 @@ export function FeaturesSection() {
           />
         </div>
 
-        {/* Kartlar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 16 }}
-          className="sm:grid-cols-2 lg:grid-cols-4">
+        {/* Kartlar — inline gridTemplateColumns kaldırıldı, Tailwind sınıfları override edebilir */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {FEATURES.map((feature, i) => (
             <motion.div
               key={feature.id}

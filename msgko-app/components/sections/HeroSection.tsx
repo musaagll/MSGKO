@@ -34,14 +34,17 @@ const TICKER_ITEMS = [
 export function HeroSection() {
   const [okcuOpen, setOkcuOpen]   = useState(false)
   const [asasOpen, setAsasOpen]   = useState(false)
-  const [isMobile, setIsMobile]   = useState(false)
+  const [isMobile, setIsMobile]   = useState<boolean | null>(null)
   const sectionRef                = useRef<HTMLElement>(null)
   const mousePosRef               = useRef({ x: 0, y: 0 })
   const [mousePos, setMousePos]   = useState({ x: 0, y: 0 })
   const rafRef                    = useRef<number | null>(null)
 
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768)
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
   }, [])
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
@@ -74,9 +77,14 @@ export function HeroSection() {
         {/* ── Zemin ── */}
         <div style={{ position: 'absolute', inset: 0, background: 'var(--void)' }} />
 
-        {/* ── Arka plan videosu — mobilde devre dışı ── */}
+        {/* ── Arka plan videosu — mobilde devre dışı, null guard ile hydration-safe ── */}
         <motion.div style={{ position: 'absolute', inset: 0, y: videoY }}>
-          {!isMobile ? (
+          {isMobile === null ? null : isMobile ? (
+            <div style={{
+              width: '100%', height: '100%',
+              background: 'radial-gradient(ellipse 80% 60% at 60% 50%, rgba(59,130,246,0.06) 0%, transparent 60%)',
+            }} />
+          ) : (
             <video
               style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.18 }}
               src="/bg-video.mp4"
@@ -84,11 +92,6 @@ export function HeroSection() {
               autoPlay loop muted playsInline preload="metadata"
               aria-hidden="true"
             />
-          ) : (
-            <div style={{
-              width: '100%', height: '100%',
-              background: 'radial-gradient(ellipse 80% 60% at 60% 50%, rgba(59,130,246,0.06) 0%, transparent 60%)',
-            }} />
           )}
         </motion.div>
 
@@ -118,7 +121,9 @@ export function HeroSection() {
         {/* ── Sol gradient (okunabilirlik) ── */}
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: 'linear-gradient(105deg, rgba(8,10,15,0.98) 25%, rgba(8,10,15,0.75) 55%, rgba(8,10,15,0.05) 100%)',
+          background: isMobile
+            ? 'rgba(6,9,18,0.82)'
+            : 'linear-gradient(105deg, rgba(8,10,15,0.98) 25%, rgba(8,10,15,0.75) 55%, rgba(8,10,15,0.05) 100%)',
         }} />
 
         {/* ── Alt fade ── */}
@@ -127,7 +132,7 @@ export function HeroSection() {
           background: 'linear-gradient(to top, var(--void) 0%, rgba(8,10,15,0.6) 60%, transparent 100%)',
         }} />
 
-        {/* ── Logo (sağ, parallax + mouse) ── */}
+        {/* ── Logo (sağ, parallax + mouse) — tabletüstü görünür ── */}
         <motion.div
           style={{
             position: 'absolute',
@@ -140,6 +145,7 @@ export function HeroSection() {
             x: mousePos.x * -20,
             pointerEvents: 'none',
             userSelect: 'none',
+            display: isMobile ? 'none' : undefined,
           }}
           aria-hidden="true"
         >

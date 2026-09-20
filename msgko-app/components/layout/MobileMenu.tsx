@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { X, ChevronRight, Swords } from 'lucide-react'
 import { NAV_ITEMS } from '@/lib/data'
@@ -172,7 +173,7 @@ export function MobileMenu({ isOpen, onClose, onYoutubeOpen, onInstagramOpen, on
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--steel)' }}
                       >
                         <div style={{ width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--crimson-subtle)', border: '1px solid var(--border-crimson)', flexShrink: 0 }}>
-                          {item.img ? <img src={item.img} alt="" style={{ width: 14, height: 14, objectFit: 'contain', mixBlendMode: 'screen' }} /> : <Swords size={12} style={{ color: 'var(--crimson-bright)' }} />}
+                          {item.img ? <Image src={item.img} alt="" width={14} height={14} style={{ objectFit: 'contain', mixBlendMode: 'screen' }} /> : <Swords size={12} style={{ color: 'var(--crimson-bright)' }} />}
                         </div>
                         {item.label}
                       </Link>
@@ -191,7 +192,7 @@ export function MobileMenu({ isOpen, onClose, onYoutubeOpen, onInstagramOpen, on
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--steel)' }}
                       >
                         <div style={{ width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--crimson-subtle)', border: '1px solid var(--border-crimson)', flexShrink: 0 }}>
-                          {item.img ? <img src={item.img} alt="" style={{ width: 14, height: 14, objectFit: 'contain', mixBlendMode: 'screen' }} /> : <Swords size={12} style={{ color: 'var(--crimson-bright)' }} />}
+                          {item.img ? <Image src={item.img} alt="" width={14} height={14} style={{ objectFit: 'contain', mixBlendMode: 'screen' }} /> : <Swords size={12} style={{ color: 'var(--crimson-bright)' }} />}
                         </div>
                         {item.label}
                       </button>

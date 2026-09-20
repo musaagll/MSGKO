@@ -78,9 +78,8 @@ export function Footer() {
 
       <div style={{ position: 'relative', maxWidth: 'var(--max-w)', margin: '0 auto', padding: 'clamp(3rem, 6vw, 5rem) var(--page-px) 0' }}>
 
-        {/* ── Grid — 5 kolon ── */}
-        <div style={{ display: 'grid', gap: '2.5rem 2rem' }}
-          className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1.2fr]">
+        {/* ── Grid — mobil 1 kolon, tablet 2, desktop 5 ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1.2fr] gap-x-8 gap-y-10">
 
           {/* ── Marka kolonu ── */}
           <div>

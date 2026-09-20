@@ -101,7 +101,7 @@ function RehberDropdown() {
                     border: '1px solid rgba(212,168,50,0.14)',
                   }}>
                     {item.icon
-                      ? <img src={item.icon} alt="" style={{ width: 16, height: 16, objectFit: 'contain', mixBlendMode: 'screen' }} />
+                      ? <Image src={item.icon} alt="" width={16} height={16} style={{ objectFit: 'contain', mixBlendMode: 'screen' }} />
                       : <Swords size={12} style={{ color: 'var(--crimson-bright)', opacity: 0.7 }} />
                     }
                   </div>
