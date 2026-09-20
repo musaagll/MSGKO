@@ -24,11 +24,12 @@ export function SponsorAd() {
       role="complementary"
       aria-label="Sponsor reklamı"
     >
-      {/* GIF — tam genişlik, oran korunur */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/Reklam/Romaelit.GIF"
-        alt="Romaelit — Sponsor"
+      {/* Video — tüm tarayıcılarda çalışır, döngü halinde */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
         style={{
           width: '100%',
           height: 'auto',
@@ -36,7 +37,9 @@ export function SponsorAd() {
           maxHeight: '200px',
           objectFit: 'cover',
         }}
-      />
+      >
+        <source src="/Reklam/RomaEliteGif.mp4" type="video/mp4" />
+      </video>
 
       {/* "SPONSOR" etiketi — sol üst */}
       <div style={{
