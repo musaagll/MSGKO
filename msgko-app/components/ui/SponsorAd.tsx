@@ -85,7 +85,6 @@ export function SponsorAd() {
           backgroundSize: '400px 100%',
           animation: 'skeleton-shimmer 1.6s infinite linear',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          minHeight: 80,
         }}>
           <div style={{ display: 'flex', gap: 6 }}>
             {[0,1,2].map(i => (
@@ -100,7 +99,7 @@ export function SponsorAd() {
         </div>
       )}
 
-      {/* Video — max-height ile yükseklik sınırlandırıldı */}
+      {/* Video — doğal boyutunda tam görünür */}
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <video
         ref={videoRef}
@@ -113,8 +112,6 @@ export function SponsorAd() {
           display: 'block',
           width: '100%',
           height: 'auto',
-          maxHeight: 180,
-          objectFit: 'cover',
           visibility: loaded ? 'visible' : 'hidden',
         }}
       >
