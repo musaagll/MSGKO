@@ -7,7 +7,7 @@ interface Particle {
   size: number; opacity: number; color: string
 }
 
-const COLORS = ['139,92,246', '236,72,153', '167,139,250']
+const COLORS = ['59,130,246', '96,165,250', '147,197,253']
 
 export function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
