@@ -1,240 +1,137 @@
-'use client'
+import Link from "next/link";
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { SOCIAL_LINKS } from '@/lib/data'
-
-function SocialIcon({ platform }: { platform: string }) {
-  if (platform === 'youtube') return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-    </svg>
-  )
-  if (platform === 'instagram') return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-    </svg>
-  )
-  return null
-}
-
-function FooterLink({ label, href }: { label: string; href: string }) {
+function DiscordIcon() {
   return (
-    <Link
-      href={href}
-      style={{
-        display: 'flex', alignItems: 'center', gap: 6,
-        fontSize: '0.72rem', color: 'var(--iron)',
-        textDecoration: 'none', transition: 'color 0.2s',
-      }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--platinum)' }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--iron)' }}
-    >
-      <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--crimson)', opacity: 0.45, flexShrink: 0 }} />
-      {label}
-    </Link>
-  )
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.031.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+    </svg>
+  );
 }
 
-const COL_REHBER = [
-  { label: 'Asas Rehberi',    href: '/rehber/asas' },
-  { label: 'Okçu Rehberi',    href: '/rehber/okcu' },
-  { label: 'Warrior Rehberi', href: '/rehber/warrior' },
-  { label: 'Mage Rehberi',    href: '/rehber/mage' },
-  { label: 'Priest Rehberi',  href: '/rehber/priest' },
-  { label: 'Tüm Rehberler',   href: '/rehber' },
-]
+function InstagramIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+    </svg>
+  );
+}
 
-const COL_OYUN = [
-  { label: 'USKO Pazar',        href: '/pazar' },
-  { label: 'GB Fiyatları',      href: '/gb-fiyatlari' },
-  { label: 'Item Veritabanı',   href: '/item' },
-  { label: 'Boss Rehberleri',   href: '/boss' },
-  { label: 'Harita Rehberleri', href: '/harita' },
-]
+function YoutubeIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/>
+      <path d="m10 15 5-3-5-3z"/>
+    </svg>
+  );
+}
 
-const COL_ICERIK = [
-  { label: 'Videolar',   href: '/youtube' },
-  { label: 'Wallpaper',  href: '/wallpaper' },
-  { label: 'Destek',     href: '/destek' },
-  { label: 'İletişim',   href: '/iletisim' },
-]
+function XIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.845L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+    </svg>
+  );
+}
 
 export function Footer() {
   return (
-    <footer style={{ position: 'relative', background: 'var(--abyss)', overflow: 'hidden' }} aria-label="Site footer">
+    <footer
+      className="relative z-10"
+      style={{
+        borderTop: "1px solid rgba(201,168,76,0.1)",
+        background: "rgba(7,8,13,0.95)",
+      }}
+      aria-label="Footer"
+    >
+      <div className="section-container py-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
 
-      {/* Arka plan */}
-      <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 55% 50% at 5% 100%, rgba(212,168,50,0.04) 0%, transparent 55%)',
-      }} />
-      <div className="grid-overlay" />
+          {/* Left — Brand */}
+          <div className="flex flex-col items-center md:items-start">
+            <span
+              className="font-black leading-none"
+              style={{
+                fontFamily: "'Cinzel', serif",
+                fontSize: "20px",
+                background: "linear-gradient(135deg, #e8c96a 0%, #c9a84c 50%, #a07830 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                letterSpacing: "0.06em",
+              }}
+            >
+              MSGKO
+            </span>
+            <span
+              className="uppercase tracking-[0.18em] mt-0.5"
+              style={{ fontSize: "7px", color: "#3a3530", letterSpacing: "0.2em" }}
+            >
+              Knight Online Community
+            </span>
+          </div>
 
-      {/* Üst altın çizgi */}
-      <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, var(--crimson), var(--crimson-bright), transparent)' }} />
-
-      <div style={{ position: 'relative', maxWidth: 'var(--max-w)', margin: '0 auto', padding: 'clamp(3rem, 6vw, 5rem) var(--page-px) 0' }}>
-
-        {/* ── Grid — mobil 1 kolon, tablet 2, desktop 5 ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1.2fr] gap-x-8 gap-y-10">
-
-          {/* ── Marka kolonu ── */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-              <Image src="/logo.png" alt="MSGKO" width={44} height={44}
-                style={{ mixBlendMode: 'screen', filter: 'brightness(1.3) drop-shadow(0 0 8px rgba(212,168,50,0.4))' }} />
-              <div>
-                <div style={{ fontSize: '0.83rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--platinum)', fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-                  MSG<span style={{ color: 'var(--crimson-bright)' }}>KO</span>
-                </div>
-                <div style={{ fontSize: '0.42rem', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--iron)', marginTop: 2 }}>
-                  Knight Online Platform
-                </div>
-              </div>
-            </div>
-
-            <p style={{ fontSize: '0.72rem', lineHeight: 1.85, color: 'var(--iron)', maxWidth: 230, marginBottom: 18 }}>
-              Knight Online oyuncuları için rehber, pazar, item veritabanı ve içerik platformu. Bağımsız bir oyuncu platformudur.
+          {/* Center — Tagline + copyright */}
+          <div className="flex flex-col items-center text-center">
+            <p style={{ fontSize: "12px", color: "#5a5448", marginBottom: "4px" }}>
+              Aynı Oyun, Daha Güçlü Bir Topluluk.
             </p>
-
-            {/* Sosyal */}
-            <div style={{ display: 'flex', gap: 8, marginBottom: 0 }}>
-              {SOCIAL_LINKS.map(s => (
-                <a
-                  key={s.platform}
-                  href={s.url}
-                  target="_blank" rel="noopener noreferrer"
-                  aria-label={s.label}
-                  style={{
-                    width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    border: '1px solid var(--border-md)', color: 'var(--iron)', background: 'transparent',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.borderColor = 'var(--border-crimson)'; el.style.color = 'var(--crimson-bright)'; el.style.background = 'var(--crimson-subtle)' }}
-                  onMouseLeave={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.borderColor = 'var(--border-md)'; el.style.color = 'var(--iron)'; el.style.background = 'transparent' }}
-                >
-                  <SocialIcon platform={s.platform} />
-                </a>
-              ))}
-            </div>
+            <p style={{ fontSize: "11px", color: "#3a3530" }}>
+              © 2026 MSGKO. Tüm hakları saklıdır.
+            </p>
           </div>
 
-          {/* ── Rehberler ── */}
-          <div>
-            <h3 style={{ fontSize: '0.57rem', fontWeight: 800, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--crimson-bright)', marginBottom: 18, opacity: 0.8 }}>
-              Rehberler
-            </h3>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {COL_REHBER.map(l => <FooterLink key={l.href} {...l} />)}
-            </nav>
-          </div>
-
-          {/* ── Oyun ── */}
-          <div>
-            <h3 style={{ fontSize: '0.57rem', fontWeight: 800, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--crimson-bright)', marginBottom: 18, opacity: 0.8 }}>
-              Oyun
-            </h3>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {COL_OYUN.map(l => <FooterLink key={l.href} {...l} />)}
-            </nav>
-          </div>
-
-          {/* ── İçerik ── */}
-          <div>
-            <h3 style={{ fontSize: '0.57rem', fontWeight: 800, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--crimson-bright)', marginBottom: 18, opacity: 0.8 }}>
-              İçerik
-            </h3>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {COL_ICERIK.map(l => <FooterLink key={l.href} {...l} />)}
-            </nav>
-          </div>
-
-          {/* ── İletişim ── */}
-          <div>
-            <h3 style={{ fontSize: '0.57rem', fontWeight: 800, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--crimson-bright)', marginBottom: 18, opacity: 0.8 }}>
-              Sosyal
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {/* Right — Social + decoration */}
+          <div className="flex flex-col items-center md:items-end gap-3">
+            <div className="flex items-center gap-2">
               {[
-                { label: 'Instagram',  href: 'https://www.instagram.com/msgclip', accent: 'linear-gradient(180deg,#833ab4,#fd1d1d,#fcb045)' },
-                { label: 'YouTube',    href: 'https://www.youtube.com/@musaagll', accent: 'linear-gradient(180deg,#ff0000,#cc0000)' },
-                { label: 'E-posta',    href: 'mailto:imusaagll@gmail.com', accent: 'linear-gradient(180deg, var(--crimson), var(--crimson-bright))' },
-              ].map(item => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  target={item.href.startsWith('http') ? '_blank' : undefined}
-                  rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                { Icon: DiscordIcon,   href: "#",                                          label: "Discord" },
+                { Icon: InstagramIcon, href: "https://www.instagram.com/msgclip/",         label: "Instagram" },
+                { Icon: YoutubeIcon,   href: "https://www.youtube.com/@musaagll",          label: "YouTube" },
+                { Icon: XIcon,         href: "https://x.com/musaagll",                    label: "X (Twitter)" },
+              ].map(({ Icon, href, label }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  target={href.startsWith("http") ? "_blank" : undefined}
+                  rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200"
                   style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '9px 12px',
-                    border: '1px solid var(--border)',
-                    textDecoration: 'none', transition: 'all 0.2s',
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    color: "#5a5448",
                   }}
-                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'var(--border-crimson)'; el.style.background = 'var(--crimson-subtle)' }}
-                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'var(--border)'; el.style.background = 'transparent' }}
+                  aria-label={label}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = "#c9a84c";
+                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,76,0.2)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = "#5a5448";
+                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.06)";
+                  }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                    <div style={{ width: 2, height: 16, background: item.accent, flexShrink: 0 }} />
-                    <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--steel)' }}>
-                      {item.label}
-                    </span>
-                  </div>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--iron)" strokeWidth="2">
-                    <path d="M7 17L17 7M17 7H7M17 7v10"/>
-                  </svg>
-                </a>
+                  <Icon />
+                </Link>
               ))}
             </div>
-          </div>
-        </div>
 
-        {/* ── Disclaimer + Alt bar ── */}
-        <div style={{
-          marginTop: '3rem',
-          padding: '20px 0 24px',
-          borderTop: '1px solid var(--border)',
-          display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center',
-        }}>
-          {/* Disclaimer */}
-          <p style={{
-            fontSize: '0.58rem', letterSpacing: '0.06em', lineHeight: 1.7,
-            color: 'var(--iron)', opacity: 0.5, textAlign: 'center', maxWidth: 560,
-          }}>
-            MSGKO, Knight Online'ın resmi bir sitesi değildir ve KnightOnline.com ile herhangi bir bağlantısı bulunmamaktadır.
-            Knight Online, K2 Network ve Mgame'in tescilli markasıdır. Bu site, oyuncu topluluğu tarafından eğitim ve bilgi paylaşımı amacıyla yönetilmektedir.
-          </p>
-
-          {/* Alt bilgi */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '6px 16px' }}>
-            <p style={{ fontSize: '0.6rem', letterSpacing: '0.08em', color: 'var(--iron)' }}>
-              © {new Date().getFullYear()} MSGKO
-            </p>
-            <span style={{ color: 'var(--border-md)', fontSize: '0.6rem' }}>·</span>
-            <a href="https://msgko.net" style={{ fontSize: '0.6rem', color: 'var(--crimson-dim)', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--crimson-bright)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--crimson-dim)' }}>
-              msgko.net
-            </a>
-            <span style={{ color: 'var(--border-md)', fontSize: '0.6rem' }}>·</span>
-            <p style={{ fontSize: '0.6rem', letterSpacing: '0.08em', color: 'var(--iron)' }}>
-              Knight Online Oyuncu Platformu
-            </p>
-          </div>
-
-          {/* Dekor */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: 0.35 }}>
-            <div style={{ width: 4, height: 4, background: 'var(--crimson)', transform: 'rotate(45deg)' }} />
-            <div style={{ width: 20, height: 1, background: 'linear-gradient(90deg, transparent, var(--crimson))' }} />
-            <div style={{ width: 4, height: 4, background: 'var(--crimson-bright)', transform: 'rotate(45deg)' }} />
-            <div style={{ width: 20, height: 1, background: 'linear-gradient(90deg, var(--crimson), transparent)' }} />
-            <div style={{ width: 4, height: 4, background: 'var(--crimson)', transform: 'rotate(45deg)' }} />
+            {/* Decorative words */}
+            <div className="flex gap-3" aria-hidden="true">
+              {["PLAY", "SHARE", "BELONG"].map((w) => (
+                <span
+                  key={w}
+                  className="font-black tracking-widest"
+                  style={{ fontSize: "8px", color: "rgba(255,255,255,0.06)", letterSpacing: "0.18em" }}
+                >
+                  {w}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

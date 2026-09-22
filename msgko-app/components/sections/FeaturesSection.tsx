@@ -32,10 +32,9 @@ export function FeaturesSection() {
       {/* Arka plan */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 70% 50% at 50% 100%, rgba(212,168,50,0.06) 0%, transparent 55%)',
+        background: 'radial-gradient(ellipse 70% 50% at 50% 100%, rgba(201,168,76,0.04) 0%, transparent 55%)',
       }} />
-      {/* Üst border */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, var(--border-md), transparent)' }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)' }} />
 
       <div style={{ position: 'relative', maxWidth: 'var(--max-w)', margin: '0 auto', padding: '0 var(--page-px)' }}>
 
@@ -46,16 +45,16 @@ export function FeaturesSection() {
             style={{ marginBottom: 12, justifyContent: 'center' }}
             initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           >
-            Neden MSG?
+            Neden MSGKO?
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             transition={{ delay: 0.06 }}
             style={{
-              fontFamily: 'var(--font-rajdhani), sans-serif',
-              fontSize: 'clamp(1.9rem, 3.5vw, 2.8rem)',
+              fontFamily: "'Cinzel', var(--font-rajdhani), sans-serif",
+              fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)',
               fontWeight: 900,
-              letterSpacing: '0.04em',
+              letterSpacing: '0.06em',
               textTransform: 'uppercase',
               color: 'var(--platinum)',
               marginBottom: 12,
@@ -66,11 +65,11 @@ export function FeaturesSection() {
           <motion.div
             initial={{ opacity: 0, scaleX: 0 }} whileInView={{ opacity: 1, scaleX: 1 }} viewport={{ once: true }}
             transition={{ delay: 0.18 }}
-            style={{ height: 2, maxWidth: 80, margin: '0 auto', background: 'linear-gradient(90deg, transparent, var(--crimson), var(--ember), transparent)' }}
+            style={{ height: 2, maxWidth: 80, margin: '0 auto', background: 'linear-gradient(90deg, transparent, var(--crimson), var(--crimson-bright), transparent)' }}
           />
         </div>
 
-        {/* Kartlar — inline gridTemplateColumns kaldırıldı, Tailwind sınıfları override edebilir */}
+        {/* Kartlar */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {FEATURES.map((feature, i) => (
             <motion.div
@@ -85,22 +84,19 @@ export function FeaturesSection() {
               <div style={{
                 position: 'absolute', top: 0, right: 0,
                 width: 40, height: 40,
-                background: 'linear-gradient(225deg, var(--crimson-subtle) 0%, transparent 70%)',
-                opacity: 0,
-                transition: 'opacity 0.35s',
+                background: 'linear-gradient(225deg, rgba(201,168,76,0.07) 0%, transparent 70%)',
+                opacity: 0, transition: 'opacity 0.35s',
               }} className="group-hover:opacity-100" />
 
               {/* Numara filigranı */}
               <div style={{
                 position: 'absolute', bottom: -8, right: 10,
-                fontFamily: 'var(--font-rajdhani), sans-serif',
-                fontSize: '4rem', fontWeight: 900,
-                color: 'var(--border)',
+                fontFamily: "'Cinzel', var(--font-rajdhani), sans-serif",
+                fontSize: '3.5rem', fontWeight: 900,
+                color: 'rgba(255,255,255,0.03)',
                 lineHeight: 1,
-                pointerEvents: 'none',
-                userSelect: 'none',
-                transition: 'color 0.35s',
-              }} className="group-hover:text-crimson-subtle" aria-hidden="true">
+                pointerEvents: 'none', userSelect: 'none',
+              }} aria-hidden="true">
                 {String(i + 1).padStart(2, '0')}
               </div>
 
@@ -108,8 +104,8 @@ export function FeaturesSection() {
               <div style={{
                 width: 48, height: 48,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'var(--crimson-subtle)',
-                border: '1px solid var(--border-crimson)',
+                background: 'rgba(201,168,76,0.07)',
+                border: '1px solid rgba(201,168,76,0.16)',
                 color: 'var(--crimson-bright)',
                 marginBottom: 20,
                 transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s',
@@ -118,8 +114,8 @@ export function FeaturesSection() {
               </div>
 
               <h3 style={{
-                fontFamily: 'var(--font-rajdhani), sans-serif',
-                fontSize: '0.88rem', fontWeight: 800,
+                fontFamily: "'Cinzel', var(--font-rajdhani), sans-serif",
+                fontSize: '0.85rem', fontWeight: 800,
                 letterSpacing: '0.1em', textTransform: 'uppercase',
                 color: 'var(--platinum)', marginBottom: 10,
               }}>

@@ -11,7 +11,7 @@ const QUICK_ITEMS = [
     title: 'Rehberler',
     desc: 'Build, skill, stat ve PK taktikleri',
     accent: 'var(--crimson)',
-    accentRgb: '212,168,50',
+    accentRgb: '201,168,76',
   },
   {
     href: '/pazar',
@@ -35,8 +35,8 @@ const QUICK_ITEMS = [
     ),
     title: 'GB Fiyatları',
     desc: '9 site karşılaştırmalı GB kuru',
-    accent: '#F0C050',
-    accentRgb: '240,192,80',
+    accent: '#e8c96a',
+    accentRgb: '232,201,106',
   },
   {
     href: '/boss',
@@ -71,7 +71,7 @@ export function QuickAccessSection() {
       style={{
         background: 'var(--void)',
         padding: 'clamp(2.5rem, 5vw, 4rem) var(--page-px)',
-        borderBottom: '1px solid var(--border)',
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
       }}
     >
       <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto' }}>
@@ -80,25 +80,21 @@ export function QuickAccessSection() {
           <div>
             <p className="section-label" style={{ marginBottom: 8 }}>Platform</p>
             <h2 style={{
-              fontFamily: 'var(--font-rajdhani), sans-serif',
-              fontSize: 'clamp(1.4rem, 3vw, 1.9rem)',
-              fontWeight: 900, letterSpacing: '0.04em', textTransform: 'uppercase',
+              fontFamily: "'Cinzel', var(--font-rajdhani), sans-serif",
+              fontSize: 'clamp(1.3rem, 3vw, 1.8rem)',
+              fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase',
               color: 'var(--platinum)', margin: 0,
             }}>
               Oyun Merkezi
             </h2>
           </div>
           <p style={{ fontSize: '0.78rem', color: 'var(--iron)', maxWidth: 380, lineHeight: 1.7 }}>
-            Knight Online'da ihtiyacın olan her şey — rehber, pazar, item ve boss bilgileri tek yerde.
+            Knight Online&apos;da ihtiyacın olan her şey — rehber, pazar, item ve boss bilgileri tek yerde.
           </p>
         </div>
 
         {/* Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-          gap: 10,
-        }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
           {QUICK_ITEMS.map(item => (
             <Link
               key={item.href}
@@ -106,7 +102,7 @@ export function QuickAccessSection() {
               className="quick-card"
               style={{ textDecoration: 'none', '--accent-rgb': item.accentRgb } as React.CSSProperties}
             >
-              {/* Üst accent çizgisi — hover'da görünür */}
+              {/* Üst accent çizgisi */}
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0, height: 2,
                 background: `linear-gradient(90deg, ${item.accent}, transparent)`,
@@ -127,7 +123,7 @@ export function QuickAccessSection() {
                   <span style={{
                     fontSize: '0.48rem', fontWeight: 800, letterSpacing: '0.1em',
                     padding: '2px 6px',
-                    background: 'rgba(16,185,129,0.1)',
+                    background: 'rgba(16,185,129,0.10)',
                     border: '1px solid rgba(16,185,129,0.25)',
                     color: '#10B981',
                     display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0,
@@ -140,8 +136,8 @@ export function QuickAccessSection() {
 
               <div>
                 <p style={{
-                  fontFamily: 'var(--font-rajdhani), sans-serif',
-                  fontSize: '0.88rem', fontWeight: 800,
+                  fontFamily: "'Cinzel', var(--font-rajdhani), sans-serif",
+                  fontSize: '0.82rem', fontWeight: 800,
                   letterSpacing: '0.06em', textTransform: 'uppercase',
                   color: 'var(--platinum)', marginBottom: 4,
                 }}>

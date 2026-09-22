@@ -1,26 +1,8 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Rajdhani } from 'next/font/google'
 import './globals.css'
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
-import { ChatWidget } from '@/components/ui/ChatWidget'
-import { ParticleBackground } from '@/components/ui/ParticleBackground'
+import { SiteShell } from '@/components/layout/SiteShell'
 import { Analytics } from '@vercel/analytics/next'
 import { PageViewTracker } from '@/components/ui/PageViewTracker'
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-})
-
-const rajdhani = Rajdhani({
-  subsets: ['latin'],
-  variable: '--font-rajdhani',
-  display: 'swap',
-  weight: ['600', '700'],
-})
 
 const BASE_URL = 'https://msgko.net'
 
@@ -286,7 +268,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="tr" className={`${inter.variable} ${rajdhani.variable}`}>
+    <html lang="tr" className="dark">
       <head>
         {jsonLdStrings.map((str, i) => (
           <script
@@ -295,13 +277,12 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{ __html: str }}
           />
         ))}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="MSGKO" />
       </head>
-      <body className="bg-[var(--void)] text-white antialiased">
-        <ParticleBackground />
-        <Navbar />
-        {children}
-        <Footer />
-        <ChatWidget />
+      <body>
+        <SiteShell>{children}</SiteShell>
         <PageViewTracker />
         <Analytics />
       </body>

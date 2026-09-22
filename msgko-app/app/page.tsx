@@ -1,12 +1,8 @@
 import type { Metadata } from 'next'
 import { HeroSection } from '@/components/sections/HeroSection'
-import { YoutubeVideoSection } from '@/components/sections/YoutubeVideoSection'
-import { FeaturesSection } from '@/components/sections/FeaturesSection'
+import { FeatureCards } from '@/components/sections/FeatureCards'
+import { LatestVideos } from '@/components/sections/LatestVideos'
 import { GbKuruSection } from '@/components/sections/GbKuruSection'
-import { EtkinlikSection } from '@/components/sections/EtkinlikSection'
-import { QuickAccessSection } from '@/components/sections/QuickAccessSection'
-import { ClassGuideSection } from '@/components/sections/ClassGuideSection'
-import { SponsorAd } from '@/components/ui/SponsorAd'
 import { getYoutubeVideos } from '@/lib/youtube'
 import type { YTVideo } from '@/lib/youtube'
 
@@ -32,30 +28,18 @@ export default async function HomePage() {
   }
 
   return (
-    <main>
+    <>
       {/* Canlı GB kuru ticker */}
       <GbKuruSection />
 
       {/* Cinematic hero */}
       <HeroSection />
 
-      {/* Hızlı erişim — Oyun Merkezi */}
-      <QuickAccessSection />
+      {/* 4 ana özellik kartı */}
+      <FeatureCards />
 
       {/* Son videolar */}
-      <YoutubeVideoSection videos={videos} />
-
-      {/* Karakter sınıfı rehberleri */}
-      <ClassGuideSection />
-
-      {/* Sponsor reklam şeridi — içerik bölümleri arasında */}
-      <SponsorAd />
-
-      {/* Platform özellikleri */}
-      <FeaturesSection />
-
-      {/* Etkinlik takvimi */}
-      <EtkinlikSection />
-    </main>
+      <LatestVideos videos={videos} />
+    </>
   )
 }

@@ -12,10 +12,10 @@ interface EtkinlikData { etkinlikler: Etkinlik[] }
 const GUN: string[] = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt']
 
 function nextOccurrence(e: Etkinlik): { label: string; msDiff: number; urgent: boolean } {
-  const now     = new Date()
-  const trNow   = new Date(now.getTime() + (3 * 60 + now.getTimezoneOffset()) * 60000)
-  let bestMs    = Infinity, bestLabel = ''
-  const days    = e.gunler ?? [0,1,2,3,4,5,6]
+  const now   = new Date()
+  const trNow = new Date(now.getTime() + (3 * 60 + now.getTimezoneOffset()) * 60000)
+  let bestMs  = Infinity, bestLabel = ''
+  const days  = e.gunler ?? [0,1,2,3,4,5,6]
   for (const gun of days) {
     for (const saat of e.saatler) {
       const [hh, mm] = saat.split(':').map(Number)
@@ -44,7 +44,7 @@ export function EtkinlikSection() {
   const [data,    setData]    = useState<EtkinlikData | null>(null)
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(false)
-  const [, setTick]           = useState(0)
+  const [, setTick] = useState(0)
 
   useEffect(() => {
     fetch('/api/gb-fiyatlari?etkinlik=1')
@@ -72,7 +72,7 @@ export function EtkinlikSection() {
       style={{
         padding: '3rem 0 4rem',
         background: 'var(--abyss)',
-        borderTop: '1px solid var(--border)',
+        borderTop: '1px solid rgba(255,255,255,0.04)',
       }}
     >
       <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '0 var(--page-px)' }}>
@@ -82,7 +82,7 @@ export function EtkinlikSection() {
           <div>
             <p className="section-label" style={{ marginBottom: 8 }}>Etkinlik Takvimi</p>
             <h2 style={{
-              fontFamily: 'var(--font-rajdhani), sans-serif',
+              fontFamily: "'Cinzel', var(--font-rajdhani), sans-serif",
               fontSize: 'clamp(1rem, 2vw, 1.3rem)',
               fontWeight: 900, letterSpacing: '0.06em',
               textTransform: 'uppercase', color: 'var(--steel)',
@@ -92,8 +92,8 @@ export function EtkinlikSection() {
           </div>
         </div>
 
-        {/* Crimson divider */}
-        <div style={{ height: 1, background: 'linear-gradient(90deg, var(--crimson), var(--ember), transparent)', marginBottom: 24 }} />
+        {/* Altın divider */}
+        <div style={{ height: 1, background: 'linear-gradient(90deg, var(--crimson), var(--crimson-bright), transparent)', marginBottom: 24 }} />
 
         {/* Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 8 }}
@@ -105,21 +105,17 @@ export function EtkinlikSection() {
               style={{
                 padding: '12px 14px',
                 display: 'flex', alignItems: 'flex-start', gap: 10,
-                borderColor: etkinlik.next.urgent ? 'rgba(212,168,50,0.25)' : undefined,
-                background: etkinlik.next.urgent ? 'rgba(212,168,50,0.04)' : undefined,
+                borderColor: etkinlik.next.urgent ? 'rgba(201,168,76,0.25)' : undefined,
+                background: etkinlik.next.urgent ? 'rgba(201,168,76,0.04)' : undefined,
                 position: 'relative', overflow: 'hidden',
               }}
               title={etkinlik.not ?? ''}
             >
               {/* Urgent scan line */}
               {etkinlik.next.urgent && (
-                <div style={{
-                  position: 'absolute', top: 0, left: 0, right: 0, height: 1,
-                  background: 'var(--crimson)', opacity: 0.6,
-                }} />
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'var(--crimson)', opacity: 0.6 }} />
               )}
 
-              {/* Simge */}
               <span style={{ fontSize: '1rem', flexShrink: 0, marginTop: 1, opacity: 0.7, lineHeight: 1 }} aria-hidden="true">
                 {SIMGE_MAP[etkinlik.simge] ?? '◈'}
               </span>
@@ -128,7 +124,6 @@ export function EtkinlikSection() {
                 <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--steel)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {etkinlik.ad}
                 </p>
-
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 8px', marginTop: 3 }}>
                   <span style={{ fontSize: '0.58rem', color: 'var(--iron)' }}>
                     {etkinlik.saatler.join(', ')}
@@ -139,11 +134,10 @@ export function EtkinlikSection() {
                     </span>
                   )}
                 </div>
-
                 <p style={{
                   fontSize: '0.65rem', fontWeight: 800, marginTop: 6,
-                  color: etkinlik.next.urgent ? 'var(--crimson-bright)' :
-                         etkinlik.next.msDiff < 21600000 ? 'var(--ember)' : '#10B981',
+                  color: etkinlik.next.urgent ? 'var(--crimson-bright)'
+                       : etkinlik.next.msDiff < 21600000 ? 'var(--ember)' : '#10B981',
                 }}>
                   {etkinlik.next.label} kaldı
                 </p>
@@ -153,9 +147,9 @@ export function EtkinlikSection() {
               {idx < 3 && (
                 <div style={{
                   position: 'absolute', bottom: 0, right: 6,
-                  fontFamily: 'var(--font-rajdhani), sans-serif',
-                  fontSize: '2.5rem', fontWeight: 900, lineHeight: 1,
-                  color: 'var(--border)', pointerEvents: 'none', userSelect: 'none',
+                  fontFamily: "'Cinzel', var(--font-rajdhani), sans-serif",
+                  fontSize: '2.2rem', fontWeight: 900, lineHeight: 1,
+                  color: 'rgba(255,255,255,0.03)', pointerEvents: 'none', userSelect: 'none',
                 }} aria-hidden="true">
                   {idx + 1}
                 </div>
@@ -171,8 +165,7 @@ export function EtkinlikSection() {
             style={{
               marginTop: 16, display: 'flex', alignItems: 'center', gap: 6,
               fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
-              color: 'var(--iron)', background: 'none', border: 'none', cursor: 'pointer',
-              transition: 'color 0.2s',
+              color: 'var(--iron)', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s',
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--crimson-bright)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--iron)' }}
