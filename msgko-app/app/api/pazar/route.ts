@@ -26,6 +26,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: false, error: 'API_KEY_MISSING' }, { status: 500 })
   }
 
+  // Geçici debug — key'in ilk 8 karakterini göster
+  if (req.nextUrl.searchParams.get('debug') === '1') {
+    return NextResponse.json({
+      key_length: API_KEY.length,
+      key_prefix: API_KEY.substring(0, 8),
+      key_suffix: API_KEY.substring(API_KEY.length - 4),
+    })
+  }
+
   const sp     = req.nextUrl.searchParams
   const server = (sp.get('server') ?? 'ZERO3').toUpperCase()
   const type   = sp.get('type')   ?? 'sell'
