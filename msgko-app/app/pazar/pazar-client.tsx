@@ -43,7 +43,8 @@ const SERVERS = [
 
 /* ── Sabitler ─────────────────────────────────────────────────────── */
 const ENUCUZGB_BASE = 'https://www.enucuzgb.com/api/v2'
-const ENUCUZGB_KEY  = process.env.NEXT_PUBLIC_ENUCUZGB_API_KEY ?? ''
+// API key — tarayıcı client-side, Vercel IP sorunu yok
+const ENUCUZGB_KEY  = 'ebed794e0f302f16c6dbfcd16f2a460a19b111dc1b619cc3fd9c546ca628a1eb'
 const LIMIT = 50
 
 /* ── Yardımcılar ──────────────────────────────────────────────────── */
