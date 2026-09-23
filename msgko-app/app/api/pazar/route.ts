@@ -1,146 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { CHANNELS, type ChannelKey, type MarketListing, type PazarResponse } from '@/lib/pazar-types'
 
-export { CHANNELS, type ChannelKey, type MarketListing, type PazarResponse }
+const BASE    = 'https://www.enucuzgb.com/api/v2'
+const API_KEY = process.env.ENUCUZGB_API_KEY ?? ''
 
-export const dynamic = 'force-dynamic'
+/* ── Aktif sunucu listesi (canlı veri olan sunucular) ── */
+export const SERVERS = [
+  { key: 'ZERO3',   label: 'Zero3'   },
+  { key: 'ZERO4',   label: 'Zero4'   },
+  { key: 'ZERO5',   label: 'Zero5'   },
+  { key: 'DESTAN2', label: 'Destan2' },
+  { key: 'OREADS2', label: 'Oreads2' },
+]
 
-const VALID_KEYS = new Set(CHANNELS.map(c => c.key))
-const PAGE_SIZE  = 50
-
-// ── raw_data parse ─────────────────────────────────────────────────────────────
-function parseRaw(item: MarketListing & { raw_data?: string | null }): MarketListing {
-  let img_url: string | null        = null
-  let loc_x: number | null          = null
-  let loc_z: number | null          = null
-  let item_details: string | null   = null
-  let listed_date: string | null    = null
-  let original_price: number | null = null
-  try {
-    if (item.raw_data) {
-      const r        = JSON.parse(item.raw_data)
-      img_url        = r.img_url         ?? null
-      loc_x          = r.loc_x           ?? null
-      loc_z          = r.loc_z           ?? null
-      item_details   = r.item_details    ?? null
-      listed_date    = r.listed_date     ?? null
-      original_price = r.original_price  ?? null
-    }
-  } catch { /* ignore */ }
-  const { raw_data: _, ...rest } = item as MarketListing & { raw_data?: string | null }
-  return { ...rest, img_url, loc_x, loc_z, item_details, listed_date, original_price }
-}
-
-// ── GET /api/pazar ─────────────────────────────────────────────────────────────
+/* ── GET /api/pazar — canlı ilanları döner ── */
 export async function GET(req: NextRequest) {
-  const sp = req.nextUrl.searchParams
+  const sp     = req.nextUrl.searchParams
+  const server = (sp.get('server') ?? 'ZERO3').toUpperCase()
+  const type   = sp.get('type')  ?? 'sell'
+  const query  = sp.get('query') ?? ''
+  const page   = Math.max(1, parseInt(sp.get('page') ?? '1', 10))
+  const limit  = Math.min(50, Math.max(10, parseInt(sp.get('limit') ?? '50', 10)))
+  const sort   = sp.get('sort')  ?? 'price_asc'
 
-  // ── Server çözümle ──────────────────────────────────────────────────────────
-  const rawServer = (sp.get('server') ?? 'zero3').toLowerCase().trim()
-  let serverParam: string
-
-  if (rawServer === 'all') {
-    serverParam = 'all'
-  } else if (rawServer.startsWith('all_')) {
-    serverParam = rawServer  // e.g. "all_zero"
-  } else {
-    // tekil veya virgüllü — tekil ise doğrula
-    const keys = rawServer.split(',').map(s => s.trim()).filter(s => VALID_KEYS.has(s as ChannelKey))
-    serverParam = keys.length ? keys[0] : 'zero3'  // RPC tek server alıyor
+  // Sıralama parametresini API formatına çevir
+  const sortMap: Record<string, string> = {
+    price_asc:  'price_asc',
+    price_desc: 'price_desc',
+    time_desc:  'time_desc',
   }
+  const apiSort = sortMap[sort] ?? 'price_asc'
 
-  const q         = (sp.get('q') ?? '').trim().slice(0, 100)
-  const pageRaw   = parseInt(sp.get('page') ?? '1', 10)
-  const page      = isNaN(pageRaw) || pageRaw < 1 ? 1 : pageRaw
-  const offset    = (page - 1) * PAGE_SIZE
-
-  const sortRaw = sp.get('sort') ?? 'price_asc'
-  const sort    = ['price_asc','price_desc','name_asc','newest','upgrade_asc','upgrade_desc']
-    .includes(sortRaw) ? sortRaw : 'price_asc'
-
-  const upgradeRaw   = sp.get('upgrade') ?? ''
-  const upgradeLevel = upgradeRaw === '' ? -1
-    : (isNaN(parseInt(upgradeRaw, 10)) ? -1 : parseInt(upgradeRaw, 10))
-
-  const supabase = await createClient()
-
-  // ── RPC çağrısı — limit yok, gruplama DB tarafında ─────────────────────────
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any).rpc('get_market_listings', {
-    p_server:  serverParam,
-    p_q:       q || null,
-    p_sort:    sort,
-    p_upgrade: upgradeLevel,
-    p_limit:   PAGE_SIZE,
-    p_offset:  offset,
+  const params = new URLSearchParams({
+    server,
+    type,
+    page:  String(page),
+    limit: String(limit),
+    sort:  apiSort,
   })
+  if (query.trim()) params.set('query', query.trim())
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  try {
+    const res = await fetch(`${BASE}/market/live?${params}`, {
+      headers: { 'X-API-Key': API_KEY, Accept: 'application/json' },
+      next: { revalidate: 0 }, // her zaman canlı
+    })
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      return NextResponse.json(
+        { success: false, error: body?.error?.message ?? `HTTP ${res.status}` },
+        { status: res.status }
+      )
+    }
+
+    const json = await res.json()
+    return NextResponse.json(json, {
+      headers: { 'Cache-Control': 'no-store' },
+    })
+  } catch (err) {
+    return NextResponse.json(
+      { success: false, error: String(err) },
+      { status: 500 }
+    )
   }
-
-  // ── Toplam sayı (count RPC) ─────────────────────────────────────────────────
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: countData } = await (supabase as any).rpc('get_market_listings_count', {
-    p_server:  serverParam,
-    p_q:       q || null,
-    p_upgrade: upgradeLevel,
-  })
-
-  // ── Son scrape zamanı ───────────────────────────────────────────────────────
-  const serverKeys = serverParam === 'all'
-    ? CHANNELS.map(c => c.key)
-    : serverParam.startsWith('all_')
-      ? CHANNELS.filter(c => c.group === serverParam.slice(4)).map(c => c.key)
-      : [serverParam]
-
-  const { data: logData } = await supabase
-    .from('market_scrape_log')
-    .select('scraped_at')
-    .in('server', serverKeys)
-    .order('scraped_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-
-  const total      = (countData as number) ?? 0
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
-
-  const listings = ((data ?? []) as (MarketListing & { raw_data?: string | null })[])
-    .map(parseRaw)
-
-  const response: PazarResponse = {
-    listings,
-    total,
-    page,
-    page_size:      PAGE_SIZE,
-    total_pages:    totalPages,
-    server:         serverParam,
-    last_scraped:   logData?.scraped_at ?? null,
-    upgrade_filter: upgradeLevel === -1 ? null : upgradeLevel,
-  }
-
-  return NextResponse.json(response, {
-    headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=15' },
-  })
 }
 
-// ── POST — tüm kanalların ilan sayıları ────────────────────────────────────────
+/* ── POST /api/pazar — tüm sunuculardaki ilan sayılarını döner ── */
 export async function POST() {
-  const supabase = await createClient()
-  const result: Record<string, number> = {}
+  const counts: Record<string, number> = {}
 
-  await Promise.all(
-    CHANNELS.map(async ch => {
-      const { count } = await supabase
-        .from('market_listings')
-        .select('*', { count: 'exact', head: true })
-        .eq('server', ch.key)
-      result[ch.key] = count ?? 0
+  await Promise.allSettled(
+    SERVERS.map(async s => {
+      const res = await fetch(
+        `${BASE}/market/live?server=${s.key}&type=sell&limit=1`,
+        { headers: { 'X-API-Key': API_KEY, Accept: 'application/json' }, next: { revalidate: 60 } }
+      )
+      if (res.ok) {
+        const j = await res.json()
+        if (j.success) counts[s.key] = j.meta?.total ?? 0
+      }
     })
   )
 
-  return NextResponse.json(result, {
-    headers: { 'Cache-Control': 'public, s-maxage=60' },
+  return NextResponse.json(counts, {
+    headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=30' },
   })
 }

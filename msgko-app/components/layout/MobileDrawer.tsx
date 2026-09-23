@@ -17,6 +17,7 @@ interface Props {
 
 const drawerNavItems = [
   { label: "Anasayfa",    href: "/" },
+  { label: "Pazar",       href: "/pazar" },
   { label: "Rehber",      href: "/rehber" },
   { label: "Wallpaper",   href: "/wallpaper" },
   { label: "GB Takip",    href: "/gb-fiyatlari" },
