@@ -41,6 +41,9 @@ const SERVERS = [
   { key: 'OREADS2', label: 'Oreads2' },
 ]
 
+/* ── Sabitler ─────────────────────────────────────────────────────── */
+const ENUCUZGB_BASE = 'https://www.enucuzgb.com/api/v2'
+const ENUCUZGB_KEY  = process.env.NEXT_PUBLIC_ENUCUZGB_API_KEY ?? ''
 const LIMIT = 50
 
 /* ── Yardımcılar ──────────────────────────────────────────────────── */
@@ -126,13 +129,20 @@ export function PazarClient() {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const p = new URLSearchParams({
+      const params = new URLSearchParams({
         server, type, sort,
         page:  String(page),
         limit: String(LIMIT),
       })
-      if (dq) p.set('query', dq)
-      const res  = await fetch(`/api/pazar?${p}`, { cache: 'no-store' })
+      if (dq) params.set('query', dq)
+
+      const res = await fetch(
+        `${ENUCUZGB_BASE}/market/live?${params}`,
+        {
+          headers: { 'X-API-Key': ENUCUZGB_KEY, Accept: 'application/json' },
+          cache: 'no-store',
+        }
+      )
       const json = await res.json()
       setData(json)
     } catch {
@@ -152,10 +162,18 @@ export function PazarClient() {
 
   // Sunucu sayılarını yükle
   useEffect(() => {
-    fetch('/api/pazar', { method: 'POST' })
-      .then(r => r.json())
-      .then(setCounts)
-      .catch(() => {})
+    Promise.allSettled(
+      SERVERS.map(async s => {
+        const res = await fetch(
+          `${ENUCUZGB_BASE}/market/live?server=${s.key}&type=sell&limit=1`,
+          { headers: { 'X-API-Key': ENUCUZGB_KEY, Accept: 'application/json' } }
+        )
+        if (res.ok) {
+          const j = await res.json()
+          if (j.success) setCounts(prev => ({ ...prev, [s.key]: j.meta?.total ?? 0 }))
+        }
+      })
+    )
   }, [])
 
   const listings   = data?.data ?? []
