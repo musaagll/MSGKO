@@ -1,739 +1,1008 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
+import { CHANNELS } from '@/lib/pazar-types'
+import type { MarketListing, PazarResponse, ChannelKey } from '@/lib/pazar-types'
 
-/* ── Tipler ───────────────────────────────────────────────────────── */
-interface Listing {
-  item_id:       number
-  item_name:     string
-  item_type:     number
-  item_base_id:  number
-  item_icon_url: string | null
-  username:      string
-  server:        string
-  price:         number
-  merchant_type: number
-  type:          'sell' | 'buy'
-  pos_x:         number | null
-  pos_z:         number | null
-  created_at:    string
-}
+// ÔöÇÔöÇ Sabitler ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+const GROUPS = [
+  { key: 'zero',    label: 'Zero',    color: '#60a5fa', bg: 'rgba(96,165,250,0.08)'   },
+  { key: 'agartha', label: 'Agartha', color: '#fbbf24', bg: 'rgba(251,191,36,0.08)'   },
+  { key: 'pandora', label: 'Pandora', color: '#34d399', bg: 'rgba(52,211,153,0.08)'   },
+  { key: 'destan',  label: 'Destan',  color: '#a78bfa', bg: 'rgba(167,139,250,0.08)'  },
+  { key: 'oreads',  label: 'Oreads',  color: '#fb923c', bg: 'rgba(251,146,60,0.08)'   },
+] as const
 
-interface ApiResponse {
-  success: boolean
-  data:    Listing[]
-  meta: {
-    page:      number
-    page_size: number
-    total:     number
-    type:      string
-  }
-  error?: string
-}
+type GroupKey = (typeof GROUPS)[number]['key']
 
-/* ── Sunucu listesi ───────────────────────────────────────────────── */
-const SERVERS = [
-  { key: 'ZERO3',   label: 'Zero3'   },
-  { key: 'ZERO4',   label: 'Zero4'   },
-  { key: 'ZERO5',   label: 'Zero5'   },
-  { key: 'DESTAN2', label: 'Destan2' },
-  { key: 'OREADS2', label: 'Oreads2' },
+// server string ÔÇö tek kanal ("zero3"), t├╝m grup ("all_zero"), t├╝m├╝ ("all")
+type ServerParam = string
+
+const SORT_OPTIONS = [
+  { value: 'price_asc',    label: 'En Ucuz'    },
+  { value: 'price_desc',   label: 'En Pahal─▒'  },
+  { value: 'name_asc',     label: '─░sim A-Z'   },
+  { value: 'upgrade_desc', label: '+Lvl Ôåô'     },
+  { value: 'upgrade_asc',  label: '+Lvl Ôåæ'     },
+  { value: 'newest',       label: 'En Yeni'    },
 ]
 
-/* ── Sabitler ─────────────────────────────────────────────────────── */
-const LIMIT = 50
-
-/* ── Yardımcılar ──────────────────────────────────────────────────── */
+// ÔöÇÔöÇ Yard─▒mc─▒lar ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 function formatPrice(n: number): string {
-  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2).replace(/\.?0+$/, '') + 'B'
-  if (n >= 1_000_000)     return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'
-  if (n >= 1_000)         return n.toLocaleString('tr-TR')
-  return String(n)
+  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`
+  if (n >= 1_000_000)     return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000)         return `${(n / 1_000).toFixed(1)}K`
+  return n.toLocaleString('tr-TR')
 }
 
 function timeAgo(iso: string): string {
-  const sec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
-  if (sec < 60)    return `${sec}sn`
-  if (sec < 3600)  return `${Math.floor(sec / 60)}dk`
-  if (sec < 86400) return `${Math.floor(sec / 3600)}sa`
-  return `${Math.floor(sec / 86400)}g`
+  const d = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
+  if (d < 60)    return `${d}sn ├Ânce`
+  if (d < 3600)  return `${Math.floor(d / 60)}dk ├Ânce`
+  if (d < 86400) return `${Math.floor(d / 3600)}sa ├Ânce`
+  return `${Math.floor(d / 86400)}g ├Ânce`
 }
 
-// item adından upgrade seviyesini çıkar: "Iron Bow (+8)" → 8
-function parseUpgrade(name: string): string {
-  const m = name.match(/\(\+(\d+)\)/)
-  return m ? `+${m[1]}` : '—'
+function parseItemDetails(html: string | null | undefined) {
+  if (!html) return { title: '', type: '', kind: '', props: [] as string[] }
+  const get = (cls: string) => {
+    const esc = cls.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const m   = html.match(new RegExp(`<div class='${esc}'[^>]*>([\\s\\S]*?)</div>`, 'i'))
+    return m ? m[1].replace(/<[^>]+>/g, '').trim() : ''
+  }
+  const title = get('item_title white') || get('item_title')
+  const type  = get('item_type white')  || get('item_type')
+  const kind  = get('item_kind')
+  const props: string[] = []
+  const re = /<div class='item_property[^']*'>([\s\S]*?)<\/div>/gi
+  let m: RegExpExecArray | null
+  while ((m = re.exec(html)) !== null) {
+    const t = m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    if (t) props.push(t)
+  }
+  return { title, type, kind, props }
 }
 
-// item adından upgrade'i temizle
-function cleanName(name: string): string {
-  return name.replace(/\s*\(\+\d+\)$/, '').trim()
+// Aktif server i├ğin grup rengini bul
+function colorFor(serverParam: ServerParam): { color: string; bg: string; label: string } {
+  if (serverParam === 'all') return { color: '#94a3b8', bg: 'rgba(148,163,184,0.08)', label: 'T├╝m Serverler' }
+  const grpKey = serverParam.startsWith('all_') ? serverParam.slice(4) : null
+  if (grpKey) {
+    const g = GROUPS.find(x => x.key === grpKey)
+    return g ? { color: g.color, bg: g.bg, label: `T├╝m ${g.label}` } : { color: '#94a3b8', bg: 'rgba(148,163,184,0.08)', label: '' }
+  }
+  const firstKey = serverParam.split(',')[0] as ChannelKey
+  const ch  = CHANNELS.find(c => c.key === firstKey)
+  const grp = GROUPS.find(g => g.key === ch?.group)
+  return grp ? { color: grp.color, bg: grp.bg, label: ch?.label ?? '' } : { color: '#94a3b8', bg: 'rgba(148,163,184,0.08)', label: '' }
 }
 
-// upgrade seviyesine göre renk
-function upgradeColor(name: string): string {
-  const m = name.match(/\(\+(\d+)\)/)
-  if (!m) return 'rgba(255,255,255,0.2)'
-  const n = parseInt(m[1])
-  if (n >= 9) return '#e8c96a'
-  if (n >= 7) return '#a78bfa'
-  if (n >= 5) return '#60a5fa'
-  return 'rgba(255,255,255,0.5)'
+// Aktif grup key'ini bul
+function activeGroupKey(serverParam: ServerParam): GroupKey | null {
+  if (serverParam === 'all') return null
+  if (serverParam.startsWith('all_')) return serverParam.slice(4) as GroupKey
+  const firstKey = serverParam.split(',')[0] as ChannelKey
+  const ch = CHANNELS.find(c => c.key === firstKey)
+  return (ch?.group as GroupKey) ?? null
 }
 
-// konum: koordinat → harita adı tahmini
-function mapName(x: number | null, z: number | null): string {
-  if (x == null || z == null) return '—'
-  // Knight Online'da Moradon ~800-840 x, 520-700 z aralığı
-  if (x >= 790 && x <= 850 && z >= 500 && z <= 720) return `Moradon (${x}, ${z})`
-  if (x >= 700 && x <= 790) return `El Morad (${x}, ${z})`
-  return `(${x}, ${z})`
-}
-
-// sayfalama helper
-function pageRange(current: number, total: number): (number | '...')[] {
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
-  const pages: (number | '...')[] = [1]
-  if (current > 3) pages.push('...')
-  for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) pages.push(i)
-  if (current < total - 2) pages.push('...')
-  pages.push(total)
-  return pages
-}
-
-/* ── Ana bileşen ──────────────────────────────────────────────────── */
-export function PazarClient() {
-  const [server,  setServer]  = useState('ZERO3')
-  const [type,    setType]    = useState<'sell' | 'buy'>('sell')
+// ÔöÇÔöÇ Ana Bile┼şen ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+export function PazarClient({ initialData }: { initialData?: PazarResponse | null }) {
+  const [server,  setServer]  = useState<ServerParam>('zero3')
   const [query,   setQuery]   = useState('')
-  const [dq,      setDq]      = useState('')
   const [sort,    setSort]    = useState('price_asc')
+  const [upgrade, setUpgrade] = useState('')
   const [page,    setPage]    = useState(1)
-  const [data,    setData]    = useState<ApiResponse | null>(null)
+  const [data,    setData]    = useState<PazarResponse | null>(initialData ?? null)
   const [loading, setLoading] = useState(false)
+  const [error,   setError]   = useState<string | null>(null)
   const [counts,  setCounts]  = useState<Record<string, number>>({})
-  const debRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Arama debounce
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [dq, setDq] = useState('')
+
   useEffect(() => {
-    if (debRef.current) clearTimeout(debRef.current)
-    debRef.current = setTimeout(() => { setDq(query); setPage(1) }, 400)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => { setDq(query); setPage(1) }, 350)
   }, [query])
 
-  // Filtre değişince sayfa sıfırla
-  useEffect(() => { setPage(1) }, [server, type, sort])
+  // filtre de─şi┼şince page reset
+  useEffect(() => { setPage(1) }, [server, sort, upgrade])
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
+    setLoading(true); setError(null)
     try {
-      const params = new URLSearchParams({
-        server, type, sort,
-        page:  String(page),
-        limit: String(LIMIT),
-      })
-      if (dq) params.set('query', dq)
-
-      const res  = await fetch(`/api/pazar?${params}`, { cache: 'no-store' })
-      const json = await res.json()
-      setData(json)
-    } catch {
-      setData(null)
+      const p = new URLSearchParams({ server, sort, page: String(page) })
+      if (dq)      p.set('q', dq)
+      if (upgrade) p.set('upgrade', upgrade)
+      const res = await fetch(`/api/pazar?${p}`, { cache: 'no-store' })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      setData(await res.json())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Ba─şlant─▒ hatas─▒')
     } finally {
       setLoading(false)
     }
-  }, [server, type, sort, page, dq])
+  }, [server, sort, page, dq, upgrade])
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  // 60 saniyede otomatik yenile
+  // 3 dk otomatik yenile
   useEffect(() => {
-    const t = setInterval(fetchData, 60_000)
+    const t = setInterval(fetchData, 3 * 60 * 1000)
     return () => clearInterval(t)
   }, [fetchData])
 
-  // Sunucu sayılarını yükle
   useEffect(() => {
     fetch('/api/pazar', { method: 'POST' })
-      .then(r => r.json())
-      .then(setCounts)
-      .catch(() => {})
+      .then(r => r.json()).then(setCounts).catch(() => {})
   }, [])
 
-  const listings   = data?.data ?? []
-  const total      = data?.meta?.total ?? 0
-  const totalPages = Math.max(1, Math.ceil(total / LIMIT))
-  const activeServer = SERVERS.find(s => s.key === server)
+  const { color, bg, label: activeLabel } = colorFor(server)
+  const activeGrp = activeGroupKey(server)
+
+  function changeServer(s: ServerParam) {
+    setServer(s)
+    setPage(1)
+  }
+
+  function groupTotal(gKey: string) {
+    return CHANNELS
+      .filter(c => c.group === gKey)
+      .reduce((s, c) => s + (counts[c.key] ?? 0), 0)
+  }
+
+  const allTotal = CHANNELS.reduce((s, c) => s + (counts[c.key] ?? 0), 0)
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--void)', color: 'var(--platinum)' }}>
 
-      {/* ── Hero banner ────────────────────────────────────────────── */}
-      <div
-        className="relative overflow-hidden"
-        style={{
-          marginTop: '68px',
-          height: '180px',
-          background: 'linear-gradient(135deg, #0d0b08 0%, #1a1205 40%, #0a0c14 100%)',
-          borderBottom: '1px solid rgba(201,168,76,0.15)',
-        }}
-      >
-        {/* Altın parıltı */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse 70% 100% at 20% 50%, rgba(201,168,76,0.08) 0%, transparent 60%)',
-        }} />
-        {/* Sağ dekoratif yazı */}
-        <div style={{
-          position: 'absolute', right: 48, bottom: 32,
-          fontFamily: "'Cinzel', serif", fontSize: 18,
-          color: 'rgba(201,168,76,0.18)', fontStyle: 'italic', letterSpacing: '0.08em',
-          userSelect: 'none',
-        }} aria-hidden="true">
-          Good game!
-        </div>
+      {/* Arka plan */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 55% 45% at 15% 20%, rgba(212,168,50,0.05) 0%, transparent 50%)' }} />
+      <div className="grid-overlay" style={{ position: 'fixed' }} />
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 2, zIndex: 10, background: 'linear-gradient(90deg, transparent, var(--crimson), var(--ember), transparent)' }} />
 
-        <div className="section-container h-full flex flex-col justify-center">
-          {/* Breadcrumb */}
-          <nav className="mb-3">
-            <ol className="flex items-center gap-2" style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.25)' }}>
-              <li><Link href="/" style={{ color: 'inherit', textDecoration: 'none' }} onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)' }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.25)' }}>Anasayfa</Link></li>
-              <li style={{ opacity: 0.3 }}>›</li>
-              <li style={{ color: 'rgba(255,255,255,0.45)' }}>Pazar</li>
-            </ol>
-          </nav>
+      {/* ÔòÉÔòÉ HEADER ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-5">
+        <nav className="mb-4">
+          <ol className="flex items-center gap-2 text-[0.68rem] text-white/20">
+            <li><Link href="/" className="hover:text-white/50 transition-colors">Ana Sayfa</Link></li>
+            <li className="text-white/10">/</li>
+            <li className="text-white/40">Pazar</li>
+          </ol>
+        </nav>
 
-          <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(22px,4vw,36px)', fontWeight: 900, letterSpacing: '0.04em', lineHeight: 1.1 }}>
-            OYUNCU{' '}
-            <span style={{ background: 'linear-gradient(135deg, #e8c96a, #c9a84c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              PAZARLARI
-            </span>
-          </h1>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 6, maxWidth: 380 }}>
-            Tüm sunuculardaki oyuncu pazarlarını anlık olarak görüntüleyin. Fiyatları karşılaştırın, en iyi fırsatları yakalayın.
-          </p>
-        </div>
-      </div>
-
-      {/* ── Ana içerik ─────────────────────────────────────────────── */}
-      <div className="section-container py-6">
-        <div className="flex gap-5" style={{ alignItems: 'flex-start' }}>
-
-          {/* ── SOL: Sunucu listesi ──────────────────────────────── */}
-          <aside style={{ width: 180, flexShrink: 0 }} className="hidden lg:block">
-            <p style={{ fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
-              Sunucu Seç
+        {/* Ba┼şl─▒k + son g├╝ncelleme */}
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{ background: color, boxShadow: `0 0 6px ${color}` }} />
+              <span className="text-[0.6rem] tracking-[0.25em] uppercase font-bold opacity-70"
+                style={{ color }}>Canl─▒ Pazar</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+              USKO <span style={{ color }}>{activeLabel}</span>
+            </h1>
+            <p style={{ fontSize: '0.72rem', color: 'var(--iron)', marginTop: 6 }}>
+              Knight Online USKO market ilanlar─▒ ┬À Ger├ğek zamanl─▒ veri
             </p>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 2, listStyle: 'none', padding: 0, margin: 0 }}>
-              {SERVERS.map(s => {
-                const active  = server === s.key
-                const cnt     = counts[s.key]
-                return (
-                  <li key={s.key}>
-                    <button
-                      type="button"
-                      onClick={() => setServer(s.key)}
-                      style={{
-                        width: '100%', textAlign: 'left',
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        padding: '9px 12px',
-                        background: active ? 'rgba(201,168,76,0.10)' : 'transparent',
-                        border: active ? '1px solid rgba(201,168,76,0.25)' : '1px solid transparent',
-                        borderRadius: 6,
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                      }}
-                      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)' }}
-                      onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{
-                          width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-                          background: active ? '#c9a84c' : 'rgba(255,255,255,0.2)',
-                          boxShadow: active ? '0 0 6px rgba(201,168,76,0.6)' : 'none',
-                        }} />
-                        <span style={{ fontSize: '0.82rem', fontWeight: active ? 700 : 500, color: active ? '#f0ead6' : 'var(--text-secondary)' }}>
-                          {s.label}
-                        </span>
-                      </div>
-                      {cnt != null && (
-                        <span style={{ fontSize: '0.68rem', color: active ? 'var(--gold-mid)' : 'var(--text-muted)', fontWeight: 600 }}>
-                          {cnt.toLocaleString('tr-TR')}
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-
-            {/* Dekoratif kart */}
-            <div style={{
-              marginTop: 20,
-              padding: '16px',
-              background: 'linear-gradient(135deg, #0d0b08, #1a1205)',
-              border: '1px solid rgba(201,168,76,0.1)',
-              borderRadius: 8,
-            }}>
-              <p style={{ fontFamily: "'Cinzel', serif", fontSize: '13px', color: '#c9a84c', fontWeight: 700, marginBottom: 4 }}>
-                KNIGHT ONLINE
-              </p>
-              <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                Efsane devam ediyor.
-              </p>
-            </div>
-          </aside>
-
-          {/* ── SAĞ: İçerik ─────────────────────────────────────── */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-
-            {/* Sunucu başlık + yenile */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#c9a84c', boxShadow: '0 0 8px rgba(201,168,76,0.6)', flexShrink: 0 }} />
-                  <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: 22, fontWeight: 900, color: '#f0ead6', letterSpacing: '0.04em' }}>
-                    {activeServer?.label}
-                  </h2>
-                </div>
-                <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 3 }}>
-                  Toplam <strong style={{ color: 'var(--text-secondary)' }}>{total.toLocaleString('tr-TR')}</strong> aktif pazar
-                </p>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            {data?.last_scraped && (
+              <div className="flex items-center gap-2 text-[0.7rem] text-white/30">
+                <span className="w-1.5 h-1.5 rounded-full"
+                  style={{ background: '#22c55e', boxShadow: '0 0 4px #22c55e' }} />
+                <span>G├╝ncellendi: <span className="text-white/50">{timeAgo(data.last_scraped)}</span></span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                {data?.meta && (
-                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
-                    Son güncelleme: {new Date().toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })}
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={fetchData}
-                  disabled={loading}
+            )}
+            {data && !loading && (
+              <div style={{
+                padding: '4px 12px',
+                background: `${color}10`,
+                border: `1px solid ${color}30`,
+                fontSize: '0.72rem', fontWeight: 700, color,
+              }}>
+                {data.total.toLocaleString('tr-TR')} ilan
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ÔöÇÔöÇ Sunucu Se├ğimi ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */}
+        <div className="space-y-2 mb-5">
+
+          {/* Sat─▒r 1: T├╝m serverler + Grup butonlar─▒ */}
+          <div className="flex flex-wrap gap-1.5 overflow-x-auto pb-1">
+            {/* T├╝m Serverler */}
+            <button type="button" onClick={() => changeServer('all')}
+              className="px-3 py-1.5 text-[0.7rem] font-bold tracking-[0.08em] uppercase border
+                transition-all duration-150 rounded-sm"
+              style={{
+                background:  server === 'all' ? 'rgba(148,163,184,0.08)' : 'rgba(255,255,255,0.02)',
+                borderColor: server === 'all' ? 'rgba(148,163,184,0.4)' : 'rgba(255,255,255,0.07)',
+                color:       server === 'all' ? '#94a3b8' : 'rgba(255,255,255,0.3)',
+              }}>
+              T├╝m Serverler
+              {allTotal > 0 && (
+                <span className="ml-1.5 text-[0.6rem] opacity-50 font-normal">
+                  {allTotal.toLocaleString('tr-TR')}
+                </span>
+              )}
+            </button>
+
+            {GROUPS.map(g => {
+              const isAllGrp  = server === `all_${g.key}`
+              const isSomeGrp = !isAllGrp && activeGrp === g.key
+              const total     = groupTotal(g.key)
+              return (
+                <button key={g.key} type="button" onClick={() => changeServer(`all_${g.key}`)}
+                  className="px-3 py-1.5 text-[0.7rem] font-bold tracking-[0.08em] uppercase border
+                    transition-all duration-150 rounded-sm"
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '7px 14px',
-                    background: 'rgba(201,168,76,0.08)',
-                    border: '1px solid rgba(201,168,76,0.2)',
-                    borderRadius: 6,
-                    fontSize: '0.75rem', fontWeight: 600, color: '#c9a84c',
-                    cursor: 'pointer', transition: 'all 0.15s',
-                    opacity: loading ? 0.5 : 1,
-                  }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-                    style={{ animation: loading ? 'spin 0.8s linear infinite' : 'none' }}>
-                    <path d="M21 12a9 9 0 11-6.219-8.56"/>
-                  </svg>
-                  Yenile
+                    background:  isAllGrp ? g.bg : isSomeGrp ? `${g.color}08` : 'rgba(255,255,255,0.02)',
+                    borderColor: (isAllGrp || isSomeGrp) ? `${g.color}45` : 'rgba(255,255,255,0.07)',
+                    color:       (isAllGrp || isSomeGrp) ? g.color : 'rgba(255,255,255,0.3)',
+                  }}>
+                  T├╝m {g.label}
+                  {total > 0 && (
+                    <span className="ml-1.5 text-[0.6rem] opacity-50 font-normal">
+                      {total.toLocaleString('tr-TR')}
+                    </span>
+                  )}
                 </button>
-              </div>
-            </div>
+              )
+            })}
+          </div>
 
-            {/* Filtre çubuğu */}
-            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-              {/* Arama */}
-              <div style={{ position: 'relative', flex: '1', minWidth: 180 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                  style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
-                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                </svg>
-                <input
-                  type="text"
-                  value={query}
-                  onChange={e => setQuery(e.target.value)}
-                  placeholder="Item adı ara..."
-                  style={{
-                    width: '100%',
-                    paddingLeft: 34, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 6,
-                    fontSize: '0.8rem', color: '#f0ead6',
-                    outline: 'none',
-                  }}
-                  onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,168,76,0.35)' }}
-                  onBlur={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)' }}
-                />
-              </div>
-
-              {/* Kategori (type) */}
-              <select
-                value={type}
-                onChange={e => setType(e.target.value as 'sell' | 'buy')}
-                style={{
-                  padding: '8px 12px',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 6,
-                  fontSize: '0.8rem', color: '#f0ead6',
-                  cursor: 'pointer', outline: 'none',
-                }}
-              >
-                <option value="sell" style={{ background: '#0e1018' }}>Satış İlanları</option>
-                <option value="buy"  style={{ background: '#0e1018' }}>Alım İlanları</option>
-              </select>
-
-              {/* Sıralama */}
-              <select
-                value={sort}
-                onChange={e => setSort(e.target.value)}
-                style={{
-                  padding: '8px 12px',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 6,
-                  fontSize: '0.8rem', color: '#f0ead6',
-                  cursor: 'pointer', outline: 'none',
-                }}
-              >
-                <option value="price_asc"  style={{ background: '#0e1018' }}>En Ucuz</option>
-                <option value="price_desc" style={{ background: '#0e1018' }}>En Pahalı</option>
-                <option value="time_desc"  style={{ background: '#0e1018' }}>En Yeni</option>
-              </select>
-
-              {/* Filtrele butonu */}
-              <button
-                type="button"
-                onClick={fetchData}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '8px 16px',
-                  background: '#c9a84c',
-                  border: '1px solid #e8c96a',
-                  borderRadius: 6,
-                  fontSize: '0.8rem', fontWeight: 700, color: '#07080d',
-                  cursor: 'pointer', transition: 'all 0.15s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#e8c96a' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#c9a84c' }}
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-                </svg>
-                Filtrele
-              </button>
-            </div>
-
-            {/* Mobil sunucu seçimi */}
-            <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 mb-4" style={{ scrollbarWidth: 'none' }}>
-              {SERVERS.map(s => {
-                const active = server === s.key
+          {/* Sat─▒r 2: Tekil kanal sekmeleri (aktif gruba g├Âre) */}
+          {activeGrp && (
+            <div className="flex flex-wrap gap-1 overflow-x-auto pb-1">
+              {CHANNELS.filter(c => c.group === activeGrp).map(ch => {
+                const active = server === ch.key
+                const cnt    = counts[ch.key] ?? 0
                 return (
-                  <button
-                    key={s.key}
-                    type="button"
-                    onClick={() => setServer(s.key)}
+                  <button key={ch.key} type="button" onClick={() => changeServer(ch.key)}
+                    className="px-3 py-1 text-[0.67rem] font-semibold tracking-[0.05em] uppercase border
+                      transition-all duration-100 rounded-sm"
                     style={{
-                      flexShrink: 0,
-                      padding: '6px 12px',
-                      background: active ? 'rgba(201,168,76,0.10)' : 'rgba(255,255,255,0.03)',
-                      border: active ? '1px solid rgba(201,168,76,0.3)' : '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: 6,
-                      fontSize: '0.75rem', fontWeight: active ? 700 : 400,
-                      color: active ? '#c9a84c' : 'var(--text-muted)',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {s.label}
+                      background:  active ? bg : 'transparent',
+                      borderColor: active ? `${color}40` : 'rgba(255,255,255,0.05)',
+                      color:       active ? color : 'rgba(255,255,255,0.28)',
+                    }}>
+                    {ch.label}
+                    {cnt > 0 && (
+                      <span className="ml-1 opacity-45 font-normal text-[0.58rem]">
+                        {cnt.toLocaleString('tr-TR')}
+                      </span>
+                    )}
                   </button>
                 )
               })}
             </div>
+          )}
+        </div>
 
-            {/* Tablo */}
-            {loading && listings.length === 0 ? (
-              <SkeletonTable />
-            ) : listings.length === 0 && !loading ? (
-              <EmptyState query={dq} onClear={() => setQuery('')} />
-            ) : (
-              <>
-                <div
-                  className={loading ? 'opacity-50 pointer-events-none' : ''}
-                  style={{
-                    background: 'rgba(10,11,16,0.8)',
-                    border: '1px solid rgba(255,255,255,0.07)',
-                    borderRadius: 8,
-                    overflow: 'hidden',
-                    transition: 'opacity 0.15s',
-                  }}
-                >
-                  {/* Tablo header */}
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: '40px 1fr 70px 140px 160px 90px 80px',
-                    padding: '10px 16px',
-                    background: 'rgba(255,255,255,0.03)',
-                    borderBottom: '1px solid rgba(255,255,255,0.07)',
-                    fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.18em',
-                    textTransform: 'uppercase', color: 'var(--text-muted)',
-                  }}>
-                    <span>#</span>
-                    <span>İtem</span>
-                    <span style={{ textAlign: 'center' }}>+</span>
-                    <span style={{ textAlign: 'right' }}>Fiyat</span>
-                    <span>Satıcı</span>
-                    <span>Lokasyon</span>
-                    <span style={{ textAlign: 'right' }}>Süre</span>
-                  </div>
+        {/* ÔöÇÔöÇ Filtre ├çubu─şu ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          {/* Arama ÔÇö ucuzagb autocomplete */}
+          <SearchBox query={query} onChange={setQuery} />
 
-                  {/* Tablo satırları */}
-                  {listings.map((item, idx) => (
-                    <TableRow
-                      key={`${item.item_id}-${idx}`}
-                      item={item}
-                      idx={(page - 1) * LIMIT + idx + 1}
-                    />
-                  ))}
-                </div>
+          {/* +Lvl */}
+          <select value={upgrade} onChange={e => setUpgrade(e.target.value)}
+            className="appearance-none px-3 py-2 text-[0.76rem] rounded-sm bg-white/[0.04]
+              border border-white/[0.07] text-white/55 outline-none focus:border-white/20
+              transition-all cursor-pointer sm:min-w-[105px]">
+            <option value=""  style={{ background: '#0d0d1a' }}>T├╝m +Lvl</option>
+            <option value="0" style={{ background: '#0d0d1a' }}>Seviyesiz</option>
+            {[1,2,3,4,5,6,7,8,9,10,11].map(n => (
+              <option key={n} value={String(n)} style={{ background: '#0d0d1a' }}>+{n}</option>
+            ))}
+          </select>
 
-                {/* Alt özet + sayfalama */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, flexWrap: 'wrap', gap: 8 }}>
-                  <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                    Toplam <strong style={{ color: 'var(--text-secondary)' }}>{total.toLocaleString('tr-TR')}</strong> pazardan{' '}
-                    <strong style={{ color: 'var(--text-secondary)' }}>{LIMIT}</strong> tanesi gösteriliyor.
-                  </p>
+          {/* S─▒ralama */}
+          <select value={sort} onChange={e => setSort(e.target.value)}
+            className="appearance-none px-3 py-2 text-[0.76rem] rounded-sm bg-white/[0.04]
+              border border-white/[0.07] text-white/55 outline-none focus:border-white/20
+              transition-all cursor-pointer sm:min-w-[110px]">
+            {SORT_OPTIONS.map(o => (
+              <option key={o.value} value={o.value} style={{ background: '#0d0d1a' }}>
+                {o.label}
+              </option>
+            ))}
+          </select>
 
-                  {totalPages > 1 && (
-                    <Pagination
-                      page={page}
-                      total={totalPages}
-                      onChange={p => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                      loading={loading}
-                    />
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+          {/* Yenile */}
+          <button onClick={fetchData} disabled={loading} type="button"
+            className="px-3 py-2 text-[0.76rem] rounded-sm border border-white/[0.07]
+              text-white/40 hover:border-white/20 hover:text-white/70 transition-all
+              disabled:opacity-30 flex items-center justify-center gap-1.5">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.5" className={loading ? 'animate-spin' : ''}>
+              <path d="M21 12a9 9 0 11-6.219-8.56"/>
+            </svg>
+            Yenile
+          </button>
         </div>
       </div>
 
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
-    </div>
-  )
-}
+      {/* ÔòÉÔòÉ ─░├çER─░K ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pb-24">
 
-/* ── Tablo satırı ─────────────────────────────────────────────────── */
-function TableRow({ item, idx }: { item: Listing; idx: number }) {
-  const upgrade  = parseUpgrade(item.item_name)
-  const upgColor = upgradeColor(item.item_name)
-  const name     = cleanName(item.item_name)
-  const loc      = mapName(item.pos_x, item.pos_z)
-  const ago      = timeAgo(item.created_at)
-  const [hovered, setHovered] = useState(false)
-
-  return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '40px 1fr 70px 140px 160px 90px 80px',
-        padding: '10px 16px',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
-        alignItems: 'center',
-        background: hovered ? 'rgba(201,168,76,0.03)' : 'transparent',
-        transition: 'background 0.1s',
-      }}
-    >
-      {/* # */}
-      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>{idx}</span>
-
-      {/* İtem */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-        {item.item_icon_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={item.item_icon_url}
-            alt=""
-            width={32}
-            height={32}
-            style={{
-              width: 32, height: 32, objectFit: 'contain',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 4, flexShrink: 0,
-              imageRendering: 'pixelated',
-            }}
-            loading="lazy"
-            onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-          />
-        ) : (
-          <div style={{
-            width: 32, height: 32, flexShrink: 0,
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 4,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <path d="m9 9 6 6m0-6-6 6"/>
-            </svg>
+        {/* Sonu├ğ ├Âzeti */}
+        {data && !loading && (
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2 text-[0.72rem] text-white/30 flex-wrap">
+              <span className="font-bold text-white/60 tabular-nums">
+                {data.total.toLocaleString('tr-TR')}
+              </span>
+              <span>ilan</span>
+              {dq && (
+                <>
+                  <span className="text-white/15">┬À</span>
+                  <span className="text-white/50">&ldquo;{dq}&rdquo;</span>
+                </>
+              )}
+              {upgrade && (
+                <>
+                  <span className="text-white/15">┬À</span>
+                  <span style={{ color }}>+{upgrade === '0' ? '0 (seviyesiz)' : upgrade}</span>
+                </>
+              )}
+              <span className="text-white/15">┬À</span>
+              <span style={{ color }}>{activeLabel}</span>
+            </div>
+            {(dq || upgrade) && (
+              <button onClick={() => { setQuery(''); setUpgrade('') }}
+                className="text-[0.68rem] text-white/25 hover:text-white/60 transition-colors
+                  border border-white/[0.06] hover:border-white/15 px-2 py-0.5 rounded-sm">
+                Temizle ├ù
+              </button>
+            )}
           </div>
         )}
-        <span style={{
-          fontSize: '0.82rem', fontWeight: 600,
-          color: hovered ? '#f0ead6' : 'var(--text-secondary)',
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          transition: 'color 0.1s',
-        }}>
-          {name}
-        </span>
-      </div>
 
-      {/* + */}
-      <div style={{ textAlign: 'center' }}>
-        {upgrade !== '—' ? (
-          <span style={{
-            fontSize: '0.72rem', fontWeight: 800,
-            color: upgColor,
-            background: `${upgColor}18`,
-            border: `1px solid ${upgColor}30`,
-            padding: '2px 7px',
-            borderRadius: 4,
-          }}>
-            {upgrade}
-          </span>
-        ) : (
-          <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.72rem' }}>—</span>
+        {/* Hata */}
+        {error && (
+          <div className="error-state mb-4">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0, color: 'rgba(252,165,165,0.8)' }}>
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <div>
+              <p style={{ fontWeight: 600, marginBottom: 2 }}>Veriler al─▒namad─▒</p>
+              <p style={{ fontSize: '0.72rem', opacity: 0.7 }}>{error} ÔÇö{' '}
+                <button onClick={fetchData} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', textDecoration: 'underline', padding: 0 }}>
+                  Tekrar dene
+                </button>
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Skeleton y├╝kleniyor */}
+        {loading && !data && <SkeletonTable color={color} />}
+
+        {/* Tablo */}
+        {data && data.listings.length > 0 && (
+          <div className={`transition-opacity duration-150 ${loading ? 'opacity-40 pointer-events-none' : ''}`}>
+
+            {/* ÔöÇÔöÇ Desktop ÔöÇÔöÇ */}
+            <div className="hidden md:block rounded overflow-hidden"
+              style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
+              <table className="w-full text-[0.8rem] border-collapse">
+                <thead>
+                  <tr style={{
+                    background:   'rgba(255,255,255,0.03)',
+                    borderBottom: '1px solid rgba(255,255,255,0.06)',
+                  }}>
+                    {/* Item */}
+                    <th className="text-left py-2.5 px-4 text-[0.6rem] tracking-[0.18em]
+                      uppercase text-white/30 font-semibold">
+                      Item
+                    </th>
+                    {/* +Lvl */}
+                    <th className="text-center py-2.5 px-3 text-[0.6rem] tracking-[0.18em]
+                      uppercase text-white/30 font-semibold w-16">
+                      +Lvl
+                    </th>
+                    {/* Adet */}
+                    <th className="text-center py-2.5 px-3 text-[0.6rem] tracking-[0.18em]
+                      uppercase text-white/30 font-semibold w-16">
+                      Adet
+                    </th>
+                    {/* Sat─▒c─▒ */}
+                    <th className="text-left py-2.5 px-4 text-[0.6rem] tracking-[0.18em]
+                      uppercase text-white/30 font-semibold w-32">
+                      Sat─▒c─▒
+                    </th>
+                    {/* Konum */}
+                    <th className="text-left py-2.5 px-4 text-[0.6rem] tracking-[0.18em]
+                      uppercase text-white/30 font-semibold w-28">
+                      Konum
+                    </th>
+                    {/* Server ÔÇö sadece multi-server modda */}
+                    {data.server.includes(',') && (
+                      <th className="text-left py-2.5 px-4 text-[0.6rem] tracking-[0.18em]
+                        uppercase text-white/30 font-semibold w-24">
+                        Server
+                      </th>
+                    )}
+                    {/* Fiyat */}
+                    <th className="text-right py-2.5 px-4 text-[0.6rem] tracking-[0.18em]
+                      uppercase text-white/30 font-semibold w-36">
+                      Fiyat
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.listings.map((item, idx) => (
+                    <DesktopRow
+                      key={item.id}
+                      item={item}
+                      idx={idx}
+                      color={color}
+                      showServer={data.server.includes(',')}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* ÔöÇÔöÇ Mobil ÔöÇÔöÇ */}
+            <div className="md:hidden space-y-2">
+              {data.listings.map(item => (
+                <MobileCard key={item.id} item={item} color={color}
+                  showServer={data.server.includes(',')} />
+              ))}
+            </div>
+
+            {/* ÔöÇÔöÇ Sayfalama ÔöÇÔöÇ */}
+            {data.total_pages > 1 && (
+              <Pagination
+                page={page}
+                total={data.total_pages}
+                onChange={p => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                loading={loading}
+                color={color}
+              />
+            )}
+          </div>
+        )}
+
+        {/* Bo┼ş durum */}
+        {data && data.listings.length === 0 && !loading && (
+          <div className="flex flex-col items-center justify-center py-28 gap-3 text-center">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="1.2" className="text-white/15">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <p className="text-[0.9rem] text-white/35">
+              {dq ? `"${dq}" bulunamad─▒` : 'Bu kanalda ilan yok'}
+            </p>
+            <p className="text-[0.74rem] text-white/18">
+              {dq ? 'Farkl─▒ kanal veya isim deneyin' : 'Veriler hen├╝z y├╝klenmi┼ş olmayabilir'}
+            </p>
+            {(dq || upgrade) && (
+              <button onClick={() => { setQuery(''); setUpgrade('') }}
+                className="text-[0.72rem] text-white/30 hover:text-white/60 transition-colors mt-1">
+                Filtreleri temizle
+              </button>
+            )}
+          </div>
         )}
       </div>
+    </div>
+  )
+}
 
-      {/* Fiyat */}
-      <div style={{ textAlign: 'right' }}>
-        <span style={{
-          fontSize: '0.88rem', fontWeight: 800,
-          color: '#e8c96a',
-          fontVariantNumeric: 'tabular-nums',
-        }}>
-          {formatPrice(item.price)}
-        </span>
+// ÔöÇÔöÇ Skeleton ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function SkeletonTable({ color }: { color: string }) {
+  return (
+    <div className="rounded overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
+      {/* thead placeholder */}
+      <div className="py-2.5 px-4 border-b border-white/[0.06]"
+        style={{ background: 'rgba(255,255,255,0.03)' }}>
+        <div className="h-3 w-48 rounded-sm bg-white/[0.07]" />
       </div>
-
-      {/* Satıcı */}
-      <span style={{ fontSize: '0.77rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {item.username}
-      </span>
-
-      {/* Lokasyon */}
-      <span style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {loc}
-      </span>
-
-      {/* Süre */}
-      <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textAlign: 'right' }}>
-        {ago}
-      </span>
-    </div>
-  )
-}
-
-/* ── Sayfalama ────────────────────────────────────────────────────── */
-function Pagination({
-  page, total, onChange, loading,
-}: {
-  page: number; total: number; onChange: (p: number) => void; loading: boolean
-}) {
-  const pages = pageRange(page, total)
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-      {/* Önceki */}
-      <button
-        type="button"
-        onClick={() => onChange(page - 1)}
-        disabled={page === 1 || loading}
-        style={{
-          width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: 6, cursor: page === 1 ? 'not-allowed' : 'pointer',
-          color: page === 1 ? 'rgba(255,255,255,0.2)' : 'var(--text-secondary)',
-        }}
-      >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-
-      {/* Sayfa numaraları */}
-      {pages.map((p, i) =>
-        p === '...' ? (
-          <span key={`dots-${i}`} style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', padding: '0 4px' }}>…</span>
-        ) : (
-          <button
-            key={p}
-            type="button"
-            onClick={() => onChange(p as number)}
-            disabled={loading}
-            style={{
-              width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: p === page ? '#c9a84c' : 'rgba(255,255,255,0.04)',
-              border: p === page ? '1px solid #e8c96a' : '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 6, cursor: 'pointer',
-              fontSize: '0.78rem', fontWeight: p === page ? 800 : 500,
-              color: p === page ? '#07080d' : 'var(--text-secondary)',
-              transition: 'all 0.1s',
-            }}
-          >
-            {p}
-          </button>
-        )
-      )}
-
-      {/* Sonraki */}
-      <button
-        type="button"
-        onClick={() => onChange(page + 1)}
-        disabled={page === total || loading}
-        style={{
-          width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: 6, cursor: page === total ? 'not-allowed' : 'pointer',
-          color: page === total ? 'rgba(255,255,255,0.2)' : 'var(--text-secondary)',
-        }}
-      >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
-      </button>
-    </div>
-  )
-}
-
-/* ── Skeleton ─────────────────────────────────────────────────────── */
-function SkeletonTable() {
-  return (
-    <div style={{ background: 'rgba(10,11,16,0.8)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, overflow: 'hidden' }}>
-      <div style={{ padding: '10px 16px', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.07)', height: 36 }} />
-      {Array.from({ length: 10 }).map((_, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-          <div className="skeleton" style={{ width: 24, height: 14, borderRadius: 3 }} />
-          <div className="skeleton" style={{ width: 32, height: 32, borderRadius: 4, flexShrink: 0 }} />
-          <div className="skeleton" style={{ flex: 1, height: 14, borderRadius: 3 }} />
-          <div className="skeleton" style={{ width: 80, height: 14, borderRadius: 3 }} />
-          <div className="skeleton" style={{ width: 100, height: 14, borderRadius: 3 }} />
+      {Array.from({ length: 12 }).map((_, i) => (
+        <div key={i}
+          className="flex items-center gap-4 px-4 py-3 border-b border-white/[0.04] animate-pulse"
+          style={{ animationDelay: `${i * 0.05}s` }}>
+          {/* icon placeholder */}
+          <div className="w-8 h-8 rounded flex-shrink-0 bg-white/[0.05]" />
+          {/* name */}
+          <div className="flex-1 space-y-1.5">
+            <div className="h-2.5 rounded-sm bg-white/[0.07]"
+              style={{ width: `${45 + (i % 5) * 10}%` }} />
+            <div className="h-2 rounded-sm bg-white/[0.04]" style={{ width: '30%' }} />
+          </div>
+          {/* price */}
+          <div className="h-4 w-16 rounded-sm flex-shrink-0"
+            style={{ background: `${color}15` }} />
         </div>
       ))}
     </div>
   )
 }
 
-/* ── Boş durum ────────────────────────────────────────────────────── */
-function EmptyState({ query, onClear }: { query: string; onClear: () => void }) {
+// ÔöÇÔöÇ Item Tooltip ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function ItemTooltip({ item, color }: { item: MarketListing; color: string }) {
+  const d = parseItemDetails(item.item_details)
+  if (!d.title && !d.type && d.props.length === 0) return null
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', gap: 12, textAlign: 'center' }}>
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.2">
+    <div className="absolute left-0 top-full mt-1.5 z-50 w-[250px] pointer-events-none"
+      style={{
+        background:   'rgba(7,7,18,0.98)',
+        border:       `1px solid ${color}28`,
+        boxShadow:    '0 16px 48px rgba(0,0,0,0.85)',
+        borderRadius: '4px',
+      }}>
+      {d.title && (
+        <div className="px-3 pt-2.5 pb-2 border-b border-white/[0.06]">
+          <p className="text-[0.8rem] font-bold leading-tight" style={{ color }}>
+            {d.title}
+            {item.upgrade_level != null && (
+              <span className="ml-1.5" style={{
+                color: item.upgrade_level >= 9 ? '#fbbf24'
+                     : item.upgrade_level >= 7 ? '#a78bfa'
+                     : 'rgba(255,255,255,0.5)',
+              }}>+{item.upgrade_level}</span>
+            )}
+          </p>
+          {d.kind && <p className="text-[0.62rem] text-white/30 mt-0.5">{d.kind}</p>}
+        </div>
+      )}
+      {d.type && (
+        <div className="px-3 py-1.5 border-b border-white/[0.04]">
+          <span className="text-[0.65rem] text-yellow-400/65">{d.type}</span>
+        </div>
+      )}
+      {d.props.filter(Boolean).length > 0 && (
+        <div className="px-3 py-2 space-y-0.5">
+          {d.props.filter(Boolean).map((p, i) => (
+            <p key={i} className="text-[0.68rem] text-white/50 leading-relaxed">{p}</p>
+          ))}
+        </div>
+      )}
+      <div className="px-3 py-2 border-t border-white/[0.04]"
+        style={{ background: 'rgba(255,255,255,0.015)' }}>
+        <div className="flex justify-between items-center">
+          <span className="text-[0.62rem] text-white/25">Fiyat</span>
+          <span className="text-[0.73rem] font-bold text-red-400/80">
+            {(item.original_price ?? item.price).toLocaleString('tr-TR')} ÔéĞ
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ÔöÇÔöÇ Upgrade badge ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function UpgradeBadge({ level }: { level: number | null }) {
+  if (level == null) return <span className="text-white/15 text-xs">ÔÇö</span>
+  const gold  = level >= 9
+  const purp  = level >= 7 && level < 9
+  return (
+    <span className="inline-block text-[0.7rem] font-black px-1.5 py-0.5 rounded-sm tabular-nums"
+      style={{
+        background: gold ? 'rgba(251,191,36,0.12)' : purp ? 'rgba(167,139,250,0.10)' : 'rgba(255,255,255,0.05)',
+        color:      gold ? '#fbbf24'                : purp ? '#a78bfa'                : 'rgba(255,255,255,0.45)',
+        border:    `1px solid ${gold ? 'rgba(251,191,36,0.22)' : purp ? 'rgba(167,139,250,0.18)' : 'rgba(255,255,255,0.07)'}`,
+      }}>
+      +{level}
+    </span>
+  )
+}
+
+// Kanal ad─▒n─▒ k─▒sa g├Âster ("zero3" ÔåÆ "Z3")
+function shortServer(key: string): string {
+  const ch = CHANNELS.find(c => c.key === key)
+  if (!ch) return key
+  const g = GROUPS.find(x => x.key === ch.group)
+  return g ? `${g.label[0]}${key.replace(/[^0-9]/g, '')}` : key
+}
+
+function serverColor(key: string): string {
+  const ch  = CHANNELS.find(c => c.key === key)
+  const grp = GROUPS.find(g => g.key === ch?.group)
+  return grp?.color ?? '#94a3b8'
+}
+
+// ÔöÇÔöÇ Desktop Sat─▒r ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function DesktopRow({
+  item, idx, color, showServer,
+}: {
+  item: MarketListing; idx: number; color: string; showServer: boolean
+}) {
+  const [tip, setTip] = useState(false)
+  const ppu = item.price_per_unit ?? (item.item_count > 1 ? Math.round(item.price / item.item_count) : null)
+
+  return (
+    <tr className="border-b transition-colors duration-75 hover:bg-white/[0.025] cursor-default"
+      style={{ borderColor: 'rgba(255,255,255,0.04)' }}>
+
+      {/* Item ad─▒ + tooltip */}
+      <td className="py-2.5 px-4">
+        <div className="relative flex items-center gap-3"
+          onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
+          <div className="flex-shrink-0 w-8 h-8 rounded flex items-center justify-center overflow-hidden"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            {item.img_url ? (
+              <img src={item.img_url} alt="" width={28} height={28}
+                className="w-7 h-7 object-contain" style={{ imageRendering: 'pixelated' }}
+                loading="lazy"
+                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+              />
+            ) : (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="1.5" className="text-white/15">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+              </svg>
+            )}
+          </div>
+          <div className="min-w-0">
+            <p className="font-semibold text-white/85 truncate max-w-[280px] leading-snug
+              group-hover:text-white transition-colors">
+              {item.item_name}
+            </p>
+            {item.item_details && (
+              <p className="text-[0.6rem] text-white/28 mt-0.5 truncate max-w-[280px]">
+                {parseItemDetails(item.item_details).type}
+              </p>
+            )}
+          </div>
+          {tip && <ItemTooltip item={item} color={color} />}
+        </div>
+      </td>
+
+      {/* +Lvl */}
+      <td className="py-2.5 px-3 text-center w-16">
+        <UpgradeBadge level={item.upgrade_level} />
+      </td>
+
+      {/* Adet */}
+      <td className="py-2.5 px-3 text-center w-16">
+        {item.item_count > 1 ? (
+          <span className="text-[0.72rem] font-semibold text-white/55
+            bg-white/[0.05] border border-white/[0.08] px-1.5 py-0.5 rounded-sm tabular-nums">
+            ├ù{item.item_count}
+          </span>
+        ) : <span className="text-white/15 text-xs">ÔÇö</span>}
+      </td>
+
+      {/* Sat─▒c─▒ */}
+      <td className="py-2.5 px-4 w-32">
+        <span className="text-[0.77rem] text-white/38 truncate block max-w-[120px]">
+          {item.seller_name ?? 'ÔÇö'}
+        </span>
+      </td>
+
+      {/* Konum */}
+      <td className="py-2.5 px-4 w-28">
+        {item.loc_x != null && item.loc_z != null ? (
+          <span className="inline-flex items-center gap-1 text-[0.67rem] font-mono
+            text-white/40 bg-white/[0.04] border border-white/[0.06] px-2 py-0.5 rounded-sm">
+            <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.5" className="text-white/30 flex-shrink-0">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            {item.loc_x},{item.loc_z}
+          </span>
+        ) : <span className="text-white/15 text-xs">ÔÇö</span>}
+      </td>
+
+      {/* Server (multi-server modu) */}
+      {showServer && (
+        <td className="py-2.5 px-4 w-24">
+          <span className="text-[0.68rem] font-semibold px-1.5 py-0.5 rounded-sm"
+            style={{
+              color:       serverColor(item.server),
+              background:  `${serverColor(item.server)}12`,
+              border:      `1px solid ${serverColor(item.server)}25`,
+            }}>
+            {shortServer(item.server)}
+          </span>
+        </td>
+      )}
+
+      {/* Fiyat */}
+      <td className="py-2.5 px-4 text-right w-36">
+        <p className="font-black text-[0.92rem] tabular-nums leading-tight"
+          style={{ color: '#f87171' }}>
+          {formatPrice(item.price)}
+        </p>
+        <p className="text-[0.6rem] text-white/20 tabular-nums mt-0.5">
+          {item.price.toLocaleString('tr-TR')} ÔéĞ
+        </p>
+        {ppu && item.item_count > 1 && (
+          <p className="text-[0.58rem] text-white/25 tabular-nums">
+            birim: {formatPrice(ppu)}
+          </p>
+        )}
+      </td>
+    </tr>
+  )
+}
+
+// ÔöÇÔöÇ Mobil Kart ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function MobileCard({
+  item, color, showServer,
+}: {
+  item: MarketListing; color: string; showServer: boolean
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const d   = parseItemDetails(item.item_details)
+  const ppu = item.price_per_unit ?? (item.item_count > 1 ? Math.round(item.price / item.item_count) : null)
+
+  return (
+    <div className="rounded overflow-hidden"
+      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+      <div className="flex items-center gap-3 p-3">
+        {/* Icon */}
+        <div className="flex-shrink-0 w-10 h-10 rounded flex items-center justify-center overflow-hidden"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+          {item.img_url ? (
+            <img src={item.img_url} alt="" width={32} height={32}
+              className="w-8 h-8 object-contain" style={{ imageRendering: 'pixelated' }}
+              loading="lazy" />
+          ) : (
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="1.5" className="text-white/15">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+            </svg>
+          )}
+        </div>
+
+        {/* Meta */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[0.83rem] font-semibold text-white/85 truncate">
+              {item.item_name}
+            </span>
+            <UpgradeBadge level={item.upgrade_level} />
+            {item.item_count > 1 && (
+              <span className="text-[0.65rem] font-semibold text-white/45
+                bg-white/[0.05] border border-white/[0.07] px-1 py-0.5 rounded-sm flex-shrink-0">
+                ├ù{item.item_count}
+              </span>
+            )}
+            {showServer && (
+              <span className="text-[0.62rem] font-semibold px-1.5 py-0.5 rounded-sm flex-shrink-0"
+                style={{ color: serverColor(item.server), background: `${serverColor(item.server)}12` }}>
+                {shortServer(item.server)}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-3 mt-0.5 text-[0.67rem] text-white/30">
+            <span className="truncate max-w-[130px]">{item.seller_name ?? 'ÔÇö'}</span>
+            {item.loc_x != null && (
+              <span className="font-mono flex items-center gap-0.5 flex-shrink-0">
+                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                {item.loc_x},{item.loc_z}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Fiyat */}
+        <div className="text-right flex-shrink-0">
+          <p className="font-black text-[0.9rem] tabular-nums" style={{ color: '#f87171' }}>
+            {formatPrice(item.price)}
+          </p>
+          {ppu && item.item_count > 1 && (
+            <p className="text-[0.58rem] text-white/28 mt-0.5">
+              birim: {formatPrice(ppu)}
+            </p>
+          )}
+          {(d.type || d.props.length > 0) && (
+            <button onClick={() => setExpanded(!expanded)} type="button"
+              className="text-[0.58rem] text-white/22 hover:text-white/55 mt-0.5 transition-colors">
+              {expanded ? 'gizle Ôû▓' : 'detay Ôû╝'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {expanded && (d.type || d.props.length > 0) && (
+        <div className="px-3 pb-3 pt-2 border-t border-white/[0.04]">
+          {d.type && <p className="text-[0.66rem] text-yellow-400/60 mb-1">{d.type}</p>}
+          {d.props.filter(Boolean).map((p, i) => (
+            <p key={i} className="text-[0.68rem] text-white/42 leading-relaxed">{p}</p>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ÔöÇÔöÇ Sayfalama ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function Pagination({
+  page, total, onChange, loading, color,
+}: {
+  page: number; total: number
+  onChange: (p: number) => void; loading: boolean; color: string
+}) {
+  // G├Âr├╝nt├╝lenecek sayfa numaralar─▒
+  const pages: (number | 'ÔÇĞ')[] = []
+  if (total <= 9) {
+    for (let i = 1; i <= total; i++) pages.push(i)
+  } else {
+    pages.push(1)
+    if (page > 4)          pages.push('ÔÇĞ')
+    for (let i = Math.max(2, page - 2); i <= Math.min(total - 1, page + 2); i++) pages.push(i)
+    if (page < total - 3)  pages.push('ÔÇĞ')
+    pages.push(total)
+  }
+
+  const btn = `min-w-[34px] h-8 px-1.5 text-[0.74rem] font-semibold rounded-sm
+    border transition-all duration-100 disabled:opacity-25 disabled:cursor-not-allowed`
+
+  return (
+    <div className="flex items-center justify-center gap-1 mt-7 flex-wrap">
+      {/* ─░lk sayfa */}
+      <button onClick={() => onChange(1)} disabled={page === 1 || loading}
+        className={`${btn} border-white/[0.07] text-white/35 hover:border-white/20 hover:text-white/65`}>
+        ┬½
+      </button>
+      {/* ├ûnceki */}
+      <button onClick={() => onChange(page - 1)} disabled={page === 1 || loading}
+        className={`${btn} border-white/[0.07] text-white/35 hover:border-white/20 hover:text-white/65`}>
+        ÔÇ╣
+      </button>
+
+      {pages.map((p, i) =>
+        p === 'ÔÇĞ' ? (
+          <span key={`e${i}`} className="w-7 text-center text-white/20 text-[0.74rem]">ÔÇĞ</span>
+        ) : (
+          <button key={p} onClick={() => onChange(p)} disabled={loading}
+            className={`${btn}`}
+            style={{
+              background:  p === page ? `${color}15` : 'transparent',
+              borderColor: p === page ? `${color}40` : 'rgba(255,255,255,0.07)',
+              color:       p === page ? color         : 'rgba(255,255,255,0.4)',
+            }}>
+            {p}
+          </button>
+        )
+      )}
+
+      {/* Sonraki */}
+      <button onClick={() => onChange(page + 1)} disabled={page === total || loading}
+        className={`${btn} border-white/[0.07] text-white/35 hover:border-white/20 hover:text-white/65`}>
+        ÔÇ║
+      </button>
+      {/* Son sayfa */}
+      <button onClick={() => onChange(total)} disabled={page === total || loading}
+        className={`${btn} border-white/[0.07] text-white/35 hover:border-white/20 hover:text-white/65`}>
+        ┬╗
+      </button>
+    </div>
+  )
+}
+
+// ÔöÇÔöÇ SearchBox ÔÇö ucuzagb.com /api/items/ara autocomplete ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+interface AcItem { id: number; n: string; s: string; p: string | null }
+
+function SearchBox({ query, onChange }: { query: string; onChange: (v: string) => void }) {
+  const [suggestions, setSuggestions] = useState<AcItem[]>([])
+  const [open, setOpen]               = useState(false)
+  const [acTimer, setAcTimer]         = useState<ReturnType<typeof setTimeout> | null>(null)
+  const boxRef                        = useRef<HTMLDivElement>(null)
+
+  // D─▒┼ş t─▒klamada kapat
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  function handleInput(val: string) {
+    onChange(val)
+    if (acTimer) clearTimeout(acTimer)
+    if (val.trim().length < 2) { setSuggestions([]); setOpen(false); return }
+    setAcTimer(setTimeout(async () => {
+      try {
+        const r = await fetch(
+          `https://ucuzagb.com/api/items/ara?q=${encodeURIComponent(val)}&limit=8`,
+        )
+        const d = await r.json()
+        setSuggestions(d.itemler ?? [])
+        setOpen(true)
+      } catch { /* ignore */ }
+    }, 300))
+  }
+
+  function pick(name: string) {
+    onChange(name)
+    setOpen(false)
+    setSuggestions([])
+  }
+
+  return (
+    <div ref={boxRef} className="relative flex-1 min-w-0">
+      {/* Arama ikonu */}
+      <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none"
+        width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
-      <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.35)' }}>
-        {query ? `"${query}" için ilan bulunamadı` : 'Bu sunucuda aktif ilan yok'}
-      </p>
+
+      <input
+        type="text"
+        value={query}
+        onChange={e => handleInput(e.target.value)}
+        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        placeholder="Item ara... (Raptor, Shard, Glave, Mirage...)"
+        className="w-full pl-9 pr-8 py-2 text-[0.8rem] rounded-sm bg-white/[0.04]
+          border border-white/[0.07] text-white/80 placeholder-white/20 outline-none
+          focus:border-white/20 focus:bg-white/[0.05] transition-all"
+        autoComplete="off"
+      />
+
+      {/* Temizle */}
       {query && (
-        <button onClick={onClear} style={{ fontSize: '0.75rem', color: '#c9a84c', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
-          Aramayı temizle
+        <button onClick={() => { onChange(''); setSuggestions([]); setOpen(false) }} type="button"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30
+            hover:text-white/70 transition-colors text-base leading-none">
+          ├ù
         </button>
+      )}
+
+      {/* ├ûneri listesi */}
+      {open && suggestions.length > 0 && (
+        <div
+          className="absolute left-0 right-0 top-full mt-1 z-50 overflow-hidden rounded-sm"
+          style={{
+            background:   'rgba(10,10,22,0.98)',
+            border:       '1px solid rgba(255,255,255,0.1)',
+            boxShadow:    '0 12px 32px rgba(0,0,0,0.7)',
+          }}
+        >
+          {suggestions.map(item => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => pick(item.n)}
+              className="w-full flex items-center gap-3 px-3 py-2 text-left
+                hover:bg-white/[0.06] transition-colors group"
+            >
+              {/* Item ikonu */}
+              {item.p ? (
+                <img
+                  src={`https://ucuzagb.com${item.p}`}
+                  alt=""
+                  width={24} height={24}
+                  className="w-6 h-6 object-contain flex-shrink-0"
+                  style={{ imageRendering: 'pixelated' }}
+                  onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
+              ) : (
+                <div className="w-6 h-6 flex-shrink-0 bg-white/[0.04] rounded-sm" />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-[0.78rem] font-semibold text-white/80
+                  group-hover:text-white transition-colors truncate">
+                  {item.n}
+                </p>
+                <p className="text-[0.62rem] text-white/30 capitalize truncate">
+                  {item.s}
+                </p>
+              </div>
+            </button>
+          ))}
+          <div className="px-3 py-1.5 border-t border-white/[0.05]
+            text-[0.58rem] text-white/20 text-right">
+            ucuzagb.com
+          </div>
+        </div>
       )}
     </div>
   )
