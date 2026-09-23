@@ -129,7 +129,7 @@ const nextConfig: NextConfig = {
               "media-src 'self' blob:",
               "frame-src https://www.youtube.com https://www.instagram.com https://googleads.g.doubleclick.net",
               "worker-src 'self' blob:",
-              "connect-src 'self' https://*.supabase.co https://www.googleapis.com https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ucuzagb.com",
+              "connect-src 'self' https://*.supabase.co https://www.googleapis.com https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ucuzagb.com https://www.enucuzgb.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
