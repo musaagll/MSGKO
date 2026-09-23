@@ -11,8 +11,8 @@ function CoinsIcon()  { return <svg width="20" height="20" viewBox="0 0 24 24" f
 
 const navItems = [
   { Icon: HomeIcon,  label: "Anasayfa", href: "/" },
-  { Icon: BookIcon,  label: "Pazar",    href: "/pazar" },
-  { Icon: ImageIcon, label: "Rehber",   href: "/rehber" },
+  { Icon: BookIcon,  label: "Rehber",   href: "/rehber" },
+  { Icon: ImageIcon, label: "Wallpaper",href: "/wallpaper" },
   { Icon: CoinsIcon, label: "GB",       href: "/gb-fiyatlari" },
 ];
 

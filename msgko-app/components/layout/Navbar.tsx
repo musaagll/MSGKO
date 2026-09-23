@@ -11,7 +11,6 @@ interface NavbarProps {
 
 const navLinks = [
   { label: "Anasayfa",  href: "/",             icon: "home"   },
-  { label: "Pazar",     href: "/pazar",         icon: "shop"   },
   { label: "Rehber",    href: "/rehber",        icon: "book"   },
   { label: "Wallpaper", href: "/wallpaper",     icon: "image"  },
   { label: "GB Takip",  href: "/gb-fiyatlari",  icon: "globe"  },
