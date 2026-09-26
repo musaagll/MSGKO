@@ -21,7 +21,12 @@ export function GbKuruSection() {
   const fetchData = () =>
     fetch('/api/gb-fiyatlari?kuru=1')
       .then(r => r.json())
-      .then((d: GbKuruData) => { setData(d); setLoading(false) })
+      .then((d: GbKuruData) => {
+        if (d && Array.isArray(d.sunucular)) {
+          setData(d)
+        }
+        setLoading(false)
+      })
       .catch(() => setLoading(false))
 
   useEffect(() => { fetchData() }, [])

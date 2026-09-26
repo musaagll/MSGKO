@@ -16,6 +16,7 @@ export function HeroSection() {
         className="relative overflow-hidden w-full"
         style={{ height: "calc(100vh - 68px)", minHeight: "580px", maxHeight: "780px", marginTop: "68px" }}
         aria-label="Hero"
+        suppressHydrationWarning
       >
         {/* Full-width cinematic background */}
         <div className="absolute inset-0 z-0">

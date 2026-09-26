@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { FeatureCards } from '@/components/sections/FeatureCards'
 import { LatestVideos } from '@/components/sections/LatestVideos'
-import { GbKuruSection } from '@/components/sections/GbKuruSection'
 import { getYoutubeVideos } from '@/lib/youtube'
 import type { YTVideo } from '@/lib/youtube'
 
@@ -29,16 +28,8 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Canlı GB kuru ticker */}
-      <GbKuruSection />
-
-      {/* Cinematic hero */}
       <HeroSection />
-
-      {/* 4 ana özellik kartı */}
       <FeatureCards />
-
-      {/* Son videolar */}
       <LatestVideos videos={videos} />
     </>
   )
