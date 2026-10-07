@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect } from 'react'
+import { RefreshCw, TriangleAlert } from 'lucide-react'
 
 export default function Error({
   error,
@@ -15,28 +16,20 @@ export default function Error({
   }, [error])
 
   return (
-    <section className="section-container flex min-h-[70vh] flex-col items-center justify-center py-32 text-center">
-      <p className="page-header-eyebrow">Beklenmeyen Hata</p>
-      <h1 className="page-header-title">Bir şeyler ters gitti</h1>
-      <p className="page-header-desc mx-auto mb-10">
+    <section className="container-site flex min-h-[70vh] flex-col items-center justify-center py-20 text-center">
+      <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-ember-400/30 bg-ember-500/10 text-ember-300">
+        <TriangleAlert size={26} aria-hidden="true" />
+      </span>
+      <h1 className="display-md mt-6">Bir şeyler ters gitti</h1>
+      <p className="mx-auto mt-4 max-w-md text-fg-3">
         Sayfa yüklenirken bir sorun oluştu. Tekrar deneyebilir ya da ana sayfaya dönebilirsin.
       </p>
-      <div className="flex flex-wrap justify-center gap-3">
-        <button
-          type="button"
-          onClick={reset}
-          className="card-gaming px-5 py-2.5 text-sm font-semibold"
-          style={{ color: 'var(--text-primary)', borderRadius: 8 }}
-        >
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <button type="button" onClick={reset} className="btn btn-primary">
+          <RefreshCw size={17} aria-hidden="true" />
           Tekrar dene
         </button>
-        <Link
-          href="/"
-          className="card-gaming px-5 py-2.5 text-sm font-semibold"
-          style={{ color: 'var(--gold-mid)', borderRadius: 8 }}
-        >
-          Ana sayfa
-        </Link>
+        <Link href="/" className="btn btn-secondary">Ana sayfa</Link>
       </div>
     </section>
   )

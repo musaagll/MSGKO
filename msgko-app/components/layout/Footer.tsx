@@ -1,129 +1,106 @@
-import Link from "next/link";
+import Link from 'next/link'
+import { ArrowUpRight, Mail } from 'lucide-react'
+import { Logo } from '@/components/brand/Logo'
+import { InstagramIcon, XIcon, YouTubeIcon } from '@/components/ui/BrandIcons'
+import { KO_CLASSES } from '@/lib/ko-data/classes'
+import { CONTACT_EMAIL, DATABASE_LINKS, MEDIA_LINKS, SOCIAL } from '@/lib/site'
 
-function InstagramIcon() {
+const QUICK_LINKS = [
+  { label: 'Ana Sayfa', href: '/' },
+  ...MEDIA_LINKS.map(({ label, href }) => ({ label, href })),
+  { label: 'Destek Ol', href: '/destek' },
+]
+
+function FooterColumn({ title, links }: { title: string; links: { label: string; href: string }[] }) {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-    </svg>
-  );
+    <nav aria-label={title}>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-fg-3">{title}</p>
+      <ul className="mt-4 space-y-2.5">
+        {links.map((l) => (
+          <li key={l.href}>
+            <Link href={l.href} className="link-underline text-[0.9375rem] text-fg-3 hover:text-fg">
+              {l.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
 }
 
-function YoutubeIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/>
-      <path d="m10 15 5-3-5-3z"/>
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.845L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
-    </svg>
-  );
-}
-
+/** Doküman: 4 kolon — logo/açıklama/sosyal · hızlı erişim · kategoriler · iletişim */
 export function Footer() {
+  const year = new Date().getFullYear()
   return (
-    <footer
-      className="relative z-10"
-      style={{
-        borderTop: "1px solid rgba(201,168,76,0.1)",
-        background: "rgba(7,8,13,0.95)",
-      }}
-      aria-label="Footer"
-    >
-      <div className="section-container py-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-
-          {/* Left — Brand */}
-          <div className="flex flex-col items-center md:items-start">
-            <span
-              className="font-black leading-none"
-              style={{
-                fontFamily: "var(--font-cinzel), serif",
-                fontSize: "20px",
-                background: "linear-gradient(135deg, #e8c96a 0%, #c9a84c 50%, #a07830 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-                letterSpacing: "0.06em",
-              }}
-            >
-              MSGKO
-            </span>
-            <span
-              lang="en"
-              className="uppercase tracking-[0.18em] mt-0.5"
-              style={{ fontSize: "7px", color: "#3a3530", letterSpacing: "0.2em" }}
-            >
-              Knight Online Community
-            </span>
-          </div>
-
-          {/* Center — Tagline + copyright */}
-          <div className="flex flex-col items-center text-center">
-            <p style={{ fontSize: "12px", color: "#5a5448", marginBottom: "4px" }}>
-              Aynı Oyun, Daha Güçlü Bir Topluluk.
-            </p>
-            <p style={{ fontSize: "11px", color: "#3a3530" }}>
-              © 2026 MSGKO. Tüm hakları saklıdır.
-            </p>
-          </div>
-
-          {/* Right — Social + decoration */}
-          <div className="flex flex-col items-center md:items-end gap-3">
-            <div className="flex items-center gap-2">
-              {[
-                { Icon: InstagramIcon, href: "https://www.instagram.com/msgclip/", label: "Instagram" },
-                { Icon: YoutubeIcon,   href: "https://www.youtube.com/@musaagll",  label: "YouTube" },
-                { Icon: XIcon,         href: "https://x.com/musaagll",             label: "X (Twitter)" },
-              ].map(({ Icon, href, label }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  target={href.startsWith("http") ? "_blank" : undefined}
-                  rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className="flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200"
-                  style={{
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    color: "#5a5448",
-                  }}
-                  aria-label={label}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = "#c9a84c";
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,76,0.2)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = "#5a5448";
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.06)";
-                  }}
-                >
-                  <Icon />
-                </Link>
-              ))}
-            </div>
-
-            {/* Decorative words */}
-            <div className="flex gap-3" aria-hidden="true">
-              {["PLAY", "SHARE", "BELONG"].map((w) => (
-                <span
-                  key={w}
-                  className="font-black tracking-widest"
-                  style={{ fontSize: "8px", color: "rgba(255,255,255,0.06)", letterSpacing: "0.18em" }}
-                >
-                  {w}
-                </span>
-              ))}
-            </div>
+    <footer className="pb-tabbar relative mt-10 border-t border-white/7 bg-linear-to-b from-ink-900/60 to-ink-950">
+      <div className="container-site grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:gap-12">
+        <div className="max-w-sm">
+          <Logo />
+          <p className="mt-5 text-[0.9375rem] leading-relaxed text-fg-3">
+            Knight Online için Türkçe rehber ve eğitim platformu: sınıf rehberleri, boss ve harita veritabanı,
+            eğitim videoları.
+          </p>
+          <div className="mt-6 flex gap-2">
+            {[
+              { href: SOCIAL.youtube, label: 'YouTube', Icon: YouTubeIcon },
+              { href: SOCIAL.instagram, label: 'Instagram', Icon: InstagramIcon },
+              { href: SOCIAL.x, label: 'X (Twitter)', Icon: XIcon },
+            ].map(({ href, label, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/8 bg-white/3 text-fg-3 transition-colors hover:border-amethyst-400/40 hover:text-fg"
+              >
+                <Icon size={19} />
+              </a>
+            ))}
           </div>
         </div>
+
+        <FooterColumn title="Hızlı Erişim" links={QUICK_LINKS} />
+
+        <FooterColumn
+          title="Rehberler"
+          links={[
+            ...KO_CLASSES.map((c) => ({ label: `${c.name} Rehberi`, href: `/rehber/${c.guideSlug}` })),
+            ...DATABASE_LINKS.map(({ label, href }) => ({ label, href })),
+          ]}
+        />
+
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-fg-3">İletişim</p>
+          <p className="mt-4 text-[0.9375rem] leading-relaxed text-fg-3">
+            Soru, öneri ve iş birlikleri için Instagram&apos;dan yazabilir ya da e-posta gönderebilirsin.
+          </p>
+          <ul className="mt-5 space-y-2.5">
+            <li>
+              <a href={SOCIAL.instagramDm} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[0.9375rem] font-medium text-fg-2 hover:text-fg">
+                <InstagramIcon size={17} />
+                @msgclip
+                <ArrowUpRight size={14} aria-hidden="true" className="text-fg-4" />
+              </a>
+            </li>
+            <li>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 break-all text-[0.9375rem] font-medium text-fg-2 hover:text-fg">
+                <Mail size={17} aria-hidden="true" />
+                {CONTACT_EMAIL}
+              </a>
+            </li>
+          </ul>
+          <Link href="/iletisim" className="btn btn-secondary btn-sm mt-6">İletişim sayfası</Link>
+        </div>
+      </div>
+
+      <div className="hairline" />
+      <div className="container-site flex flex-col gap-2 py-6 text-sm text-fg-4 sm:flex-row sm:items-center sm:justify-between">
+        <p>© {year} MSGKO. Tüm hakları saklıdır.</p>
+        <p className="max-w-xl sm:text-right">
+          MSGKO bağımsız bir topluluk sitesidir. Knight Online ve ilgili markalar sahiplerine aittir.
+        </p>
       </div>
     </footer>
-  );
+  )
 }

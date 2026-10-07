@@ -1,9 +1,14 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import Image from 'next/image'
+import Link from 'next/link'
 import { JsonLd } from '@/components/seo/JsonLd'
+import { PageHero } from '@/components/ui/PageHero'
+import { FaqList } from '@/components/ui/FaqList'
+import { FactList } from '@/components/ui/FactList'
+import { ArticleLayout, ContentSection, RelatedLinks, SideCard, TableOfContents } from '@/components/content/ArticleLayout'
 import { KO_CLASSES, getAllClassSlugs, getClassBySlug } from '@/lib/ko-data/classes'
+import { CLASS_META } from '@/lib/class-meta'
 import {
   buildGuideMetadata,
   buildGuideBreadcrumbs,
@@ -12,14 +17,6 @@ import {
   buildFAQSchema,
   buildClassFAQs,
 } from '@/lib/seo'
-
-const CLASS_ICONS: Record<string, string> = {
-  warrior:  '/dreadshield.png',
-  assassin: '/assassin-icon.png',
-  archer:   '/archer-icon.png',
-  mage:     '/staffwoe.png',
-  priest:   '/dreadshield.png',
-}
 
 export async function generateStaticParams() {
   return getAllClassSlugs().map((slug) => ({ slug }))
@@ -36,6 +33,8 @@ export async function generateMetadata({
   return buildGuideMetadata(cls)
 }
 
+const HIGH_SKILL_LEVELS = ['70', '72', '74', '75', '76', '78', '80'] as const
+
 export default async function RehberDetailPage({
   params,
 }: {
@@ -45,8 +44,10 @@ export default async function RehberDetailPage({
   const cls = getClassBySlug(slug)
   if (!cls) notFound()
 
+  const meta = CLASS_META[cls.slug]
   const breadcrumbs = buildGuideBreadcrumbs(cls)
   const faqs = buildClassFAQs(cls)
+  const nameLang = cls.name === cls.nameEn ? 'en' : undefined
 
   const schemas = [
     buildBreadcrumbSchema(breadcrumbs),
@@ -60,369 +61,233 @@ export default async function RehberDetailPage({
   ]
 
   const relatedClasses = KO_CLASSES.filter((c) => c.slug !== cls.slug)
+  const high = cls.highSkillRequirements
+  const highValues = [high.level70, high.level72, high.level74, high.level75, high.level76, high.level78, high.level80]
+
+  const toc = [
+    { id: 'genel-bilgi', label: `${cls.name} Hakkında` },
+    ...(cls.statBuilds.length > 0 ? [{ id: 'stat-dagilimi', label: 'Stat ve Build Dağılımı' }] : []),
+    ...(cls.skillTrees.length > 0 ? [{ id: 'skill-agaclari', label: 'Skill Ağaçları' }] : []),
+    { id: 'master-acma', label: 'Master Açma' },
+    { id: 'ileri-skill', label: 'İleri Seviye Skill' },
+    ...(cls.tips.length > 0 ? [{ id: 'ipuclari', label: 'İpuçları' }] : []),
+    { id: 'sss', label: 'Sık Sorulan Sorular' },
+  ]
 
   return (
     <>
       <JsonLd data={schemas} />
 
-      <article className="min-h-screen" style={{ background: 'var(--void)' }}>
-        {/* Breadcrumb */}
-        <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
-          <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
-            {breadcrumbs.map((crumb, i) => (
-              <li key={crumb.href} className="flex items-center gap-1.5">
-                {i > 0 && <span aria-hidden="true">/</span>}
-                {i === breadcrumbs.length - 1 ? (
-                  <span className="text-white/60">{crumb.label}</span>
-                ) : (
-                  <Link href={crumb.href} className="hover:text-white/60 transition-colors">{crumb.label}</Link>
-                )}
-              </li>
-            ))}
-          </ol>
-        </nav>
-
-        {/* Header */}
-        <header className="max-w-[1280px] mx-auto px-6 sm:px-8 py-8">
-          <div className="flex flex-col md:flex-row md:items-start gap-6">
-            <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center
-              border border-white/[0.08]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-              <Image
-                src={CLASS_ICONS[cls.slug] ?? '/dreadshield.png'}
-                alt={cls.name}
-                width={40}
-                height={40}
-                style={{ objectFit: 'contain', mixBlendMode: 'screen' }}
-              />
-            </div>
-            <div className="flex-1">
-              <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase text-gold-bright/60 mb-2">
-                KARAKTERİ REHBERİ
-              </p>
-              <h1 className="text-3xl md:text-4xl font-black tracking-[0.04em] uppercase text-white mb-3"
-                style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-                Knight Online {cls.name} Rehberi
-              </h1>
-              <p className="text-[0.88rem] leading-[1.85] text-white/55 max-w-2xl">
-                {cls.description}
-              </p>
-            </div>
-          </div>
-        </header>
-
-        <div className="max-w-[1280px] mx-auto px-6 sm:px-8 pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-10">
-
-            {/* Ana İçerik */}
-            <div className="flex flex-col gap-10">
-
-              {/* Genel Bilgi */}
-              <section aria-labelledby="genel-bilgi">
-                <h2 id="genel-bilgi" className="section-title">
-                  {cls.name} Hakkında
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {[
-                    { label: 'Birincil Stat',  value: cls.primaryStat },
-                    { label: 'Master NPC',     value: cls.masterNPC.split(' — ')[0] },
-                    { label: 'Human Unvanı',   value: cls.masterTitle.human },
-                    { label: 'Karus Unvanı',   value: cls.masterTitle.karus },
-                  ].map((item) => (
-                    <div key={item.label} className="p-3 border border-white/[0.06]"
-                      style={{ background: 'rgba(255,255,255,0.02)' }}>
-                      <p className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-1">{item.label}</p>
-                      <p className="text-[0.8rem] font-semibold text-white/80">{item.value}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-3 p-4 border border-white/[0.06]"
-                  style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <p className="text-[0.65rem] tracking-[0.2em] uppercase text-white/30 mb-2">Irk Seçenekleri</p>
-                  <div className="flex flex-wrap gap-2">
-                    {cls.races.map((r) => (
-                      <span key={r} className="text-[0.72rem] px-2.5 py-1"
-                        style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.5)' }}>
-                        {r}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              {/* Stat Dağılımı — sadece korehberi.com'dan gelen verisi olan sınıflar */}
-              {cls.statBuilds.length > 0 && (
-                <section aria-labelledby="stat-dagilimi">
-                  <h2 id="stat-dagilimi" className="section-title">
-                    {cls.name} Stat ve Build Dağılımı
-                  </h2>
-                  <p className="text-[0.78rem] text-white/35 mb-4">
-                    Aşağıdaki dağılımlar yalnızca öneri niteliği taşımaktadır. Farklı build&#39;lere göre farklı dağılımlar gerçekleştirilebilir.
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {cls.statBuilds.map((build) => (
-                      <div key={build.name} className="p-5 border border-white/[0.07]"
-                        style={{ background: 'rgba(255,255,255,0.02)' }}>
-                        <h3 className="text-[0.9rem] font-black tracking-[0.05em] uppercase text-white mb-2"
-                          style={{ fontFamily: 'var(--font-rajdhani)' }}>
-                          {build.name}
-                        </h3>
-                        <p className="text-[0.82rem] font-semibold" style={{ color: cls.color }}>
-                          {build.distribution}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Skill Ağaçları */}
-              {cls.skillTrees.length > 0 && (
-                <section aria-labelledby="skill-agaclari">
-                  <h2 id="skill-agaclari" className="section-title">
-                    {cls.name} Skill&#39;leri
-                  </h2>
-                  <div className="flex flex-col gap-4">
-                    {cls.skillTrees.map((tree) => (
-                      <details key={tree.name} className="group border border-white/[0.06]"
-                        style={{ background: 'rgba(255,255,255,0.015)' }}>
-                        <summary className="flex items-center justify-between px-5 py-4 cursor-pointer list-none">
-                          <h3 className="text-[0.84rem] font-black tracking-[0.1em] uppercase text-white/80"
-                            style={{ fontFamily: 'var(--font-rajdhani)' }}>
-                            {tree.name}
-                            <span className="text-white/30 font-normal text-[0.72rem] ml-2 normal-case">
-                              ({tree.skills.length} skill)
-                            </span>
-                          </h3>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            strokeWidth="2" className="flex-shrink-0 transition-transform duration-200 group-open:rotate-180 text-white/30" aria-hidden="true">
-                            <path d="M6 9l6 6 6-6"/>
-                          </svg>
-                        </summary>
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-[0.76rem]">
-                            <thead>
-                              <tr className="border-t border-white/[0.05]">
-                                <th className="text-left py-2 px-4 text-[0.62rem] tracking-[0.15em] uppercase text-white/30 font-semibold w-20">Seviye</th>
-                                <th className="text-left py-2 px-4 text-[0.62rem] tracking-[0.15em] uppercase text-white/30 font-semibold w-44">Skill Adı</th>
-                                <th className="text-left py-2 px-4 text-[0.62rem] tracking-[0.15em] uppercase text-white/30 font-semibold">Açıklama</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {tree.skills.map((skill, i) => (
-                                <tr key={i} className="border-t border-white/[0.04] hover:bg-white/[0.02] transition-colors">
-                                  <td className="py-2.5 px-4 text-white/40 font-mono text-center">
-                                    {skill.level === 0 ? '—' : `${skill.level}`}
-                                  </td>
-                                  <td className="py-2.5 px-4 font-semibold text-white/80">{skill.name}</td>
-                                  <td className="py-2.5 px-4 text-white/45 leading-relaxed">{skill.description}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </details>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Master Açma */}
-              <section aria-labelledby="master-acma">
-                <h2 id="master-acma" className="section-title">
-                  {cls.name} Master Nasıl Açılır?
-                </h2>
-                <div className="p-5 border border-white/[0.07]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <p className="text-[0.8rem] font-semibold text-white/70 mb-4">
-                    Gerekli eşyalar (3 adet):
-                  </p>
-                  <ul className="flex flex-col gap-3 mb-5">
-                    {cls.masterRequirements.items.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 text-[0.8rem] text-white/55">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: cls.color }} aria-hidden="true"/>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="pt-4 border-t border-white/[0.06] flex flex-col gap-1.5">
-                    <p className="text-[0.78rem] text-white/55">
-                      <span className="text-white/70 font-semibold">NPC:</span> {cls.masterRequirements.npcLocation}
-                    </p>
-                    <p className="text-[0.74rem] text-white/35">{cls.masterRequirements.notes}</p>
-                  </div>
-                </div>
-              </section>
-
-              {/* Spell Stone Powder Tablosu */}
-              <section aria-labelledby="ileri-skill">
-                <h2 id="ileri-skill" className="section-title">
-                  {cls.name} İleri Seviye Skill&#39;lerini Açma
-                </h2>
-                <p className="text-[0.78rem] text-white/40 mb-4">
-                  21 Şubat 2019 güncellemesiyle birlikte tüm sınıflar için skill açma gereksinimleri basitleştirildi.
-                  Yüksek seviye skill&#39;ler için <strong className="text-white/60">Spell Stone Powder</strong> gerekmektedir.
-                </p>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-[0.78rem] border border-white/[0.06]">
-                    <thead>
-                      <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
-                        {['70', '72', '74', '75', '76', '78', '80'].map((lvl) => (
-                          <th key={lvl} className="px-4 py-2.5 text-[0.65rem] tracking-[0.1em] uppercase text-white/40 font-semibold">
-                            Lv. {lvl}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-t border-white/[0.05]">
-                        {[
-                          cls.highSkillRequirements.level70,
-                          cls.highSkillRequirements.level72,
-                          cls.highSkillRequirements.level74,
-                          cls.highSkillRequirements.level75,
-                          cls.highSkillRequirements.level76,
-                          cls.highSkillRequirements.level78,
-                          cls.highSkillRequirements.level80,
-                        ].map((val, i) => (
-                          <td key={i} className="px-4 py-2.5 text-center text-white/60">
-                            {val ? `${val}x` : '—'}
-                          </td>
-                        ))}
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <p className="text-[0.7rem] text-white/25 mt-2">Spell Stone Powder miktarları</p>
-              </section>
-
-              {/* İpuçları */}
-              {cls.tips.length > 0 && (
-                <section aria-labelledby="ipuclari">
-                  <h2 id="ipuclari" className="section-title">
-                    {cls.name} İpuçları
-                  </h2>
-                  <ul className="flex flex-col gap-3">
-                    {cls.tips.map((tip, i) => (
-                      <li key={i} className="flex items-start gap-3 p-4 border border-white/[0.05]"
-                        style={{ background: 'rgba(255,255,255,0.01)' }}>
-                        <span className="mt-0.5 text-[0.72rem] font-bold text-white/20 flex-shrink-0 w-5 text-right">{i + 1}.</span>
-                        <p className="text-[0.8rem] leading-[1.8] text-white/55">{tip}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-
-              {/* SSS */}
-              <section aria-labelledby="sss">
-                <h2 id="sss" className="section-title">Sık Sorulan Sorular</h2>
-                <div className="flex flex-col gap-3">
-                  {faqs.map((faq, i) => (
-                    <details key={i} className="group border border-white/[0.06] p-4"
-                      style={{ background: 'rgba(255,255,255,0.015)' }}>
-                      <summary className="text-[0.82rem] font-semibold text-white/80 cursor-pointer list-none
-                        flex items-center justify-between gap-3 group-open:text-white">
-                        <span>{faq.question}</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          strokeWidth="2" className="flex-shrink-0 transition-transform group-open:rotate-180 text-white/30" aria-hidden="true">
-                          <path d="M6 9l6 6 6-6"/>
-                        </svg>
-                      </summary>
-                      <p className="mt-3 text-[0.78rem] leading-[1.8] text-white/45">{faq.answer}</p>
-                    </details>
-                  ))}
-                </div>
-              </section>
-
-            </div>
-
-            {/* Sidebar */}
-            <aside>
-              <div className="sticky top-24 flex flex-col gap-4">
-                {/* Hızlı Bilgi */}
-                <div className="p-5 border border-white/[0.07]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase text-white/60 mb-4">
-                    HIZLI BİLGİ
-                  </h3>
-                  <dl className="flex flex-col gap-3">
-                    <div>
-                      <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Birincil Stat</dt>
-                      <dd className="text-[0.82rem] font-semibold text-white">{cls.primaryStat}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Master (Human)</dt>
-                      <dd className="text-[0.82rem] font-semibold text-white">{cls.masterTitle.human}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Master (Karus)</dt>
-                      <dd className="text-[0.82rem] font-semibold text-white">{cls.masterTitle.karus}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Master NPC</dt>
-                      <dd className="text-[0.78rem] text-white/70">{cls.masterNPC}</dd>
-                    </div>
-                  </dl>
-                </div>
-
-                {/* Irklar */}
-                <div className="p-5 border border-white/[0.07]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase text-white/60 mb-3">IRKLAR</h3>
-                  <div className="flex flex-col gap-1.5">
-                    {cls.races.map((r) => (
-                      <span key={r} className="text-[0.74rem] text-white/50">{r}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Diğer Rehberler */}
-                <div className="p-5 border border-white/[0.07]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase text-white/60 mb-4">
-                    DİĞER REHBERLER
-                  </h3>
-                  <ul className="flex flex-col gap-2">
-                    {relatedClasses.map((c) => (
-                      <li key={c.slug}>
-                        <Link href={`/rehber/${c.guideSlug}`}
-                          className="flex items-center gap-2.5 text-[0.78rem] text-white/40
-                            hover:text-white/80 transition-colors duration-200 py-1">
-                          <Image
-                            src={CLASS_ICONS[c.slug] ?? '/dreadshield.png'}
-                            alt={c.name}
-                            width={16}
-                            height={16}
-                            style={{ objectFit: 'contain', mixBlendMode: 'screen', opacity: 0.7 }}
-                          />
-                          <span>{c.name} Rehberi</span>
-                        </Link>
-                      </li>
-                    ))}
-                    <li>
-                      <Link href="/rehber" className="text-[0.72rem] tracking-[0.1em] uppercase text-gold-bright/50
-                        hover:text-gold-bright transition-colors duration-200 mt-1 inline-block">
-                        Tüm Rehberler →
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </article>
-
-      <style>{`
-        .section-title {
-          font-family: var(--font-rajdhani), sans-serif;
-          font-size: 1.1rem;
-          font-weight: 900;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-          color: white;
-          margin-bottom: 1rem;
-          padding-bottom: 0.75rem;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+      <PageHero
+        breadcrumbs={breadcrumbs}
+        eyebrow="Karakter Rehberi"
+        accent={cls.color}
+        art={{ src: meta.art, position: meta.focus }}
+        title={
+          <>
+            <span lang="en">Knight Online</span> <span lang={nameLang}>{cls.name}</span> Rehberi
+          </>
         }
-      `}</style>
+        description={<p>{cls.description}</p>}
+      >
+        <ul className="flex flex-wrap gap-2">
+          <li className="chip border" style={{ color: cls.color, borderColor: `${cls.color}55`, background: `${cls.color}14` }}>{meta.role}</li>
+          <li className="chip">Ana stat: {cls.primaryStat}</li>
+          <li className="chip">Human: {cls.masterTitle.human}</li>
+          <li className="chip">Karus: {cls.masterTitle.karus}</li>
+        </ul>
+      </PageHero>
+
+      <ArticleLayout
+        aside={
+          <>
+            <SideCard title="Bu sayfada">
+              <TableOfContents items={toc} />
+            </SideCard>
+            <SideCard title="Hızlı Bilgi">
+              <FactList
+                facts={[
+                  { label: 'Birincil Stat', value: cls.primaryStat },
+                  { label: 'Master (Human)', value: cls.masterTitle.human },
+                  { label: 'Master (Karus)', value: cls.masterTitle.karus },
+                  { label: 'Master NPC', value: <span className="font-normal text-fg-2">{cls.masterNPC}</span> },
+                ]}
+              />
+            </SideCard>
+            <SideCard title="Irklar">
+              <ul className="flex flex-wrap gap-1.5">
+                {cls.races.map((r) => <li key={r} className="chip">{r}</li>)}
+              </ul>
+            </SideCard>
+            <SideCard title="Diğer Rehberler">
+              <RelatedLinks
+                links={relatedClasses.map((c) => ({ label: `${c.name} Rehberi`, href: `/rehber/${c.guideSlug}` }))}
+                all={{ label: 'Tüm Rehberler', href: '/rehber' }}
+              />
+            </SideCard>
+          </>
+        }
+      >
+        {/* Genel Bilgi */}
+        <ContentSection id="genel-bilgi" title={`${cls.name} Hakkında`}>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {[
+              { label: 'Birincil Stat', value: cls.primaryStat },
+              { label: 'Master NPC', value: cls.masterNPC.split(' — ')[0] },
+              { label: 'Human Unvanı', value: cls.masterTitle.human },
+              { label: 'Karus Unvanı', value: cls.masterTitle.karus },
+            ].map((f) => (
+              <div key={f.label} className="card p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-fg-4">{f.label}</p>
+                <p className="mt-1.5 font-semibold text-fg">{f.value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="card mt-3 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-fg-4">Irk Seçenekleri</p>
+            <ul className="mt-2.5 flex flex-wrap gap-1.5">
+              {cls.races.map((r) => <li key={r} className="chip">{r}</li>)}
+            </ul>
+          </div>
+        </ContentSection>
+
+        {/* Stat Dağılımı — sadece korehberi.com'dan gelen verisi olan sınıflar */}
+        {cls.statBuilds.length > 0 && (
+          <ContentSection id="stat-dagilimi" title={`${cls.name} Stat ve Build Dağılımı`}>
+            <p className="mb-4 text-fg-3">
+              Aşağıdaki dağılımlar yalnızca öneri niteliği taşımaktadır. Farklı build&#39;lere göre farklı dağılımlar gerçekleştirilebilir.
+            </p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {cls.statBuilds.map((build) => (
+                <div key={build.name} className="card relative overflow-hidden p-5">
+                  <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1" style={{ background: cls.color }} />
+                  <h3 className="text-lg font-bold">{build.name}</h3>
+                  <p className="mt-2 font-semibold" style={{ color: cls.color }}>{build.distribution}</p>
+                </div>
+              ))}
+            </div>
+          </ContentSection>
+        )}
+
+        {/* Skill Ağaçları */}
+        {cls.skillTrees.length > 0 && (
+          <ContentSection id="skill-agaclari" title={`${cls.name} Skill'leri`}>
+            <div className="space-y-3">
+              {cls.skillTrees.map((tree, ti) => (
+                <details key={tree.name} open={ti === 0} className="card group overflow-hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-white/3 [&::-webkit-details-marker]:hidden">
+                    <h3 className="text-base font-bold">
+                      {tree.name} <span className="ml-1 text-sm font-medium text-fg-4">({tree.skills.length} skill)</span>
+                    </h3>
+                    <span aria-hidden="true" className="text-xl leading-none text-amethyst-300 transition-transform duration-300 group-open:rotate-45">+</span>
+                  </summary>
+                  <div className="overflow-x-auto border-t border-white/6">
+                    <table className="table-ko table-stack min-w-136">
+                      <thead>
+                        <tr>
+                          <th scope="col" className="w-20">Seviye</th>
+                          <th scope="col" className="w-48">Skill Adı</th>
+                          <th scope="col">Açıklama</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tree.skills.map((skill, i) => (
+                          <tr key={i}>
+                            <td data-label="Lv." className="tabular-nums text-fg-3">{skill.level === 0 ? "—" : `${skill.level}`}</td>
+                            <td data-primary className="font-semibold text-fg">{skill.name}</td>
+                            <td data-full>{skill.description}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </ContentSection>
+        )}
+
+        {/* Master Açma */}
+        <ContentSection id="master-acma" title={`${cls.name} Master Nasıl Açılır?`}>
+          <div className="card p-5 sm:p-6">
+            <p className="font-semibold text-fg">Gerekli eşyalar (3 adet):</p>
+            <ol className="mt-4 space-y-3">
+              {cls.masterRequirements.items.map((item, i) => (
+                <li key={i} className="flex gap-3 text-fg-2">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                    style={{ color: cls.color, background: `${cls.color}1f` }}
+                  >
+                    {i + 1}
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-5 space-y-1.5 border-t border-white/7 pt-5">
+              <p className="text-fg-2"><span className="font-semibold text-fg">NPC:</span> {cls.masterRequirements.npcLocation}</p>
+              <p className="text-sm text-fg-3">{cls.masterRequirements.notes}</p>
+            </div>
+          </div>
+        </ContentSection>
+
+        {/* Spell Stone Powder Tablosu */}
+        <ContentSection id="ileri-skill" title={`${cls.name} İleri Seviye Skill'lerini Açma`}>
+          <p className="mb-4 text-fg-3">
+            21 Şubat 2019 güncellemesiyle birlikte tüm sınıflar için skill açma gereksinimleri basitleştirildi.
+            Yüksek seviye skill&#39;ler için <strong className="text-fg-2">Spell Stone Powder</strong> gerekmektedir.
+          </p>
+          <div className="card overflow-x-auto">
+            <table className="table-ko min-w-136 text-center">
+              <thead>
+                <tr>
+                  {HIGH_SKILL_LEVELS.map((lvl) => (
+                    <th key={lvl} scope="col" className="text-center">Lv. {lvl}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {highValues.map((val, i) => (
+                    <td key={i} className="text-center font-semibold tabular-nums text-fg">{val ? `${val}x` : '—'}</td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-sm text-fg-4">Spell Stone Powder miktarları</p>
+        </ContentSection>
+
+        {/* İpuçları */}
+        {cls.tips.length > 0 && (
+          <ContentSection id="ipuclari" title={`${cls.name} İpuçları`}>
+            <ol className="space-y-3">
+              {cls.tips.map((tip, i) => (
+                <li key={i} className="card flex gap-4 p-4 sm:p-5">
+                  <span aria-hidden="true" className="font-display text-lg font-bold leading-6 text-amethyst-300">{i + 1}</span>
+                  <p className="leading-relaxed text-fg-2">{tip}</p>
+                </li>
+              ))}
+            </ol>
+          </ContentSection>
+        )}
+
+        {/* SSS */}
+        <ContentSection id="sss" title="Sık Sorulan Sorular">
+          <FaqList faqs={faqs} />
+        </ContentSection>
+
+        <div className="card flex items-center gap-4 p-5">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-white/8 bg-ink-800">
+            <Image src={meta.weapon} alt="" width={40} height={40} className="h-10 w-10 object-contain" />
+          </span>
+          <p className="text-sm text-fg-3">
+            Oyun güncellemeleriyle değerler değişebilir. Hatalı ya da eskimiş bir bilgi gördüysen{' '}
+            <Link href="/iletisim" className="font-semibold text-amethyst-300 hover:text-amethyst-200">bize bildir</Link>.
+          </p>
+        </div>
+      </ArticleLayout>
     </>
   )
 }

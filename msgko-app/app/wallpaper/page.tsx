@@ -1,8 +1,13 @@
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/seo/JsonLd'
+import { PageHero } from '@/components/ui/PageHero'
 import { WallpaperClient } from './wallpaper-client'
-
+import { getWallpapers } from '@/lib/wallpapers'
+import { SECTION_ART } from '@/lib/class-meta'
 import { SITE_URL as BASE_URL } from '@/lib/site'
+
+// Liste sunucuda üretilir; yeni yüklenen duvar kağıtları 5 dakika içinde görünür
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: { absolute: 'Knight Online Wallpaper — Ücretsiz HD Duvar Kağıtları | MSGKO' },
@@ -69,11 +74,29 @@ const webPageSchema = {
   inLanguage: 'tr',
 }
 
-export default function WallpaperPage() {
+export default async function WallpaperPage() {
+  const wallpapers = await getWallpapers()
+
   return (
     <>
       <JsonLd data={webPageSchema} />
-      <WallpaperClient />
+
+      <PageHero
+        breadcrumbs={[{ label: 'Ana Sayfa', href: '/' }, { label: 'Knight Online Wallpaper', href: '/wallpaper' }]}
+        eyebrow="Duvar Kağıtları"
+        art={{ src: SECTION_ART.wallpaper, position: '60% 40%' }}
+        title={<span lang="en">Knight Online Wallpaper</span>}
+        description={
+          <p>
+            PC ve telefon için ücretsiz, yüksek çözünürlüklü Knight Online duvar kağıtları. Asas, okçu, warrior, mage
+            ve priest karakterleri için özel tasarımlar — büyütmek için tıkla, tek dokunuşla indir.
+          </p>
+        }
+      />
+
+      <section aria-label="Duvar kağıdı galerisi" className="container-site py-10 sm:py-14">
+        <WallpaperClient wallpapers={wallpapers} />
+      </section>
     </>
   )
 }

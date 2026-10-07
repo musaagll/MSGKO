@@ -108,6 +108,17 @@ export const SEARCH_INDEX: SearchItem[] = [
     badgeColor: 'pink',
   },
   {
+    id: 'gb-fiyatlari',
+    type: 'sayfa',
+    title: 'GB Fiyatları',
+    description: 'Knight Online GB fiyatlarını siteler arasında karşılaştır',
+    action: 'link',
+    href: '/gb-fiyatlari',
+    keywords: ['gb', 'gb fiyat', 'gold bar', 'gb kuru', 'gb satış', 'ucuz gb', 'gb al', 'gb sat', 'fiyat'],
+    badge: 'Araç',
+    badgeColor: 'green',
+  },
+  {
     id: 'wallpaper',
     type: 'sayfa',
     title: 'Knight Online Wallpaper',

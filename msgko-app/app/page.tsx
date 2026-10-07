@@ -1,7 +1,11 @@
 import type { Metadata } from 'next'
 import { HeroSection } from '@/components/sections/HeroSection'
-import { FeatureCards } from '@/components/sections/FeatureCards'
+import { ClassGuideSection } from '@/components/sections/ClassGuideSection'
 import { LatestVideos } from '@/components/sections/LatestVideos'
+import { QuickAccessSection } from '@/components/sections/QuickAccessSection'
+import { FeatureCards } from '@/components/sections/FeatureCards'
+import { WallpaperTeaser } from '@/components/sections/WallpaperTeaser'
+import { CommunitySection } from '@/components/sections/CommunitySection'
 import { getYoutubeVideos } from '@/lib/youtube'
 import type { YTVideo } from '@/lib/youtube'
 import { SITE_URL } from '@/lib/site'
@@ -30,8 +34,12 @@ export default async function HomePage() {
   return (
     <>
       <HeroSection />
-      <FeatureCards />
+      <ClassGuideSection />
       <LatestVideos videos={videos} />
+      <QuickAccessSection />
+      <FeatureCards />
+      <WallpaperTeaser />
+      <CommunitySection />
     </>
   )
 }

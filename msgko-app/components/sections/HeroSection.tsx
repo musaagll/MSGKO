@@ -1,202 +1,101 @@
-"use client";
+import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowRight, BookOpen, Crosshair } from 'lucide-react'
+import { KO_CLASSES } from '@/lib/ko-data/classes'
+import { getPublishedBossSlugs } from '@/lib/ko-data/bosses'
+import { getPublishedMapSlugs } from '@/lib/ko-data/maps'
+import { getPublishedItemSlugs } from '@/lib/ko-data/items'
 
-import Link from "next/link";
-import Image from "next/image";
-import { BookOpen, Play } from "lucide-react";
-import { useState } from "react";
-import { OkcuModal } from "@/components/ui/OkcuModal";
-import { AsasModal } from "@/components/ui/AsasModal";
-
+/**
+ * Ana sayfa hero'su — sinematik, tam genişlik, bölünmüş düzen (doküman).
+ * Sol: pelerininde MSG amblemi taşıyan şövalye · Sağ: başlık ve aksiyonlar.
+ */
 export function HeroSection() {
-  const [okcuOpen, setOkcuOpen] = useState(false);
-  const [asasOpen, setAsasOpen] = useState(false);
+  const stats = [
+    { value: KO_CLASSES.length, label: 'Sınıf rehberi', href: '/rehber' },
+    { value: getPublishedBossSlugs().length, label: 'Boss', href: '/boss' },
+    { value: getPublishedMapSlugs().length, label: 'Harita', href: '/harita' },
+    { value: getPublishedItemSlugs().length, label: 'Item', href: '/item' },
+  ]
 
   return (
-    <>
-      <section
-        className="relative overflow-hidden w-full"
-        style={{ height: "calc(100vh - 68px)", minHeight: "580px", maxHeight: "780px", marginTop: "68px" }}
-        aria-label="Hero"
-        suppressHydrationWarning
+    <section
+      aria-labelledby="hero-baslik"
+      className="relative isolate -mt-(--header-h) flex min-h-[min(100svh,60rem)] items-end overflow-hidden lg:min-h-[min(100svh,52rem)] lg:items-center"
+    >
+      <Image
+        src="/Gorsel/arkaplan.png"
+        alt=""
+        fill
+        priority
+        // Dikey ekranda object-cover görseli ~yükseklik×1.78 genişliğe büyütür
+        sizes="(max-width: 1024px) 1400px, 100vw"
+        className="-z-20 object-cover object-[30%_center] lg:object-[20%_center]"
+      />
+      {/* Okunabilirlik katmanları */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-linear-to-t from-ink-950 via-ink-950/70 to-ink-950/10 lg:bg-linear-to-l lg:from-ink-950 lg:via-ink-950/80 lg:to-transparent" />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-40 bg-linear-to-b from-ink-950/80 to-transparent" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-ink-950 to-transparent" />
+
+      {/* Marka sözü (dekoratif) */}
+      <p
+        aria-hidden="true"
+        className="absolute bottom-10 left-[max(2rem,calc((100vw-75rem)/2+2rem))] hidden max-w-60 font-display text-sm italic leading-relaxed text-fg-3/70 xl:block"
       >
-        {/* Full-width cinematic background */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/Gorsel/arkaplan.png"
-            alt=""
-            aria-hidden="true"
-            fill
-            priority
-            // Dikey ekranda object-cover görseli ~yükseklik×1.78 genişliğe büyütür
-            sizes="(max-width: 1024px) 1400px, 100vw"
-            className="object-cover object-center"
-            style={{ filter: "brightness(0.72) saturate(0.9)" }}
-          />
+        “Bazı oyunlar geçici, bazıları ise bir yaşam tarzıdır.”
+      </p>
 
-          {/* Left-side dark gradient */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(90deg, rgba(7,8,13,0.92) 0%, rgba(7,8,13,0.75) 30%, rgba(7,8,13,0.35) 55%, rgba(7,8,13,0.10) 75%, transparent 100%)",
-            }}
-          />
-
-          {/* Top dark fade */}
-          <div
-            className="absolute top-0 left-0 right-0"
-            style={{ height: "120px", background: "linear-gradient(to bottom, rgba(7,8,13,0.85) 0%, transparent 100%)" }}
-          />
-
-          {/* Subtle gold tint overlay */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse 60% 80% at 30% 60%, rgba(201,168,76,0.04) 0%, transparent 70%)" }}
-          />
-        </div>
-
-        {/* RIGHT: Decorative "MORE THAN A GAME" */}
-        <div
-          className="absolute right-8 top-16 z-10 hidden lg:flex flex-col items-end gap-1 select-none"
-          aria-hidden="true"
-        >
-          <span className="text-xs font-semibold tracking-[0.22em] uppercase" style={{ color: "#5a5448" }}>More</span>
-          <span className="text-xs font-semibold tracking-[0.22em] uppercase" style={{ color: "#5a5448" }}>Than A</span>
-          <span className="text-xs font-semibold tracking-[0.22em] uppercase" style={{ color: "#5a5448" }}>Game</span>
-        </div>
-
-        {/* RIGHT: Quote block */}
-        <div
-          className="absolute right-8 top-32 z-10 hidden xl:block max-w-[220px] select-none"
-          aria-hidden="true"
-        >
-          <p
-            className="italic leading-relaxed"
-            style={{ fontSize: "12px", color: "rgba(240,234,214,0.35)", fontFamily: "var(--font-cinzel), serif" }}
-          >
-            &ldquo;Bazı oyunlar geçici, bazıları ise bir yaşam tarzıdır.&rdquo;
+      <div className="container-site grid grid-cols-1 pb-14 pt-[calc(var(--header-h)+18rem)] sm:pt-[calc(var(--header-h)+22rem)] lg:grid-cols-2 lg:py-[calc(var(--header-h)+4rem)]">
+        <div className="animate-[rise-in_.8s_var(--ease-soft)_both] lg:col-start-2">
+          {/* 360px altında tek satıra sığması için çizgi gizlenir ve harf aralığı daraltılır */}
+          <p className="eyebrow max-[359px]:tracking-[0.14em] max-[359px]:before:hidden">
+            <span lang="en">Knight Online</span>
+            <span aria-hidden="true">·</span>
+            <span>Türkçe Rehber</span>
           </p>
-        </div>
 
-        {/* BOTTOM RIGHT: Knight Lives On */}
-        <div
-          className="absolute bottom-12 right-12 z-10 hidden lg:block select-none"
-          style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "13px", color: "rgba(201,168,76,0.28)", fontStyle: "italic", letterSpacing: "0.08em" }}
-          aria-hidden="true"
-        >
-          Knight Lives On
-        </div>
+          <h1 id="hero-baslik" className="mt-5">
+            <span className="display-xl text-silver block drop-shadow-[0_4px_24px_rgba(0,0,0,0.6)]">MSGKO</span>
+            <span className="sr-only"> — </span>
+            <span className="mt-4 block text-2xl font-semibold leading-tight text-fg sm:text-3xl">
+              <span lang="en">Knight Online</span> Rehber Platformu
+            </span>
+          </h1>
 
-        {/* LEFT: Text content */}
-        <div className="relative z-10 h-full flex items-center">
-          <div className="section-container w-full">
-            <div className="max-w-[540px]">
+          <h2 className="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-amethyst-300">
+            Oyuncular İçin Daha Fazlası
+          </h2>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-fg-3 sm:text-lg">
+            Knight Online dünyasına dair rehberler, içerikler, araçlar ve daha fazlası. Tek bir yerde, oyuncular için.
+          </p>
 
-              {/* Eyebrow */}
-              <div className="flex items-center gap-3 mb-5">
-                <span lang="en" className="text-xs font-bold uppercase tracking-[0.22em]" style={{ color: "#c9a84c", letterSpacing: "0.2em" }}>
-                  Knight Online
-                </span>
-                <span className="gold-line" aria-hidden="true" />
-              </div>
-
-              {/* Main title */}
-              <h1
-                className="sr-only"
-              >
-                MSGKO — Knight Online Rehber Platformu
-              </h1>
-              <div
-                aria-hidden="true"
-                className="font-black leading-none mb-5"
-                style={{
-                  fontFamily: "var(--font-cinzel), serif",
-                  fontSize: "clamp(64px, 9vw, 110px)",
-                  background: "linear-gradient(135deg, #ffffff 0%, #e8c96a 40%, #c9a84c 70%, #a07830 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                MSGKO
-              </div>
-
-              {/* Sub-headline */}
-              <h2
-                className="font-bold uppercase tracking-wider mb-5"
-                style={{ fontSize: "clamp(15px, 2vw, 22px)", color: "#f0ead6", letterSpacing: "0.08em", lineHeight: 1.2 }}
-              >
-                Oyuncular İçin Daha Fazlası
-              </h2>
-
-              {/* Description */}
-              <p className="leading-relaxed mb-8" style={{ fontSize: "14px", color: "#9a9080", maxWidth: "420px" }}>
-                Knight Online dünyasına dair rehberler, içerikler, araçlar ve daha fazlası.
-                Tek bir yerde, oyuncular için.
-              </p>
-
-              {/* CTA buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => setAsasOpen(true)}
-                  className="inline-flex items-center gap-3 px-6 py-3.5 rounded-lg font-semibold text-sm transition-all duration-200 group"
-                  style={{ background: "transparent", border: "1px solid #c9a84c", color: "#f0ead6" }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.12)";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "0 0 20px rgba(201,168,76,0.15)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = "transparent";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "none";
-                  }}
-                >
-                  <BookOpen size={16} strokeWidth={1.75} style={{ color: "#c9a84c" }} />
-                  Asas Eğitimleri
-                  <span style={{ color: "#c9a84c" }}>→</span>
-                </button>
-
-                <button
-                  onClick={() => setOkcuOpen(true)}
-                  className="inline-flex items-center gap-3 px-6 py-3.5 rounded-lg font-semibold text-sm transition-all duration-200"
-                  style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.12)", color: "#9a9080" }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.22)";
-                    (e.currentTarget as HTMLElement).style.color = "#f0ead6";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)";
-                    (e.currentTarget as HTMLElement).style.color = "#9a9080";
-                  }}
-                >
-                  <Play size={14} className="fill-current" />
-                  Okçu Eğitimleri
-                  <span>→</span>
-                </button>
-
-                <Link
-                  href="/rehber"
-                  className="inline-flex items-center gap-3 px-6 py-3.5 rounded-lg font-semibold text-sm transition-all duration-200"
-                  style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.08)", color: "#5a5448", textDecoration: "none" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#9a9080"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#5a5448"; }}
-                >
-                  Tüm Rehberler →
-                </Link>
-              </div>
-            </div>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <Link href="/rehber/asas" className="btn btn-primary btn-lg">
+              <Crosshair size={18} aria-hidden="true" />
+              Asas Rehberi
+            </Link>
+            <Link href="/rehber/okcu" className="btn btn-secondary btn-lg">
+              <BookOpen size={18} aria-hidden="true" />
+              Okçu Rehberi
+            </Link>
+            <Link href="/rehber" className="btn btn-ghost btn-lg">
+              Tüm rehberler
+              <ArrowRight size={18} aria-hidden="true" />
+            </Link>
           </div>
+
+          <ul aria-label="İçerik sayıları" className="mt-10 grid max-w-xl grid-cols-4 overflow-hidden rounded-2xl border border-white/10 bg-ink-950/50 backdrop-blur-md">
+            {stats.map((s, i) => (
+              <li key={s.href} className={i > 0 ? 'border-l border-white/10' : ''}>
+                <Link href={s.href} className="flex flex-col items-center px-2 py-4 transition-colors hover:bg-white/5 sm:py-5">
+                  <span className="font-display text-2xl font-bold tabular-nums text-fg sm:text-3xl">{s.value}</span>
+                  <span className="mt-1 text-center text-xs text-fg-3">{s.label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
-
-        {/* Bottom fade */}
-        <div
-          className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
-          style={{ height: "160px", background: "linear-gradient(to top, #07080d 0%, rgba(7,8,13,0.7) 50%, transparent 100%)" }}
-        />
-      </section>
-
-      <OkcuModal isOpen={okcuOpen} onClose={() => setOkcuOpen(false)} />
-      <AsasModal isOpen={asasOpen} onClose={() => setAsasOpen(false)} />
-    </>
-  );
+      </div>
+    </section>
+  )
 }

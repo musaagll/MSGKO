@@ -1,147 +1,145 @@
-"use client";
+'use client'
 
-import { useEffect, useCallback } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { X, ExternalLink } from "lucide-react";
+import { useEffect, useRef } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { ArrowUpRight, Search, X } from 'lucide-react'
+import { Logo } from '@/components/brand/Logo'
+import { InstagramIcon, XIcon, YouTubeIcon } from '@/components/ui/BrandIcons'
+import { useModal } from '@/hooks/useModal'
+import { KO_CLASSES } from '@/lib/ko-data/classes'
+import { CLASS_META } from '@/lib/class-meta'
+import { DATABASE_LINKS, MEDIA_LINKS, SECONDARY_LINKS, SOCIAL } from '@/lib/site'
 
 interface Props {
-  isOpen:          boolean;
-  onClose:         () => void;
-  onYoutubeOpen:   () => void;
-  onInstagramOpen: () => void;
-  onIletisimOpen:  () => void;
-  onAsasOpen:      () => void;
-  onWallpaperOpen: () => void;
+  open: boolean
+  onClose: () => void
+  onSearch: () => void
 }
 
-const drawerNavItems = [
-  { label: "Anasayfa",    href: "/" },
-  { label: "Rehber",      href: "/rehber" },
-  { label: "Wallpaper",   href: "/wallpaper" },
-  { label: "GB Takip",    href: "/gb-fiyatlari" },
-  { label: "Videolar",    href: "/youtube" },
-  { label: "İletişim",    href: "/iletisim" },
-];
+/** Mobil kaydırmalı menü (doküman: slide panel + body lock) */
+export function MobileDrawer({ open, onClose, onSearch }: Props) {
+  const pathname = usePathname()
+  const closeRef = useRef<HTMLButtonElement>(null)
+  const returnFocus = useRef<HTMLElement | null>(null)
 
-export function MobileDrawer({ isOpen, onClose, onYoutubeOpen, onInstagramOpen, onIletisimOpen }: Props) {
-  const pathname = usePathname();
+  useModal(open, onClose) // ESC + kaydırma kilidi
 
-  useEffect(() => { onClose(); }, [pathname, onClose]);
-
-  const handleKey = useCallback((e: KeyboardEvent) => { if (e.key === "Escape") onClose(); }, [onClose]);
-
+  // Açılınca odağı panele al, kapanınca tetikleyiciye geri ver
   useEffect(() => {
-    if (isOpen) {
-      document.addEventListener("keydown", handleKey);
-      document.body.style.overflow = "hidden";
+    if (open) {
+      returnFocus.current = document.activeElement as HTMLElement | null
+      closeRef.current?.focus()
     } else {
-      document.body.style.overflow = "";
+      returnFocus.current?.focus?.()
     }
-    return () => { document.removeEventListener("keydown", handleKey); document.body.style.overflow = ""; };
-  }, [isOpen, handleKey]);
+  }, [open])
+
+  const linkCls = (href: string) =>
+    `flex min-h-12 items-center justify-between rounded-xl px-3 text-[0.9375rem] font-medium transition-colors ${
+      pathname === href || pathname.startsWith(href + '/') ? 'bg-white/6 text-fg' : 'text-fg-2 hover:bg-white/4'
+    }`
 
   return (
-    <>
+    <div className={`fixed inset-0 z-60 xl:hidden ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
+      {/* Karartma */}
       <div
-        className="fixed inset-0 z-[60] md:hidden transition-opacity duration-300"
-        style={{ background: "rgba(0,0,0,0.7)", opacity: isOpen ? 1 : 0, pointerEvents: isOpen ? "auto" : "none" }}
         onClick={onClose}
-        aria-hidden="true"
+        className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
       />
+
       <div
-        className="fixed top-0 right-0 bottom-0 z-[61] md:hidden w-[80vw] max-w-[320px] flex flex-col transition-transform duration-300 ease-out"
-        style={{
-          background: "rgba(10,9,13,0.98)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
-          borderLeft: "1px solid rgba(201,168,76,0.12)",
-          transform: isOpen ? "translateX(0)" : "translateX(100%)",
-          paddingTop: "env(safe-area-inset-top)",
-          paddingBottom: "env(safe-area-inset-bottom)",
-        }}
+        id="mobil-menu"
         role="dialog"
         aria-modal="true"
         aria-label="Menü"
+        inert={!open}
+        className={`absolute inset-y-0 right-0 flex w-[min(24rem,calc(100vw-2.5rem))] flex-col border-l border-white/8 bg-ink-900 shadow-2xl shadow-black transition-transform duration-300 ease-soft ${
+          open ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(201,168,76,0.08)" }}>
-          <div className="flex flex-col leading-none">
-            <span style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "18px", background: "linear-gradient(135deg, #e8c96a, #c9a84c)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", fontWeight: 900, letterSpacing: "0.06em" }}>
-              MSGKO
-            </span>
-            <span style={{ fontSize: "6.5px", color: "#3a3530", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: "1px" }}>Menü</span>
-          </div>
-          <button
-            onClick={onClose}
-            className="flex items-center justify-center w-8 h-8 rounded-lg active:scale-90"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#5a5448" }}
-            aria-label="Kapat"
-          >
-            <X size={15} />
+        <div className="flex h-(--header-h) shrink-0 items-center justify-between border-b border-white/6 px-4">
+          <Logo />
+          <button ref={closeRef} type="button" onClick={onClose} aria-label="Menüyü kapat" className="btn btn-ghost h-11 min-h-11 w-11 px-0">
+            <X size={22} aria-hidden="true" />
           </button>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto px-3 py-3">
-          <ul className="flex flex-col gap-0.5">
-            {drawerNavItems.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200"
-                    style={{
-                      background: active ? "rgba(201,168,76,0.07)" : "transparent",
-                      border: active ? "1px solid rgba(201,168,76,0.15)" : "1px solid transparent",
-                      color: active ? "var(--text-primary)" : "#5a5448",
-                      textDecoration: "none",
-                    }}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
+        <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-4">
+          <button
+            type="button"
+            onClick={onSearch}
+            className="mb-5 flex min-h-12 w-full items-center gap-3 rounded-xl border border-white/8 bg-white/3 px-4 text-left text-fg-3"
+          >
+            <Search size={18} aria-hidden="true" />
+            Rehber, boss, harita ara…
+          </button>
+
+          <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-[0.16em] text-fg-4">Sınıf Rehberleri</p>
+          <ul className="mb-5 grid grid-cols-2 gap-1.5">
+            {KO_CLASSES.map((cls) => (
+              <li key={cls.slug}>
+                <Link href={`/rehber/${cls.guideSlug}`} onClick={onClose} className={`${linkCls(`/rehber/${cls.guideSlug}`)} justify-start gap-2.5`}>
+                  <Image src={CLASS_META[cls.slug].weapon} alt="" width={24} height={24} className="h-6 w-6 object-contain" />
+                  {cls.name}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link href="/rehber" onClick={onClose} className={`${linkCls('/rehber-tum')} text-amethyst-300`}>
+                Tümü
+              </Link>
+            </li>
           </ul>
 
-          <div className="my-5 h-px" style={{ background: "rgba(201,168,76,0.08)" }} />
+          <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-[0.16em] text-fg-4">Veritabanı</p>
+          <ul className="mb-5 space-y-0.5">
+            {DATABASE_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} onClick={onClose} className={linkCls(l.href)}>{l.label}</Link>
+              </li>
+            ))}
+          </ul>
 
-          <p className="px-4 mb-2 text-xs uppercase tracking-widest" style={{ color: "#3a3530", letterSpacing: "0.14em" }}>Sosyal</p>
-          {[
-            { label: "YouTube Kanalı", action: () => onYoutubeOpen() },
-            { label: "Instagram",      action: () => onInstagramOpen() },
-            { label: "İletişim",       action: () => onIletisimOpen() },
-          ].map(({ label, action }) => (
-            <button
-              key={label}
-              onClick={action}
-              className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-sm transition-colors duration-200"
-              style={{ color: "#5a5448", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
-            >
-              <span className="font-medium">{label}</span>
-              <ExternalLink size={12} className="opacity-40" />
-            </button>
-          ))}
+          <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-[0.16em] text-fg-4">Medya & Araçlar</p>
+          <ul className="mb-5 space-y-0.5">
+            {MEDIA_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} onClick={onClose} className={linkCls(l.href)}>{l.label}</Link>
+              </li>
+            ))}
+          </ul>
 
-          {[
-            { label: "Instagram", href: "https://instagram.com/msgclip" },
-          ].map(({ label, href }) => (
-            <Link
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm transition-colors duration-200"
-              style={{ color: "#5a5448", textDecoration: "none" }}
-            >
-              <span className="font-medium">{label}</span>
-              <ExternalLink size={12} className="opacity-40" />
-            </Link>
-          ))}
-        </nav>
+          <ul className="space-y-0.5 border-t border-white/6 pt-4">
+            {SECONDARY_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} onClick={onClose} className={linkCls(l.href)}>{l.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="shrink-0 border-t border-white/6 p-4">
+          <a href={SOCIAL.youtubeSubscribe} target="_blank" rel="noopener noreferrer" className="btn btn-primary w-full">
+            <YouTubeIcon size={18} />
+            YouTube&apos;da Abone Ol
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </a>
+          <div className="mt-3 flex justify-center gap-2">
+            <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="btn btn-ghost h-11 min-h-11 w-11 px-0">
+              <InstagramIcon size={20} />
+            </a>
+            <a href={SOCIAL.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="btn btn-ghost h-11 min-h-11 w-11 px-0">
+              <YouTubeIcon size={20} />
+            </a>
+            <a href={SOCIAL.x} target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="btn btn-ghost h-11 min-h-11 w-11 px-0">
+              <XIcon size={18} />
+            </a>
+          </div>
+        </div>
       </div>
-    </>
-  );
+    </div>
+  )
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { DestekClient } from './destek-client'
+import { PageHero } from '@/components/ui/PageHero'
 
 import { SITE_URL as BASE_URL } from '@/lib/site'
 
@@ -59,7 +60,15 @@ export default function DestekPage() {
   return (
     <>
       <JsonLd data={breadcrumbSchema} />
-      <DestekClient />
+      <PageHero
+        breadcrumbs={[{ label: 'Ana Sayfa', href: '/' }, { label: 'Destek', href: '/destek' }]}
+        eyebrow="MSGKO’yu Destekle"
+        title="Destek"
+        description={<p>MSGKO rehberleri ve videoları ücretsiz. Yeni içeriklerin devam etmesine katkıda bulunmak istersen aşağıdaki platformları kullanabilirsin.</p>}
+      />
+      <div className="container-site py-12 sm:py-16">
+        <DestekClient />
+      </div>
     </>
   )
 }

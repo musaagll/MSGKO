@@ -1,10 +1,17 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import Link from 'next/link'
-import { MaybeLink } from '@/components/ui/MaybeLink'
+import { Castle, Skull, Swords, Users } from 'lucide-react'
 import { JsonLd } from '@/components/seo/JsonLd'
+import { MaybeLink } from '@/components/ui/MaybeLink'
+import { PageHero } from '@/components/ui/PageHero'
+import { FaqList } from '@/components/ui/FaqList'
+import { FactList } from '@/components/ui/FactList'
+import { RichText } from '@/components/ui/RichText'
+import { ArticleLayout, ContentSection, RelatedLinks, SideCard } from '@/components/content/ArticleLayout'
+import { MAP_TYPE, levelRange } from '@/components/cards/MapCard'
 import { KO_MAPS, getMapBySlug, getPublishedMapSlugs } from '@/lib/ko-data/maps'
 import { isPublishedBoss } from '@/lib/ko-data/bosses'
+import { SECTION_ART } from '@/lib/class-meta'
 import {
   buildMapMetadata,
   buildMapBreadcrumbs,
@@ -79,226 +86,150 @@ export default async function HaritaDetailPage({
     (m) => m.slug !== map.slug && m.is_published && m.map_type === map.map_type
   ).slice(0, 4)
 
+  const type = MAP_TYPE[map.map_type] ?? MAP_TYPE.pve
+  const range = levelRange(map.min_level, map.max_level)
+
   return (
     <>
       <JsonLd data={schemas} />
 
-      <article className="min-h-screen" style={{ background: 'var(--void)' }}>
-        {/* Breadcrumb */}
-        <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
-          <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
-            {breadcrumbs.map((crumb, i) => (
-              <li key={crumb.href} className="flex items-center gap-1.5">
-                {i > 0 && <span aria-hidden="true">/</span>}
-                {i === breadcrumbs.length - 1 ? (
-                  <span className="text-white/60">{crumb.label}</span>
-                ) : (
-                  <Link href={crumb.href} className="hover:text-white/60 transition-colors">{crumb.label}</Link>
-                )}
-              </li>
-            ))}
-          </ol>
-        </nav>
-
-        {/* Header */}
-        <header className="max-w-[1280px] mx-auto px-6 sm:px-8 py-8">
-          <div className="flex flex-wrap items-center gap-3 mb-3">
-            {map.is_war_zone && (
-              <span className="text-[0.6rem] font-bold tracking-[0.2em] uppercase px-2 py-0.5 border"
-                style={{ borderColor: 'rgba(239,68,68,0.3)', color: 'rgba(239,68,68,0.8)' }}>
-                SAVAŞ BÖLGESİ
-              </span>
-            )}
-            {map.has_dungeon && (
-              <span className="text-[0.6rem] font-bold tracking-[0.2em] uppercase px-2 py-0.5 border"
-                style={{ borderColor: 'rgba(139,92,246,0.3)', color: 'rgba(139,92,246,0.8)' }}>
-                DUNGEON
-              </span>
-            )}
-          </div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-[0.04em] uppercase text-white mb-3"
-            style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-            Knight Online {map.name}
-          </h1>
-          {map.description && (
-            <p className="text-[0.88rem] leading-[1.8] text-white/50 max-w-2xl">{map.description}</p>
+      <PageHero
+        breadcrumbs={breadcrumbs}
+        eyebrow="Harita Rehberi"
+        art={{ src: SECTION_ART.harita, position: '60% 40%' }}
+        title={<span lang="en">Knight Online {map.name}</span>}
+        description={map.description ? <p>{map.description}</p> : undefined}
+      >
+        <ul className="flex flex-wrap gap-2">
+          <li className={`chip border ${type.className}`}>{type.label}</li>
+          {map.is_war_zone && (
+            <li className="chip border border-red-400/35 bg-red-500/10 text-red-200">
+              <Swords size={13} aria-hidden="true" /> Savaş Bölgesi
+            </li>
           )}
-        </header>
+          {map.has_dungeon && (
+            <li className="chip border border-amethyst-400/35 bg-amethyst-500/10 text-amethyst-200">
+              <Castle size={13} aria-hidden="true" /> Dungeon
+            </li>
+          )}
+          {range && <li className="chip">Level {range}</li>}
+        </ul>
+      </PageHero>
 
-        <div className="max-w-[1280px] mx-auto px-6 sm:px-8 pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10">
+      <ArticleLayout
+        aside={
+          <>
+            <SideCard title="Harita Bilgisi">
+              <FactList
+                columns={2}
+                facts={[
+                  { label: 'Tür', value: type.label },
+                  ...(range ? [{ label: 'Level Aralığı', value: range }] : []),
+                  {
+                    label: 'PK Bölgesi',
+                    value: <span className={map.is_pk_zone ? 'text-red-300' : 'text-emerald-300'}>{map.is_pk_zone ? 'Evet' : 'Hayır'}</span>,
+                  },
+                  {
+                    label: 'Dungeon',
+                    value: <span className={map.has_dungeon ? 'text-amethyst-200' : 'text-fg-3'}>{map.has_dungeon ? 'Var' : 'Yok'}</span>,
+                  },
+                ]}
+              />
+            </SideCard>
+            {relatedMaps.length > 0 && (
+              <SideCard title="Diğer Haritalar">
+                <RelatedLinks
+                  links={relatedMaps.map((m) => ({ label: m.name, href: `/harita/${m.slug}` }))}
+                  all={{ label: 'Tüm Haritalar', href: '/harita' }}
+                />
+              </SideCard>
+            )}
+          </>
+        }
+      >
+        {/* Temel Bilgiler */}
+        <ContentSection id="temel-bilgi" title="Harita Özellikleri">
+          {map.key_features.length > 0 && (
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {map.key_features.map((f, i) => (
+                <li key={i} className="card flex gap-3 p-4 text-fg-2">
+                  <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amethyst-400" />
+                  {f.text}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ContentSection>
 
-            <div>
-              {/* Temel Bilgiler */}
-              <section className="mb-10" aria-labelledby="temel-bilgi">
-                <h2 id="temel-bilgi" className="text-lg font-black tracking-[0.06em] uppercase text-white mb-4 pb-3 border-b border-white/[0.06]"
-                  style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-                  Harita Özellikleri
-                </h2>
-                {map.key_features.length > 0 && (
-                  <ul className="flex flex-col gap-2.5">
-                    {map.key_features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-3 text-[0.82rem] text-white/55">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-gold/50" aria-hidden="true"/>
-                        {f.text}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
-
-              {/* Farm Noktaları */}
-              {map.farm_spots.length > 0 && (
-                <section className="mb-10" aria-labelledby="farm-noktalari">
-                  <h2 id="farm-noktalari" className="text-lg font-black tracking-[0.06em] uppercase text-white mb-4 pb-3 border-b border-white/[0.06]"
-                    style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-                    {map.name} Farm Noktaları
-                  </h2>
-                  <div className="flex flex-col gap-4">
-                    {map.farm_spots.map((spot, i) => (
-                      <div key={i} className="p-4 border border-white/[0.06]"
-                        style={{ background: 'rgba(255,255,255,0.02)' }}>
-                        <h3 className="text-[0.84rem] font-semibold text-white/80 mb-2">{spot.name}</h3>
-                        <div className="flex flex-wrap gap-3 text-[0.72rem] text-white/40">
-                          {spot.level_range && <span>Level: {spot.level_range}</span>}
-                          {spot.notes && <span>{spot.notes}</span>}
-                          {spot.mob_types && spot.mob_types.length > 0 && (
-                            <span>Moblar: {spot.mob_types.join(', ')}</span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Boss'lar */}
-              {map.bosses_here.length > 0 && (
-                <section className="mb-10" aria-labelledby="harita-bosslar">
-                  <h2 id="harita-bosslar" className="text-lg font-black tracking-[0.06em] uppercase text-white mb-4 pb-3 border-b border-white/[0.06]"
-                    style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-                    {map.name}&#39;deki Boss&#39;lar
-                  </h2>
-                  <div className="flex flex-wrap gap-3">
-                    {map.bosses_here.map((b) => (
-                      <MaybeLink key={b.boss_slug} href={isPublishedBoss(b.boss_slug) ? `/boss/${b.boss_slug}` : null}
-                        className="px-4 py-2 border border-red-500/20 text-[0.78rem] font-semibold
-                          text-red-400/70 hover:text-red-400 hover:border-red-500/40
-                          transition-all duration-200">
-                        {b.boss_name}
-                      </MaybeLink>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* NPC'ler */}
-              {map.npcs_here.length > 0 && (
-                <section className="mb-10" aria-labelledby="npcler">
-                  <h2 id="npcler" className="text-lg font-black tracking-[0.06em] uppercase text-white mb-4 pb-3 border-b border-white/[0.06]"
-                    style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-                    NPC&#39;ler
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {map.npcs_here.map((npc, i) => (
-                      <div key={i} className="p-3 border border-white/[0.06]"
-                        style={{ background: 'rgba(255,255,255,0.02)' }}>
-                        <p className="text-[0.82rem] font-semibold text-white/70">{npc.name}</p>
-                        <p className="text-[0.72rem] text-white/35 mt-0.5">{npc.function}</p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* SSS */}
-              <section className="mb-10" aria-labelledby="sss">
-                <h2 id="sss" className="text-lg font-black tracking-[0.06em] uppercase text-white mb-4 pb-3 border-b border-white/[0.06]"
-                  style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}>
-                  Sık Sorulan Sorular
-                </h2>
-                <div className="flex flex-col gap-4">
-                  {mapFAQs.map((faq, i) => (
-                    <details key={i} className="group border border-white/[0.06] p-4"
-                      style={{ background: 'rgba(255,255,255,0.015)' }}>
-                      <summary className="text-[0.82rem] font-semibold text-white/80 cursor-pointer list-none
-                        flex items-center justify-between gap-3 group-open:text-white">
-                        <span>{faq.question}</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          strokeWidth="2" className="flex-shrink-0 transition-transform group-open:rotate-180" aria-hidden="true">
-                          <path d="M6 9l6 6 6-6"/>
-                        </svg>
-                      </summary>
-                      <p className="mt-3 text-[0.78rem] leading-[1.8] text-white/45">{faq.answer}</p>
-                    </details>
-                  ))}
-                </div>
-              </section>
-            </div>
-
-            {/* Sidebar */}
-            <aside>
-              <div className="sticky top-24 flex flex-col gap-4">
-                <div className="p-5 border border-white/[0.07]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase text-white/60 mb-4">HARİTA BİLGİSİ</h3>
-                  <dl className="flex flex-col gap-3">
-                    <div>
-                      <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Tür</dt>
-                      <dd className="text-[0.82rem] font-semibold text-white capitalize">
-                        {{ pve: 'PvE', pvp: 'PvP', dungeon: 'Dungeon', town: 'Kasaba', event: 'Etkinlik' }[map.map_type]}
-                      </dd>
-                    </div>
-                    {(map.min_level || map.max_level) && (
-                      <div>
-                        <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Level Aralığı</dt>
-                        <dd className="text-[0.82rem] font-semibold text-white">
-                          {map.min_level ?? '?'}{map.max_level ? ` — ${map.max_level}` : '+'}
-                        </dd>
-                      </div>
+        {/* Farm Noktaları */}
+        {map.farm_spots.length > 0 && (
+          <ContentSection id="farm-noktalari" title={`${map.name} Farm Noktaları`}>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {map.farm_spots.map((spot, i) => (
+                <div key={i} className="card p-5">
+                  <h3 className="font-bold">{spot.name}</h3>
+                  <ul className="mt-3 space-y-1.5 text-sm text-fg-3">
+                    {spot.level_range && <li><span className="text-fg-4">Level:</span> {spot.level_range}</li>}
+                    {spot.mob_types && spot.mob_types.length > 0 && (
+                      <li><span className="text-fg-4">Moblar:</span> {spot.mob_types.join(', ')}</li>
                     )}
-                    <div>
-                      <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">PK Bölgesi</dt>
-                      <dd className="text-[0.82rem] font-semibold" style={{ color: map.is_pk_zone ? '#ef4444' : '#10b981' }}>
-                        {map.is_pk_zone ? 'Evet' : 'Hayır'}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-0.5">Dungeon</dt>
-                      <dd className="text-[0.82rem] font-semibold" style={{ color: map.has_dungeon ? '#8b5cf6' : 'rgba(255,255,255,0.4)' }}>
-                        {map.has_dungeon ? 'Var' : 'Yok'}
-                      </dd>
-                    </div>
-                  </dl>
+                    {spot.notes && <li>{spot.notes}</li>}
+                  </ul>
                 </div>
+              ))}
+            </div>
+          </ContentSection>
+        )}
 
-                {relatedMaps.length > 0 && (
-                  <div className="p-5 border border-white/[0.07]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                    <h3 className="text-[0.72rem] font-bold tracking-[0.2em] uppercase text-white/60 mb-4">DİĞER HARİTALAR</h3>
-                    <ul className="flex flex-col gap-2">
-                      {relatedMaps.map((m) => (
-                        <li key={m.slug}>
-                          <Link href={`/harita/${m.slug}`}
-                            className="text-[0.78rem] text-white/40 hover:text-white/80 transition-colors flex items-center gap-2">
-                            <span className="w-1 h-1 rounded-full bg-blue-500/50 flex-shrink-0" aria-hidden="true"/>
-                            {m.name}
-                          </Link>
-                        </li>
-                      ))}
-                      <li>
-                        <Link href="/harita" className="text-[0.72rem] tracking-[0.1em] uppercase
-                          text-gold-bright/50 hover:text-gold-bright transition-colors mt-1 inline-block">
-                          Tüm Haritalar →
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </aside>
+        {/* Boss'lar */}
+        {map.bosses_here.length > 0 && (
+          <ContentSection id="harita-bosslar" title={`${map.name}'deki Boss'lar`}>
+            <ul className="flex flex-wrap gap-2">
+              {map.bosses_here.map((b) => (
+                <li key={b.boss_slug}>
+                  <MaybeLink
+                    href={isPublishedBoss(b.boss_slug) ? `/boss/${b.boss_slug}` : null}
+                    className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-ember-400/25 bg-ember-500/7 px-4 font-semibold text-ember-300 transition-colors hover:border-ember-400/50"
+                  >
+                    <Skull size={16} aria-hidden="true" />
+                    {b.boss_name}
+                  </MaybeLink>
+                </li>
+              ))}
+            </ul>
+          </ContentSection>
+        )}
 
-          </div>
-        </div>
-      </article>
+        {/* NPC'ler */}
+        {map.npcs_here.length > 0 && (
+          <ContentSection id="npcler" title="NPC'ler">
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {map.npcs_here.map((npc, i) => (
+                <li key={i} className="card flex items-start gap-3 p-4">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 text-fg-3">
+                    <Users size={16} aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="block font-semibold text-fg">{npc.name}</span>
+                    <span className="block text-sm text-fg-3">{npc.function}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </ContentSection>
+        )}
+
+        {map.content && (
+          <ContentSection id="detayli-bilgi" title="Detaylı Bilgi">
+            <RichText text={map.content} />
+          </ContentSection>
+        )}
+
+        {/* SSS */}
+        <ContentSection id="sss" title="Sık Sorulan Sorular">
+          <FaqList faqs={mapFAQs} />
+        </ContentSection>
+      </ArticleLayout>
     </>
   )
 }

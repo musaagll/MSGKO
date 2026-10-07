@@ -7,16 +7,15 @@ import { PageViewTracker } from '@/components/ui/PageViewTracker'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { SITE_URL as BASE_URL } from '@/lib/site'
 
-// Self-host edilen fontlar — render-blocking Google Fonts @import yerine
+// Self-host edilen variable fontlar (tek dosya, tüm ağırlıklar).
+// Inter: arayüz ve metin · Cinzel: başlıklar (logodaki oyma harflerle uyumlu)
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
-  weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-inter',
   display: 'swap',
 })
 const cinzel = Cinzel({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '600', '700', '800', '900'],
   variable: '--font-cinzel',
   display: 'swap',
 })
@@ -29,13 +28,16 @@ export const metadata: Metadata = {
   },
   description:
     'MSGKO.net — Türkiye\'nin Knight Online rehber ve eğitim sitesi. Asas, okçu, warrior, mage, priest build rehberleri, farm rotaları, PK taktikleri ve güncel meta analizleri burada.',
+  // Kare ikonlar logo.png'den üretildi (public/brand). logo.png 1024×1536 olduğu için
+  // önceki "512x512" bildirimi gerçek boyutla uyuşmuyordu.
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
-      { url: '/logo.png', type: 'image/png', sizes: '512x512' },
+      { url: '/brand/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/brand/icon-512.png', type: 'image/png', sizes: '512x512' },
     ],
     apple: [
-      { url: '/logo.png', sizes: '180x180', type: 'image/png' },
+      { url: '/brand/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
     shortcut: '/favicon.ico',
   },
@@ -97,8 +99,8 @@ const jsonLd = [
     logo: {
       '@type': 'ImageObject',
       url: `${BASE_URL}/logo.png`,
-      width: 512,
-      height: 512,
+      width: 1024,
+      height: 1536,
       caption: 'MSGKO — Knight Online Rehber ve Eğitim Sitesi',
     },
     sameAs: [
@@ -271,7 +273,9 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#06080F',
+  viewportFit: 'cover', // env(safe-area-inset-*) için gerekli
+  themeColor: '#0b0b0f',
+  colorScheme: 'dark',
 }
 
 export default function RootLayout({

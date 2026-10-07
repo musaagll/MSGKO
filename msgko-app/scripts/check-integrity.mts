@@ -60,8 +60,10 @@ const isTailwind = (v: string) => /^--(tw-|color-|spacing|radius|font-(sans|mono
 
 for (const file of [...walk(join(root, 'app')), ...walk(join(root, 'components'))]) {
   const src = readFileSync(file, 'utf8')
+  // Aynı dosyada style prop'u ile atanan değişkenler (ör. style={{ ['--cls']: renk }})
+  const local = new Set([...src.matchAll(/['"](--[a-z0-9-]+)['"]/gi)].map((m) => m[1]))
   for (const m of src.matchAll(/var\((--[a-z0-9-]+)/gi)) {
-    if (!defined.has(m[1]) && !isTailwind(m[1])) {
+    if (!defined.has(m[1]) && !local.has(m[1]) && !isTailwind(m[1])) {
       errors.push(`${relative(root, file)}: tanımsız CSS değişkeni ${m[1]}`)
     }
   }
