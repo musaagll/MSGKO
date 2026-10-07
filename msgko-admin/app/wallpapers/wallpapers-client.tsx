@@ -30,11 +30,12 @@ export default function WallpapersClient() {
   const [msg,      setMsg]      = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const load = () => {
-    setLoading(true)
+  // İlk yüklemede loading zaten true; efekt içinde senkron setState çağrılmaz
+  const fetchItems = () =>
     fetch('/api/wallpapers').then(r => r.json()).then(d => { setItems(Array.isArray(d) ? d : []); setLoading(false) }).catch(() => setLoading(false))
-  }
-  useEffect(() => { load() }, [])
+
+  const load = () => { setLoading(true); fetchItems() }
+  useEffect(() => { fetchItems() }, [])
 
   const handleFile = (f: File) => {
     setFile(f)

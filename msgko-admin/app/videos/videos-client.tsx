@@ -42,11 +42,12 @@ export default function VideosClient() {
   const [msg,      setMsg]      = useState('')
   const [saving,   setSaving]   = useState(false)
 
-  const load = () => {
-    setLoading(true)
+  // İlk yüklemede loading zaten true; efekt içinde senkron setState çağrılmaz
+  const fetchItems = () =>
     fetch('/api/videos').then(r => r.json()).then(d => { setItems(Array.isArray(d) ? d : []); setLoading(false) }).catch(() => setLoading(false))
-  }
-  useEffect(() => { load() }, [])
+
+  const load = () => { setLoading(true); fetchItems() }
+  useEffect(() => { fetchItems() }, [])
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true); setMsg('')
@@ -131,7 +132,7 @@ export default function VideosClient() {
                 <img src={ytThumb(ytId(form.youtube_url))} alt="" style={{ width: 100, aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--border)' }} />
                 <a href={`https://youtube.com/watch?v=${ytId(form.youtube_url)}`} target="_blank" rel="noopener noreferrer"
                   style={{ fontSize: 11, color: 'rgba(201,168,76,0.6)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <ExternalLink size={10} /> YouTube'da aç
+                  <ExternalLink size={10} /> YouTube&apos;da aç
                 </a>
               </div>
             )}

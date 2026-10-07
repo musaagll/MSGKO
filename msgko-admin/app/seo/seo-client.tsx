@@ -222,7 +222,7 @@ export function SeoClient({ initialCounts, redirectCount }: Props) {
         <div style={S.card}>
           <p style={S.label}>İndexlenebilir</p>
           <p style={S.value}>{totalIndexable}</p>
-          <p style={{ fontSize: 10, color: 'rgba(52,211,153,0.6)', marginTop: 4 }}>Google'a açık</p>
+          <p style={{ fontSize: 10, color: 'rgba(52,211,153,0.6)', marginTop: 4 }}>Google&apos;a açık</p>
         </div>
         <div style={S.card}>
           <p style={S.label}>Noindex</p>

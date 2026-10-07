@@ -56,14 +56,15 @@ export default function DashboardClient() {
   const [stats,   setStats]   = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const load = () => {
-    setLoading(true)
+  // İlk yüklemede loading zaten true; efekt içinde senkron setState çağrılmaz
+  const fetchStats = () =>
     fetch('/api/stats')
       .then(r => r.json())
       .then(d => { setStats(d); setLoading(false) })
       .catch(() => setLoading(false))
-  }
-  useEffect(() => { load() }, [])
+
+  const load = () => { setLoading(true); fetchStats() }
+  useEffect(() => { fetchStats() }, [])
 
   const fmt = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n)
 
