@@ -16,22 +16,28 @@ Supabase Dashboard → Settings → API → **service_role** key'i kopyala.
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
 ```
 
-### 3. JWT Secret Değiştir
+### 3. JWT Secret (zorunlu)
 
-`.env.local` dosyasında güçlü bir secret belirle:
-```
-ADMIN_JWT_SECRET=cok-uzun-ve-guclu-bir-secret-buraya
-```
-
-### 4. İlk Şifre Hash'i
-
-Varsayılan şifre: `msgko2026`
-
-Değiştirmek için terminalde:
+En az **32 karakterlik** rastgele bir secret üret ve `.env.local` + Vercel'e ekle.
+Tanımlı değilse veya daha kısaysa panel kimseye açılmaz (fail-closed):
 ```bash
-node -e "const b=require('bcryptjs'); b.hash('YeniSifren',12).then(h=>console.log(h))"
+node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 ```
-Çıkan hash'i `.env.local` içindeki `ADMIN_PASSWORD_HASH` alanına yapıştır.
+```
+ADMIN_JWT_SECRET=<yukarıdaki çıktı>
+```
+
+### 4. Kullanıcı ve Şifre (zorunlu)
+
+```
+ADMIN_USERNAME=<kullanıcı adı>          # tanımlı değilse "admin"
+ADMIN_PASSWORD_HASH=<bcrypt hash>       # önerilen
+```
+Hash üretmek için:
+```bash
+node -e "require('bcryptjs').hash(process.argv[1],12).then(console.log)" "GucluSifren"
+```
+`ADMIN_PASSWORD` (düz metin) hâlâ destekleniyor ama önerilmez; ikisi de boşsa giriş yapılamaz.
 
 ### 5. Uygulamayı Başlat
 
@@ -81,3 +87,6 @@ Vercel'de Environment Variables olarak `.env.local` değerlerini ekle.
 - `SUPABASE_SERVICE_ROLE_KEY` asla frontend'e expose edilmemelidir
 - Sadece `NEXT_PUBLIC_` prefix'li değişkenler tarayıcıya gider
 - Tüm API route'ları JWT doğrulaması yapar
+- Login 15 dakikada 8 başarısız denemeden sonra o IP için kilitlenir
+- 2FA ayarı okunamazsa giriş reddedilir; QR kod tarayıcıda üretilir
+- Supabase güvenlik düzeltmeleri: `supabase-security-fixes.sql`

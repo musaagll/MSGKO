@@ -2,33 +2,31 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 
-const SECRET = new TextEncoder().encode(
-  process.env.ADMIN_JWT_SECRET ?? 'fallback-secret-change-in-prod'
-)
-
-const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/logout', '/manifest.json', '/icons']
+const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/logout', '/manifest.json']
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // Public path — geç
-  if (PUBLIC_PATHS.some(p => pathname.startsWith(p))) {
+  // Public path — geç (tam eşleşme veya alt yol; '/loginx' gibi önek eşleşmeleri değil)
+  if (PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))) {
     return NextResponse.next()
   }
 
-  // Static dosyalar — geç
-  if (pathname.startsWith('/_next') || pathname.includes('.')) {
+  // Statik dosyalar — geç
+  if (pathname.startsWith('/_next/') || pathname.startsWith('/icons/') || pathname === '/favicon.ico') {
     return NextResponse.next()
   }
 
+  const raw = process.env.ADMIN_JWT_SECRET
   const token = req.cookies.get('msgko_admin_session')?.value
 
-  if (!token) {
+  // Secret tanımlı değilse kimse giremez (fail-closed)
+  if (!token || !raw || raw.length < 32) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
   try {
-    await jwtVerify(token, SECRET)
+    await jwtVerify(token, new TextEncoder().encode(raw), { algorithms: ['HS256'] })
     return NextResponse.next()
   } catch {
     const res = NextResponse.redirect(new URL('/login', req.url))

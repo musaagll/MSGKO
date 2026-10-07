@@ -33,10 +33,12 @@ export async function GET(req: NextRequest) {
     const r = await fetch(upstream, {
       next: { revalidate: 300 },
       headers: { 'Accept': 'application/json', 'User-Agent': 'MSGKO/1.0' },
+      signal: AbortSignal.timeout(10_000),
     })
 
     if (!r.ok) {
-      return NextResponse.json({ error: `upstream ${r.status}` }, { status: 502 })
+      console.error(`gb-fiyatlari upstream ${r.status}: ${upstream}`)
+      return NextResponse.json({ error: 'Fiyat kaynağına ulaşılamadı' }, { status: 502 })
     }
 
     const data = await r.json()
@@ -44,6 +46,7 @@ export async function GET(req: NextRequest) {
       headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' },
     })
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 })
+    console.error('gb-fiyatlari error:', e)
+    return NextResponse.json({ error: 'Fiyatlar alınamadı' }, { status: 500 })
   }
 }

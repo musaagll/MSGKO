@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Save, Shield, ShieldOff, QrCode, CheckCircle, AlertCircle, KeyRound } from 'lucide-react'
+import QRCode from 'qrcode'
 
 interface Settings {
   id: number; totp_enabled: boolean; site_title: string;
@@ -38,6 +39,13 @@ export default function AyarlarClient() {
   const [totpSecret,  setTotpSecret]  = useState('')
   const [totpCode,    setTotpCode]    = useState('')
   const [qrStep,      setQrStep]      = useState<'idle' | 'scan' | 'done'>('idle')
+  const [qrDataUrl,   setQrDataUrl]   = useState('')
+
+  // QR kod tarayıcıda üretilir — TOTP secret hiçbir dış servise gönderilmez
+  useEffect(() => {
+    if (!totpUri) return
+    QRCode.toDataURL(totpUri, { width: 180, margin: 1 }).then(setQrDataUrl).catch(() => setQrDataUrl(''))
+  }, [totpUri])
   const [newPass,     setNewPass]     = useState('')
   const [confirmPass, setConfirmPass] = useState('')
   const [passMsg,     setPassMsg]     = useState('')
@@ -229,9 +237,11 @@ export default function AyarlarClient() {
                     <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>Google Authenticator ile Tara</p>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(totpUri)}`}
-                      alt="2FA QR" style={{ border: '1px solid var(--border)' }} />
+                    {qrDataUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={qrDataUrl} width={180} height={180}
+                        alt="2FA QR" style={{ border: '1px solid var(--border)' }} />
+                    )}
                   </div>
                   <div style={{ padding: '9px 12px', background: 'rgba(255,255,255,0.025)', border: '1px solid var(--border)' }}>
                     <p style={{ fontSize: 9, color: 'rgba(160,160,184,0.35)', marginBottom: 4 }}>Manuel giriş için secret:</p>

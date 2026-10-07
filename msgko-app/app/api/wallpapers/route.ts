@@ -12,7 +12,7 @@ export async function GET() {
 
   if (error) {
     console.error('Wallpaper fetch error:', error.message)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Duvar kağıtları alınamadı' }, { status: 500 })
   }
   return NextResponse.json(data ?? [], {
     headers: {
@@ -27,7 +27,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const { id, type } = await req.json()
-    if (!id || !['click', 'download'].includes(type)) {
+    if (!Number.isInteger(id) || id <= 0 || !['click', 'download'].includes(type)) {
       return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 })
     }
 
@@ -41,14 +41,14 @@ export async function POST(req: NextRequest) {
 
     const col = type === 'click' ? 'click_count' : 'download_count'
 
-    // RPC dene
+    // Atomik artış: increment_wallpaper_stat (msgko-admin/supabase-security-fixes.sql)
     const { error: rpcError } = await supabase.rpc('increment_wallpaper_stat', {
       wallpaper_id: id,
       col_name: col,
     })
 
     if (rpcError) {
-      // RPC başarısız olursa direkt güncelle
+      // RPC henüz kurulmadıysa oku-yaz yedeği (eşzamanlı isteklerde sayım kaybolabilir)
       const { data: current } = await supabase
         .from('wallpapers')
         .select(col)
