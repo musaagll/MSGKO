@@ -10,7 +10,7 @@ import { InstagramIcon, XIcon, YouTubeIcon } from '@/components/ui/BrandIcons'
 import { useModal } from '@/hooks/useModal'
 import { KO_CLASSES } from '@/lib/ko-data/classes'
 import { CLASS_META } from '@/lib/class-meta'
-import { DATABASE_LINKS, MEDIA_LINKS, SECONDARY_LINKS, SOCIAL } from '@/lib/site'
+import { MEDIA_LINKS, SECONDARY_LINKS, SOCIAL } from '@/lib/site'
 
 interface Props {
   open: boolean
@@ -92,15 +92,6 @@ export function MobileDrawer({ open, onClose, onSearch }: Props) {
                 Tümü
               </Link>
             </li>
-          </ul>
-
-          <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-[0.16em] text-fg-4">Veritabanı</p>
-          <ul className="mb-5 space-y-0.5">
-            {DATABASE_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} onClick={onClose} className={linkCls(l.href)}>{l.label}</Link>
-              </li>
-            ))}
           </ul>
 
           <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-[0.16em] text-fg-4">Medya & Araçlar</p>

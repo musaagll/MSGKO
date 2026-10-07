@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Cinzel, Inter } from 'next/font/google'
+import { Barlow, Barlow_Condensed } from 'next/font/google'
 import './globals.css'
 import { SiteShell } from '@/components/layout/SiteShell'
 import { Analytics } from '@vercel/analytics/next'
@@ -7,16 +7,18 @@ import { PageViewTracker } from '@/components/ui/PageViewTracker'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { SITE_URL as BASE_URL } from '@/lib/site'
 
-// Self-host edilen variable fontlar (tek dosya, tüm ağırlıklar).
-// Inter: arayüz ve metin · Cinzel: başlıklar (logodaki oyma harflerle uyumlu)
-const inter = Inter({
+// Self-host edilen fontlar (next/font). Türkçe karakterler için latin-ext dahil.
+// Barlow: arayüz ve metin · Barlow Condensed: başlıklar ve logo
+const barlow = Barlow({
   subsets: ['latin', 'latin-ext'],
-  variable: '--font-inter',
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-body',
   display: 'swap',
 })
-const cinzel = Cinzel({
+const barlowCondensed = Barlow_Condensed({
   subsets: ['latin', 'latin-ext'],
-  variable: '--font-cinzel',
+  weight: ['600', '700', '800'],
+  variable: '--font-heading',
   display: 'swap',
 })
 
@@ -284,7 +286,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="tr" className={`dark ${inter.variable} ${cinzel.variable}`}>
+    <html lang="tr" className={`dark ${barlow.variable} ${barlowCondensed.variable}`}>
       <head>
         {jsonLd.map((schema) => (
           <JsonLd key={schema['@type']} data={schema} />

@@ -54,7 +54,7 @@ const walk = (dir: string): string[] =>
   })
 const css = readFileSync(join(root, 'app/globals.css'), 'utf8')
 const defined = new Set([...css.matchAll(/(--[a-z0-9-]+)\s*:/gi)].map((m) => m[1]))
-defined.add('--font-inter').add('--font-cinzel') // next/font (app/layout.tsx)
+defined.add('--font-body').add('--font-heading') // next/font (app/layout.tsx)
 // Tailwind'in kendi değişkenleri
 const isTailwind = (v: string) => /^--(tw-|color-|spacing|radius|font-(sans|mono|serif|display)|text-|leading-|tracking-)/.test(v)
 

@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 /**
- * MSGKO logosu — logo.png'den kırpılmış amblem + Cinzel kelime işareti.
+ * MSGKO logosu — logo.png'den kırpılmış amblem + Barlow Condensed kelime işareti.
  * Amblem dosyası: public/brand/emblem.png (282×256)
  */
 export function Logo({ size = 'md', className = '', priority = false }: { size?: 'md' | 'lg'; className?: string; priority?: boolean }) {
@@ -24,7 +24,7 @@ export function Logo({ size = 'md', className = '', priority = false }: { size?:
       />
       <span className="flex flex-col whitespace-nowrap leading-none">
         <span
-          className={`text-silver font-display font-bold tracking-[0.08em] ${size === 'lg' ? 'text-[1.75rem]' : 'text-[1.3rem]'}`}
+          className={`text-silver font-display font-bold tracking-[0.08em] ${size === 'lg' ? 'text-[2rem]' : 'text-[1.55rem]'}`}
         >
           MSGKO
         </span>

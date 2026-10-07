@@ -5,21 +5,19 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ChevronDown, Gem, Map as MapIcon, Menu, Search, Skull } from 'lucide-react'
+import { ChevronDown, Menu, Search } from 'lucide-react'
 import { Logo } from '@/components/brand/Logo'
 import { YouTubeIcon } from '@/components/ui/BrandIcons'
 import { KO_CLASSES } from '@/lib/ko-data/classes'
 import { CLASS_META } from '@/lib/class-meta'
-import { DATABASE_LINKS, SOCIAL } from '@/lib/site'
+import { SOCIAL } from '@/lib/site'
 import { MobileDrawer } from './MobileDrawer'
 import { MobileBottomNav } from './MobileBottomNav'
 
 // Arama yalnızca açıldığında yüklenir (indeks ~25 KB) — ilk yüklemeye eklenmez
 const SearchOverlay = dynamic(() => import('./SearchOverlay').then((m) => m.SearchOverlay), { ssr: false })
 
-const DB_ICONS = { '/boss': Skull, '/harita': MapIcon, '/item': Gem } as const
-
-type MenuId = 'rehber' | 'veritabani' | null
+type MenuId = 'rehber' | null
 
 const isActive = (pathname: string, href: string) =>
   href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/')
@@ -81,7 +79,6 @@ export function Navbar() {
   }, [menu])
 
   const solid = scrolled || drawerOpen || menu !== null
-  const dbActive = DATABASE_LINKS.some((l) => isActive(pathname, l.href))
   const closeMenu = () => setMenu(null)
   // Hover yalnızca fare için; dokunmatikte açma/kapama tıklamayla yapılır
   const hoverOpen = (id: Exclude<MenuId, null>) => (e: React.PointerEvent) => {
@@ -165,49 +162,6 @@ export function Navbar() {
                       </li>
                     </ul>
                   </div>
-                </div>
-              </div>
-
-              {/* Veritabanı */}
-              <div className="relative" onPointerEnter={hoverOpen('veritabani')} onPointerLeave={hoverClose}>
-                <button
-                  type="button"
-                  aria-expanded={menu === 'veritabani'}
-                  aria-controls="menu-veritabani"
-                  onClick={() => setMenu(menu === 'veritabani' ? null : 'veritabani')}
-                  className={linkClass(dbActive)}
-                >
-                  Veritabanı
-                  <ChevronDown size={15} aria-hidden="true" className={`transition-transform duration-200 ${menu === 'veritabani' ? 'rotate-180' : ''}`} />
-                  {underline(dbActive)}
-                </button>
-                <div
-                  id="menu-veritabani"
-                  hidden={menu !== 'veritabani'}
-                  className="absolute left-1/2 top-full w-88 -translate-x-1/2 pt-3"
-                >
-                  <ul className="card space-y-1 bg-ink-900/95 p-2 shadow-2xl shadow-black/60 backdrop-blur-xl">
-                    {DATABASE_LINKS.map((l) => {
-                      const Icon = DB_ICONS[l.href as keyof typeof DB_ICONS]
-                      return (
-                        <li key={l.href}>
-                          <Link
-                            href={l.href}
-                            onClick={closeMenu}
-                            className="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-white/5"
-                          >
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/8 bg-ink-800 text-amethyst-300">
-                              <Icon size={18} aria-hidden="true" />
-                            </span>
-                            <span>
-                              <span className="block font-semibold text-fg">{l.label}</span>
-                              <span className="block text-sm text-fg-3">{l.description}</span>
-                            </span>
-                          </Link>
-                        </li>
-                      )
-                    })}
-                  </ul>
                 </div>
               </div>
 

@@ -4,7 +4,7 @@
    MSGKO — Tasarım sistemi
    Kimlik: logo.png (gümüş + ametist) ve hero görseli (gece mavisi + köz).
    Zemin ve metin tonları proje dokümanındaki nötr paletten.
-   Fontlar app/layout.tsx içinde next/font ile yüklenir (--font-inter, --font-cinzel).
+   Fontlar app/layout.tsx içinde next/font ile yüklenir (--font-body, --font-heading).
 ═══════════════════════════════════════════════════════════════════════════ */
 
 @theme {
@@ -47,8 +47,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: var(--font-cinzel), ui-serif, Georgia, serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-heading), "Arial Narrow", ui-sans-serif, sans-serif;
 }
 
 :root {
@@ -72,7 +72,7 @@ body {
     radial-gradient(60rem 30rem at 85% -10%, rgba(110, 78, 206, 0.10), transparent 70%),
     var(--color-ink-950);
   color: var(--color-fg-2);
-  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-body), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 1rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -131,25 +131,25 @@ p { text-wrap: pretty; }
   }
 
   .display-xl {
-    font-family: var(--font-cinzel), ui-serif, Georgia, serif;
+    font-family: var(--font-heading), "Arial Narrow", ui-sans-serif, sans-serif;
     font-weight: 700;
-    font-size: clamp(2.5rem, 7vw, 5rem);
-    line-height: 1;
+    font-size: clamp(3rem, 8.5vw, 6rem);
+    line-height: 0.95;
     letter-spacing: 0.01em;
   }
   .display-lg {
-    font-family: var(--font-cinzel), ui-serif, Georgia, serif;
+    font-family: var(--font-heading), "Arial Narrow", ui-sans-serif, sans-serif;
     font-weight: 700;
-    font-size: clamp(2rem, 4.6vw, 3.25rem);
-    line-height: 1.08;
-    letter-spacing: 0.01em;
+    font-size: clamp(2.375rem, 5.4vw, 3.875rem);
+    line-height: 1.02;
+    letter-spacing: 0.005em;
   }
   .display-md {
-    font-family: var(--font-cinzel), ui-serif, Georgia, serif;
+    font-family: var(--font-heading), "Arial Narrow", ui-sans-serif, sans-serif;
     font-weight: 700;
-    font-size: clamp(1.5rem, 3vw, 2.125rem);
-    line-height: 1.15;
-    letter-spacing: 0.01em;
+    font-size: clamp(1.875rem, 3.6vw, 2.625rem);
+    line-height: 1.05;
+    letter-spacing: 0.005em;
   }
 
   /* Logodaki gümüş metal efekti */
@@ -376,7 +376,9 @@ p { text-wrap: pretty; }
   --max-w: 75rem;
   --section-pt: 4rem;
   --section-pb: 4rem;
-  --font-rajdhani: var(--font-cinzel), ui-serif, Georgia, serif;
+  --font-rajdhani: var(--font-heading), "Arial Narrow", ui-sans-serif, sans-serif;
+  --font-cinzel: var(--font-heading);
+  --font-inter: var(--font-body);
 }
 
 /* ─── Animasyonlar (yalnızca CSS — JS yükü yok) ─────────────────────────────── */

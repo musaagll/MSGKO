@@ -40,7 +40,7 @@ export function HeroSection() {
       {/* Marka sözü (dekoratif) */}
       <p
         aria-hidden="true"
-        className="absolute bottom-10 left-[max(2rem,calc((100vw-75rem)/2+2rem))] hidden max-w-60 font-display text-sm italic leading-relaxed text-fg-3/70 xl:block"
+        className="absolute bottom-10 left-[max(2rem,calc((100vw-75rem)/2+2rem))] hidden max-w-64 font-display text-base font-semibold uppercase tracking-[0.06em] leading-snug text-fg-3/70 xl:block"
       >
         “Bazı oyunlar geçici, bazıları ise bir yaşam tarzıdır.”
       </p>
