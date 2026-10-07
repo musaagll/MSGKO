@@ -1,8 +1,11 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Script from 'next/script'
+import { MaybeLink } from '@/components/ui/MaybeLink'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { KO_ITEMS, getItemBySlug, getPublishedItemSlugs } from '@/lib/ko-data/items'
+import { isPublishedBoss } from '@/lib/ko-data/bosses'
+import { isPublishedMap } from '@/lib/ko-data/maps'
 import {
   buildItemMetadata,
   buildItemBreadcrumbs,
@@ -10,7 +13,6 @@ import {
   buildArticleSchema,
   buildFAQSchema,
   buildItemFAQs,
-  BASE_URL,
 } from '@/lib/seo'
 
 export async function generateStaticParams() {
@@ -24,7 +26,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const item = getItemBySlug(slug)
-  if (!item) return {}
+  if (!item || !item.is_published) return {}
   return buildItemMetadata(item)
 }
 
@@ -35,7 +37,7 @@ export default async function ItemDetailPage({
 }) {
   const { slug } = await params
   const item = getItemBySlug(slug)
-  if (!item) notFound()
+  if (!item || !item.is_published) notFound()
 
   const breadcrumbs = buildItemBreadcrumbs(item)
   const faqs = buildItemFAQs(item)
@@ -63,13 +65,9 @@ export default async function ItemDetailPage({
 
   return (
     <>
-      <Script
-        id="item-detail-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
-      />
+      <JsonLd data={schemas} />
 
-      <main className="min-h-screen" style={{ background: '#07070B' }}>
+      <article className="min-h-screen" style={{ background: 'var(--void)' }}>
         {/* Breadcrumb */}
         <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
           <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
@@ -161,7 +159,7 @@ export default async function ItemDetailPage({
                         style={{ background: 'rgba(255,255,255,0.02)' }}>
                         <div>
                           <p className="text-[0.82rem] font-semibold text-white/70">
-                            {drop.mob_slug ? (
+                            {isPublishedBoss(drop.mob_slug) ? (
                               <Link href={`/boss/${drop.mob_slug}`} className="hover:text-white transition-colors">
                                 {drop.mob_name ?? drop.mob_slug}
                               </Link>
@@ -169,9 +167,9 @@ export default async function ItemDetailPage({
                           </p>
                           {drop.map_slug && (
                             <p className="text-[0.68rem] text-white/30 mt-0.5">
-                              <Link href={`/harita/${drop.map_slug}`} className="hover:text-white/50 transition-colors">
+                              <MaybeLink href={isPublishedMap(drop.map_slug) ? `/harita/${drop.map_slug}` : null} className="hover:text-white/50 transition-colors">
                                 {drop.map_slug.replace(/-/g, ' ')}
-                              </Link>
+                              </MaybeLink>
                             </p>
                           )}
                         </div>
@@ -288,7 +286,7 @@ export default async function ItemDetailPage({
                       ))}
                       <li>
                         <Link href="/item" className="text-[0.72rem] tracking-[0.1em] uppercase
-                          text-purple-400/50 hover:text-purple-400 transition-colors mt-1 inline-block">
+                          text-gold-bright/50 hover:text-gold-bright transition-colors mt-1 inline-block">
                           Tüm İtemler →
                         </Link>
                       </li>
@@ -300,7 +298,7 @@ export default async function ItemDetailPage({
 
           </div>
         </div>
-      </main>
+      </article>
     </>
   )
 }

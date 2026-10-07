@@ -59,3 +59,16 @@ export function getCategoryBadgeClass(slug: string): string {
       return 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
   }
 }
+
+/**
+ * Duvar kağıdı indirme linki. `download` attribute'u yalnızca aynı origin'de çalışır;
+ * Supabase Storage'daki dosyalar için `?download=` parametresi tarayıcıya indirme başlığı döndürtür.
+ */
+export function wallpaperDownload(src: string, label: string): { href: string; download: string } {
+  const ext = src.split('?')[0].split('.').pop()?.toLowerCase() || 'png'
+  const filename = `${label.replace(/[^\p{L}\p{N} _-]/gu, '').trim() || 'msgko-wallpaper'}.${ext}`
+  if (/^https:\/\/[^/]+\.supabase\.co\/storage\//.test(src)) {
+    return { href: `${src}?download=${encodeURIComponent(filename)}`, download: filename }
+  }
+  return { href: src, download: filename }
+}

@@ -232,3 +232,8 @@ export function getItemsByClass(cls: string): ItemSeedData[] {
     (i) => i.is_published && (i.character_class.includes(cls as never) || i.character_class.length === 0)
   )
 }
+
+/** İç linkler için: slug yayınlanmış bir item sayfasına mı gidiyor? */
+export function isPublishedItem(slug: string | null | undefined): slug is string {
+  return !!slug && KO_ITEMS.some((i) => i.slug === slug && i.is_published)
+}

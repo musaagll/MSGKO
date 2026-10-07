@@ -415,3 +415,8 @@ export function getPublishedMapSlugs(): string[] {
 export function getMapsByType(type: KOMap['map_type']): MapSeedData[] {
   return KO_MAPS.filter((m) => m.map_type === type && m.is_published)
 }
+
+/** İç linkler için: slug yayınlanmış bir harita sayfasına mı gidiyor? */
+export function isPublishedMap(slug: string | null | undefined): slug is string {
+  return !!slug && KO_MAPS.some((m) => m.slug === slug && m.is_published)
+}

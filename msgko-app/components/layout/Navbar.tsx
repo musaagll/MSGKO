@@ -66,7 +66,7 @@ export function Navbar({ onSearchOpen }: NavbarProps) {
             <span
               className="font-black tracking-wider leading-none"
               style={{
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "var(--font-cinzel), serif",
                 fontSize: "26px",
                 background: "linear-gradient(135deg, #e8c96a 0%, #c9a84c 50%, #a07830 100%)",
                 WebkitBackgroundClip: "text",
@@ -78,6 +78,7 @@ export function Navbar({ onSearchOpen }: NavbarProps) {
               MSGKO
             </span>
             <span
+              lang="en"
               className="uppercase tracking-[0.18em] leading-none mt-0.5"
               style={{ fontSize: "7px", color: "var(--text-muted)", letterSpacing: "0.22em" }}
             >

@@ -1,8 +1,11 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Script from 'next/script'
+import { MaybeLink } from '@/components/ui/MaybeLink'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { KO_BOSSES, getBossBySlug, getPublishedBossSlugs } from '@/lib/ko-data/bosses'
+import { isPublishedItem } from '@/lib/ko-data/items'
+import { isPublishedMap } from '@/lib/ko-data/maps'
 import {
   buildBossMetadata,
   buildBossBreadcrumbs,
@@ -10,7 +13,6 @@ import {
   buildArticleSchema,
   buildFAQSchema,
   buildBossFAQs,
-  BASE_URL,
 } from '@/lib/seo'
 
 export async function generateStaticParams() {
@@ -24,7 +26,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const boss = getBossBySlug(slug)
-  if (!boss) return {}
+  if (!boss || !boss.is_published) return {}
   return buildBossMetadata(boss)
 }
 
@@ -35,7 +37,7 @@ export default async function BossDetailPage({
 }) {
   const { slug } = await params
   const boss = getBossBySlug(slug)
-  if (!boss) notFound()
+  if (!boss || !boss.is_published) notFound()
 
   const breadcrumbs = buildBossBreadcrumbs(boss)
   const faqs = buildBossFAQs(boss)
@@ -60,13 +62,9 @@ export default async function BossDetailPage({
 
   return (
     <>
-      <Script
-        id="boss-detail-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
-      />
+      <JsonLd data={schemas} />
 
-      <main className="min-h-screen" style={{ background: '#07070B' }}>
+      <article className="min-h-screen" style={{ background: 'var(--void)' }}>
         {/* Breadcrumb */}
         <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
           <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
@@ -123,10 +121,10 @@ export default async function BossDetailPage({
                   {boss.map_slug && (
                     <div className="p-4 border border-white/[0.06]" style={{ background: 'rgba(255,255,255,0.02)' }}>
                       <p className="text-[0.62rem] tracking-[0.15em] uppercase text-white/30 mb-1">Harita</p>
-                      <Link href={`/harita/${boss.map_slug}`}
-                        className="text-[0.82rem] font-semibold text-purple-400/80 hover:text-purple-400 transition-colors">
+                      <MaybeLink href={isPublishedMap(boss.map_slug) ? `/harita/${boss.map_slug}` : null}
+                        className="text-[0.82rem] font-semibold text-gold-bright/80 hover:text-gold-bright transition-colors">
                         {boss.map_slug.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
-                      </Link>
+                      </MaybeLink>
                     </div>
                   )}
                   {boss.spawn_interval && (
@@ -167,7 +165,7 @@ export default async function BossDetailPage({
                         {boss.drop_list.map((drop, i) => (
                           <tr key={i} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                             <td className="py-2.5 px-3">
-                              {drop.item_slug ? (
+                              {isPublishedItem(drop.item_slug) ? (
                                 <Link href={`/item/${drop.item_slug}`}
                                   className="text-white/70 hover:text-white transition-colors">
                                   {drop.item_name}
@@ -275,7 +273,7 @@ export default async function BossDetailPage({
                       ))}
                       <li>
                         <Link href="/boss" className="text-[0.72rem] tracking-[0.1em] uppercase
-                          text-purple-400/50 hover:text-purple-400 transition-colors mt-1 inline-block">
+                          text-gold-bright/50 hover:text-gold-bright transition-colors mt-1 inline-block">
                           Tüm Boss&#39;ları Gör →
                         </Link>
                       </li>
@@ -287,7 +285,7 @@ export default async function BossDetailPage({
 
           </div>
         </div>
-      </main>
+      </article>
     </>
   )
 }

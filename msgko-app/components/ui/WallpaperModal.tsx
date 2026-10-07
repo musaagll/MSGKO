@@ -1,9 +1,12 @@
 'use client'
 
+import Image from 'next/image'
+
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Download, X, ZoomIn, ArrowLeft } from 'lucide-react'
 import { useModal } from '@/hooks/useModal'
+import { wallpaperDownload } from '@/lib/utils'
 
 interface Wallpaper {
   id: number
@@ -26,7 +29,6 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
 
   useEffect(() => {
     if (!isOpen) return
-    setLoading(true)
 
     fetch('/api/wallpapers')
       .then(r => r.json())
@@ -127,7 +129,7 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="w-9 h-9 flex items-center justify-center border border-white/[0.08] text-white/40 hover:border-purple-500/40 hover:text-white hover:bg-purple-500/10 transition-all duration-200"
+              className="w-9 h-9 flex items-center justify-center border border-white/[0.08] text-white/40 hover:border-gold/40 hover:text-white hover:bg-gold/10 transition-all duration-200"
               aria-label="Kapat"
             >
               <X size={15} />
@@ -196,11 +198,12 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
                   }}
                   onClick={() => { setLightbox(wp); trackClick(wp.id) }}
                 >
-                  <img
+                  <Image
                     src={wp.src}
                     alt={wp.label}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
+                    fill
+                    sizes="(max-width: 640px) 50vw, 300px"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.06]"
                   />
 
                   {/* Gradient overlay */}
@@ -213,16 +216,16 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
                     style={{ background: 'rgba(7,7,11,0.45)', backdropFilter: 'blur(3px)' }}
                   >
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                      <div className="w-11 h-11 flex items-center justify-center border border-white/25 bg-white/10 text-white hover:bg-purple-500/35 hover:border-purple-400/60 transition-all duration-200"
+                      <div className="w-11 h-11 flex items-center justify-center border border-white/25 bg-white/10 text-white hover:bg-gold/35 hover:border-gold/60 transition-all duration-200"
                         onClick={(e) => { e.stopPropagation(); setLightbox(wp) }}>
                         <ZoomIn size={16} />
                       </div>
                     </motion.div>
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                       <a
-                        href={wp.src}
-                        download={wp.label + '.png'}
-                        className="w-11 h-11 flex items-center justify-center border border-white/25 bg-white/10 text-white hover:bg-purple-500/35 hover:border-purple-400/60 transition-all duration-200"
+                        href={wallpaperDownload(wp.src, wp.label).href}
+                        download={wallpaperDownload(wp.src, wp.label).download}
+                        className="w-11 h-11 flex items-center justify-center border border-white/25 bg-white/10 text-white hover:bg-gold/35 hover:border-gold/60 transition-all duration-200"
                         onClick={(e) => { e.stopPropagation(); trackDownload(wp.id) }}
                         aria-label="İndir"
                       >
@@ -298,9 +301,9 @@ export function WallpaperModal({ isOpen, onClose }: WallpaperModalProps) {
                 </p>
                 <div className="w-px h-4 bg-white/10" />
                 <a
-                  href={lightbox.src}
-                  download={lightbox.label + '.png'}
-                  className="flex items-center gap-2 px-5 py-2.5 text-[0.75rem] font-bold tracking-[0.1em] uppercase border border-purple-500/40 bg-purple-500/15 text-purple-300 hover:bg-purple-500/25 hover:text-white transition-all duration-200"
+                  href={wallpaperDownload(lightbox.src, lightbox.label).href}
+                  download={wallpaperDownload(lightbox.src, lightbox.label).download}
+                  className="flex items-center gap-2 px-5 py-2.5 text-[0.75rem] font-bold tracking-[0.1em] uppercase border border-gold/40 bg-gold/15 text-gold-bright hover:bg-gold/25 hover:text-white transition-all duration-200"
                   onClick={() => trackDownload(lightbox.id)}
                 >
                   <Download size={13} />

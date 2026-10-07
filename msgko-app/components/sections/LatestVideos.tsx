@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Play } from "lucide-react";
 import { useState } from "react";
 import type { YTVideo } from "@/lib/youtube";
@@ -31,11 +32,12 @@ function VideoCard({ video, index }: { video: YTVideo; index: number }) {
       {/* Thumbnail */}
       <div className="relative overflow-hidden rounded-xl" style={{ aspectRatio: "16/9" }}>
         {video.thumbnail ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={video.thumbnail}
             alt={video.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-400"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition-transform duration-400"
             style={{ transform: hovered ? "scale(1.04)" : "scale(1)" }}
           />
         ) : (

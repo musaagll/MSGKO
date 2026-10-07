@@ -40,7 +40,7 @@ export function MobileHeader({ onSearchOpen }: MobileHeaderProps) {
           <span
             className="font-black leading-none"
             style={{
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "var(--font-cinzel), serif",
               fontSize: "20px",
               background: "linear-gradient(135deg, #e8c96a 0%, #c9a84c 50%, #a07830 100%)",
               WebkitBackgroundClip: "text",
@@ -51,7 +51,7 @@ export function MobileHeader({ onSearchOpen }: MobileHeaderProps) {
           >
             MSGKO
           </span>
-          <span style={{ fontSize: "6px", color: "var(--text-muted)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+          <span lang="en" style={{ fontSize: "6px", color: "var(--text-muted)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
             Knight Online
           </span>
         </Link>

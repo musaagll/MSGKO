@@ -1,5 +1,7 @@
 'use client'
 
+import Image from "next/image";
+
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Clock } from 'lucide-react'
 import { useModal } from '@/hooks/useModal'
@@ -38,7 +40,7 @@ export function AsasModal({ isOpen, onClose }: AsasModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 text-[#999999] hover:text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+              className="absolute top-4 right-4 text-[#999999] hover:text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
               aria-label="Kapat"
             >
               <X size={18} />
@@ -46,9 +48,11 @@ export function AsasModal({ isOpen, onClose }: AsasModalProps) {
 
             <div className="px-10 py-12 flex flex-col items-center text-center">
               <div className="w-16 h-16 border border-white/[0.08] bg-[#2A2A2A] flex items-center justify-center mb-6">
-                <img
+                <Image
                   src="/assassin-icon.png"
                   alt="Asas"
+                  width={40}
+                  height={40}
                   className="w-10 h-10 object-contain"
                   style={{ mixBlendMode: 'screen', filter: 'brightness(1.3) contrast(1.1)' }}
                 />
@@ -67,7 +71,7 @@ export function AsasModal({ isOpen, onClose }: AsasModalProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="mt-6 text-[0.75rem] text-[#666] hover:text-white transition-colors tracking-[0.08em] uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                className="mt-6 text-[0.75rem] text-[#666] hover:text-white transition-colors tracking-[0.08em] uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
               >
                 Kapat
               </button>

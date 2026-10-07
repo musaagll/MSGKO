@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { formatDuration as fmtDur, formatViews as fmtViews } from '@/lib/utils'
@@ -122,8 +124,8 @@ export function YoutubePanel() {
             >
               <div className="relative w-full overflow-hidden bg-[#1a1a1a]" style={{ aspectRatio: '16/9' }}>
                 {v.thumbnail ? (
-                  <img src={v.thumbnail} alt={v.title} loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  <Image src={v.thumbnail} alt={v.title} fill sizes="(max-width: 640px) 50vw, 240px"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #1a1a2e, #07070B)' }} />
@@ -162,8 +164,8 @@ export function YoutubePanel() {
               <div className="relative flex-shrink-0 overflow-hidden bg-[#1a1a1a]"
                 style={{ width: '112px', aspectRatio: '16/9' }}>
                 {v.thumbnail && (
-                  <img src={v.thumbnail} alt={v.title} loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  <Image src={v.thumbnail} alt={v.title} fill sizes="112px"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 )}
                 {v.duration && (

@@ -45,7 +45,7 @@ export function Footer() {
             <span
               className="font-black leading-none"
               style={{
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "var(--font-cinzel), serif",
                 fontSize: "20px",
                 background: "linear-gradient(135deg, #e8c96a 0%, #c9a84c 50%, #a07830 100%)",
                 WebkitBackgroundClip: "text",
@@ -57,6 +57,7 @@ export function Footer() {
               MSGKO
             </span>
             <span
+              lang="en"
               className="uppercase tracking-[0.18em] mt-0.5"
               style={{ fontSize: "7px", color: "#3a3530", letterSpacing: "0.2em" }}
             >

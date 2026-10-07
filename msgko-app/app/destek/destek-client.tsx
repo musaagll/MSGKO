@@ -1,5 +1,7 @@
 'use client'
 
+import Image from "next/image";
+
 import { motion } from 'framer-motion'
 import { ExternalLink, Heart, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -49,11 +51,13 @@ export function DestekClient() {
 
       {/* Büyük logo arka plan */}
       <div className="fixed inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
-        <img
+        <Image
           src="/logo.png"
           alt=""
           aria-hidden="true"
-          className="w-[520px] md:w-[700px] opacity-[0.04] select-none"
+          width={700}
+          height={700}
+          className="w-[520px] md:w-[700px] h-auto opacity-[0.04] select-none"
           style={{ mixBlendMode: 'screen', filter: 'grayscale(1) brightness(2)' }}
         />
       </div>

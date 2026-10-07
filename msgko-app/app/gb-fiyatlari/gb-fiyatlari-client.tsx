@@ -75,6 +75,18 @@ function timeAgo(iso: string) {
   return `${Math.floor(s/3600)}sa önce`
 }
 
+// Upstream (ucuzagb.com) şeması belgelenmemiş — beklenmeyen kayıtları ele, sayfayı çökertme
+function normalizeSites(raw: unknown): PricesData {
+  if (!raw || typeof raw !== 'object') return {}
+  const out: PricesData = {}
+  for (const [key, v] of Object.entries(raw as Record<string, Partial<SiteData> | null>)) {
+    if (!v || typeof v.url !== 'string' || !Array.isArray(v.prices)) continue
+    try { new URL(v.url) } catch { continue }
+    out[key] = { name: String(v.name ?? key), url: v.url, prices: v.prices }
+  }
+  return out
+}
+
 // ── Ana bileşen ───────────────────────────────────────────────────────────────
 export function GbFiyatlariClient() {
   const [sites, setSites]         = useState<PricesData>({})
@@ -82,21 +94,25 @@ export function GbFiyatlariClient() {
   const [loading, setLoading]     = useState(true)
   const [activeServer, setActive] = useState('Zero')
   const [mode, setMode]           = useState<'sell'|'buy'>('sell')
+  const [failed, setFailed]       = useState(false)
 
-  const fetchPrices = useCallback(async () => {
-    try {
-      const r = await fetch('/api/gb-fiyatlari', { cache: 'no-store' })
-      if (!r.ok) throw new Error()
-      const d = await r.json()
-      setSites(d.sites ?? {})
-      setUpdatedAt(d.updatedAt ?? null)
-    } catch { /* ignore */ } finally {
-      setLoading(false)
-    }
-  }, [])
+  const fetchPrices = useCallback(() =>
+    fetch('/api/gb-fiyatlari', { cache: 'no-store' })
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json() as Promise<{ sites?: unknown; updatedAt?: string | null }>
+      })
+      .then(d => {
+        setSites(normalizeSites(d.sites))
+        setUpdatedAt(d.updatedAt ?? null)
+        setFailed(false)
+      })
+      .catch(() => setFailed(true))
+      .finally(() => setLoading(false)),
+  [])
 
-  useEffect(() => { fetchPrices() }, [fetchPrices])
   useEffect(() => {
+    fetchPrices()
     const t = setInterval(fetchPrices, 5 * 60 * 1000)
     return () => clearInterval(t)
   }, [fetchPrices])
@@ -304,8 +320,12 @@ export function GbFiyatlariClient() {
             ))}
           </div>
         ) : serverPrices.length === 0 ? (
-          <div className="flex items-center justify-center py-20">
-            <p className="text-white/25">Bu sunucu için fiyat bulunamadı</p>
+          <div className="flex items-center justify-center py-20" role="status">
+            <p className="text-white/50">
+              {failed
+                ? 'Fiyatlar şu an alınamıyor. Birkaç dakika sonra tekrar dene.'
+                : 'Bu sunucu için fiyat bulunamadı'}
+            </p>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

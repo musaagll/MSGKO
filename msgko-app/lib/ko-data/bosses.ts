@@ -223,3 +223,8 @@ export function getPublishedBossSlugs(): string[] {
 export function getBossesByMap(mapSlug: string): BossSeedData[] {
   return KO_BOSSES.filter((b) => b.map_slug === mapSlug && b.is_published)
 }
+
+/** İç linkler için: slug yayınlanmış bir boss sayfasına mı gidiyor? */
+export function isPublishedBoss(slug: string | null | undefined): slug is string {
+  return !!slug && KO_BOSSES.some((b) => b.slug === slug && b.is_published)
+}

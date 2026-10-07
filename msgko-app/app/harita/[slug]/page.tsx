@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Script from 'next/script'
+import { MaybeLink } from '@/components/ui/MaybeLink'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { KO_MAPS, getMapBySlug, getPublishedMapSlugs } from '@/lib/ko-data/maps'
+import { isPublishedBoss } from '@/lib/ko-data/bosses'
 import {
   buildMapMetadata,
   buildMapBreadcrumbs,
@@ -10,7 +12,6 @@ import {
   buildArticleSchema,
   buildFAQSchema,
   buildPlaceSchema,
-  BASE_URL,
 } from '@/lib/seo'
 
 export async function generateStaticParams() {
@@ -24,7 +25,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const map = getMapBySlug(slug)
-  if (!map) return {}
+  if (!map || !map.is_published) return {}
   return buildMapMetadata(map)
 }
 
@@ -35,7 +36,7 @@ export default async function HaritaDetailPage({
 }) {
   const { slug } = await params
   const map = getMapBySlug(slug)
-  if (!map) notFound()
+  if (!map || !map.is_published) notFound()
 
   const breadcrumbs = buildMapBreadcrumbs(map)
 
@@ -80,13 +81,9 @@ export default async function HaritaDetailPage({
 
   return (
     <>
-      <Script
-        id="harita-detail-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
-      />
+      <JsonLd data={schemas} />
 
-      <main className="min-h-screen" style={{ background: '#07070B' }}>
+      <article className="min-h-screen" style={{ background: 'var(--void)' }}>
         {/* Breadcrumb */}
         <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
           <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
@@ -142,7 +139,7 @@ export default async function HaritaDetailPage({
                   <ul className="flex flex-col gap-2.5">
                     {map.key_features.map((f, i) => (
                       <li key={i} className="flex items-start gap-3 text-[0.82rem] text-white/55">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-purple-500/50" aria-hidden="true"/>
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-gold/50" aria-hidden="true"/>
                         {f.text}
                       </li>
                     ))}
@@ -184,12 +181,12 @@ export default async function HaritaDetailPage({
                   </h2>
                   <div className="flex flex-wrap gap-3">
                     {map.bosses_here.map((b) => (
-                      <Link key={b.boss_slug} href={`/boss/${b.boss_slug}`}
+                      <MaybeLink key={b.boss_slug} href={isPublishedBoss(b.boss_slug) ? `/boss/${b.boss_slug}` : null}
                         className="px-4 py-2 border border-red-500/20 text-[0.78rem] font-semibold
                           text-red-400/70 hover:text-red-400 hover:border-red-500/40
                           transition-all duration-200">
                         {b.boss_name}
-                      </Link>
+                      </MaybeLink>
                     ))}
                   </div>
                 </section>
@@ -289,7 +286,7 @@ export default async function HaritaDetailPage({
                       ))}
                       <li>
                         <Link href="/harita" className="text-[0.72rem] tracking-[0.1em] uppercase
-                          text-purple-400/50 hover:text-purple-400 transition-colors mt-1 inline-block">
+                          text-gold-bright/50 hover:text-gold-bright transition-colors mt-1 inline-block">
                           Tüm Haritalar →
                         </Link>
                       </li>
@@ -301,7 +298,7 @@ export default async function HaritaDetailPage({
 
           </div>
         </div>
-      </main>
+      </article>
     </>
   )
 }

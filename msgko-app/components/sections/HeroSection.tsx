@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { BookOpen, Play } from "lucide-react";
 import { useState } from "react";
 import { OkcuModal } from "@/components/ui/OkcuModal";
@@ -20,12 +21,15 @@ export function HeroSection() {
       >
         {/* Full-width cinematic background */}
         <div className="absolute inset-0 z-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/Gorsel/arkaplan.png"
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            fill
+            priority
+            // Dikey ekranda object-cover görseli ~yükseklik×1.78 genişliğe büyütür
+            sizes="(max-width: 1024px) 1400px, 100vw"
+            className="object-cover object-center"
             style={{ filter: "brightness(0.72) saturate(0.9)" }}
           />
 
@@ -68,7 +72,7 @@ export function HeroSection() {
         >
           <p
             className="italic leading-relaxed"
-            style={{ fontSize: "12px", color: "rgba(240,234,214,0.35)", fontFamily: "'Cinzel', serif" }}
+            style={{ fontSize: "12px", color: "rgba(240,234,214,0.35)", fontFamily: "var(--font-cinzel), serif" }}
           >
             &ldquo;Bazı oyunlar geçici, bazıları ise bir yaşam tarzıdır.&rdquo;
           </p>
@@ -77,7 +81,7 @@ export function HeroSection() {
         {/* BOTTOM RIGHT: Knight Lives On */}
         <div
           className="absolute bottom-12 right-12 z-10 hidden lg:block select-none"
-          style={{ fontFamily: "'Cinzel', serif", fontSize: "13px", color: "rgba(201,168,76,0.28)", fontStyle: "italic", letterSpacing: "0.08em" }}
+          style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "13px", color: "rgba(201,168,76,0.28)", fontStyle: "italic", letterSpacing: "0.08em" }}
           aria-hidden="true"
         >
           Knight Lives On
@@ -90,7 +94,7 @@ export function HeroSection() {
 
               {/* Eyebrow */}
               <div className="flex items-center gap-3 mb-5">
-                <span className="text-xs font-bold uppercase tracking-[0.22em]" style={{ color: "#c9a84c", letterSpacing: "0.2em" }}>
+                <span lang="en" className="text-xs font-bold uppercase tracking-[0.22em]" style={{ color: "#c9a84c", letterSpacing: "0.2em" }}>
                   Knight Online
                 </span>
                 <span className="gold-line" aria-hidden="true" />
@@ -106,7 +110,7 @@ export function HeroSection() {
                 aria-hidden="true"
                 className="font-black leading-none mb-5"
                 style={{
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "var(--font-cinzel), serif",
                   fontSize: "clamp(64px, 9vw, 110px)",
                   background: "linear-gradient(135deg, #ffffff 0%, #e8c96a 40%, #c9a84c 70%, #a07830 100%)",
                   WebkitBackgroundClip: "text",

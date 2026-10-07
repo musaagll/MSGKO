@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Script from 'next/script'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { KO_BOSSES } from '@/lib/ko-data/bosses'
 import { buildMetadata, buildBreadcrumbSchema, buildItemListSchema, BASE_URL } from '@/lib/seo'
 
@@ -40,9 +40,9 @@ export default function BossIndexPage() {
 
   return (
     <>
-      <Script id="boss-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
+      <JsonLd data={schemas} />
 
-      <main style={{ minHeight: '100vh', background: 'var(--void)' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--void)' }}>
 
         {/* ── Page Header ── */}
         <div className="page-header" style={{ paddingTop: 'clamp(5rem,8vw,6rem)' }}>
@@ -192,7 +192,7 @@ export default function BossIndexPage() {
             </p>
           </div>
         </section>
-      </main>
+      </div>
     </>
   )
 }

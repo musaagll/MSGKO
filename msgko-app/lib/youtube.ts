@@ -4,7 +4,6 @@
  */
 
 const API_KEY          = process.env.YOUTUBE_API_KEY!
-const CHANNEL_ID       = process.env.YOUTUBE_CHANNEL_ID ?? 'UCGWeKVw_Yiw2a_oul5QkFbA'
 const UPLOADS_PLAYLIST = process.env.YOUTUBE_UPLOADS_PLAYLIST_ID ?? 'UUGWeKVw_Yiw2a_oul5QkFbA'
 
 export interface YTVideo {

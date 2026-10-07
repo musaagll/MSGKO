@@ -67,7 +67,7 @@ export function MobileDrawer({ isOpen, onClose, onYoutubeOpen, onInstagramOpen, 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(201,168,76,0.08)" }}>
           <div className="flex flex-col leading-none">
-            <span style={{ fontFamily: "'Cinzel', serif", fontSize: "18px", background: "linear-gradient(135deg, #e8c96a, #c9a84c)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", fontWeight: 900, letterSpacing: "0.06em" }}>
+            <span style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "18px", background: "linear-gradient(135deg, #e8c96a, #c9a84c)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", fontWeight: 900, letterSpacing: "0.06em" }}>
               MSGKO
             </span>
             <span style={{ fontSize: "6.5px", color: "#3a3530", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: "1px" }}>Menü</span>

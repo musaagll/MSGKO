@@ -1,9 +1,12 @@
 'use client'
 
+import Image from 'next/image'
+
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Download, X, ZoomIn, Monitor, Smartphone } from 'lucide-react'
 import Link from 'next/link'
+import { wallpaperDownload } from '@/lib/utils'
 import { ArrowLeft } from 'lucide-react'
 
 interface Wallpaper {
@@ -25,7 +28,6 @@ export function WallpaperClient() {
   const [loading,    setLoading]    = useState(true)
 
   useEffect(() => {
-    setLoading(true)
     fetch('/api/wallpapers')
       .then(r => r.json())
       .then((data: Wallpaper[]) => {
@@ -197,11 +199,12 @@ export function WallpaperClient() {
                     style={{ aspectRatio: currentTab.aspect, cursor: 'pointer', overflow: 'hidden' }}
                     onClick={() => { setLightbox(wp); track(wp.id, 'click') }}
                   >
-                    <img
+                    <Image
                       src={wp.src}
                       alt={`Knight Online Wallpaper — ${wp.label}`}
-                      loading="lazy"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.7s ease', display: 'block' }}
+                      fill
+                      sizes={tab === 'pc' ? '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw' : '(max-width: 640px) 50vw, 25vw'}
+                      style={{ objectFit: 'cover', transition: 'transform 0.7s ease' }}
                       className="group-hover:scale-[1.06]"
                     />
                     {/* Gradient */}
@@ -226,8 +229,8 @@ export function WallpaperClient() {
                         <ZoomIn size={15} />
                       </button>
                       <a
-                        href={wp.src}
-                        download={wp.label + '.png'}
+                        href={wallpaperDownload(wp.src, wp.label).href}
+                        download={wallpaperDownload(wp.src, wp.label).download}
                         style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--crimson)', border: '1px solid rgba(212,168,50,0.5)', color: '#06080F', textDecoration: 'none' }}
                         onClick={e => { e.stopPropagation(); track(wp.id, 'download') }}
                         aria-label={`${wp.label} indir`}
@@ -308,8 +311,8 @@ export function WallpaperClient() {
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <a
-                    href={lightbox.src}
-                    download={lightbox.label + '.png'}
+                    href={wallpaperDownload(lightbox.src, lightbox.label).href}
+                    download={wallpaperDownload(lightbox.src, lightbox.label).download}
                     className="btn-primary"
                     style={{ padding: '8px 16px', fontSize: '0.7rem', textDecoration: 'none' }}
                     onClick={() => track(lightbox.id, 'download')}

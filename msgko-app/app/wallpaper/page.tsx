@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { WallpaperClient } from './wallpaper-client'
 
-const BASE_URL = 'https://msgko.net'
+import { SITE_URL as BASE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
-  title: 'Knight Online Wallpaper — Ücretsiz HD Duvar Kağıtları | MSGKO',
+  title: { absolute: 'Knight Online Wallpaper — Ücretsiz HD Duvar Kağıtları | MSGKO' },
   description:
     'Knight Online duvar kağıtları — ücretsiz indir. PC ve telefon için HD Knight Online wallpaper. Asas, okçu ve tüm karakterler için özel tasarım MSGKO duvar kağıtları.',
   keywords: [
@@ -72,11 +72,7 @@ const webPageSchema = {
 export default function WallpaperPage() {
   return (
     <>
-      <Script
-        id="wallpaper-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
-      />
+      <JsonLd data={webPageSchema} />
       <WallpaperClient />
     </>
   )

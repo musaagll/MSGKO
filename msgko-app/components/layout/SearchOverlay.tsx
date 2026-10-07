@@ -16,7 +16,9 @@ export function SearchOverlay({ isOpen, onClose }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
 
-  const handleKey = useCallback((e: KeyboardEvent) => { if (e.key === "Escape") onClose(); }, [onClose]);
+  // Kapanırken aramayı da temizle
+  const close = useCallback(() => { setQuery(""); onClose(); }, [onClose]);
+  const handleKey = useCallback((e: KeyboardEvent) => { if (e.key === "Escape") close(); }, [close]);
 
   useEffect(() => {
     if (isOpen) {
@@ -25,7 +27,6 @@ export function SearchOverlay({ isOpen, onClose }: Props) {
       setTimeout(() => inputRef.current?.focus(), 80);
     } else {
       document.body.style.overflow = "";
-      setQuery("");
     }
     return () => { document.removeEventListener("keydown", handleKey); document.body.style.overflow = ""; };
   }, [isOpen, handleKey]);
@@ -40,7 +41,7 @@ export function SearchOverlay({ isOpen, onClose }: Props) {
         opacity: isOpen ? 1 : 0,
         pointerEvents: isOpen ? "auto" : "none",
       }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget) close(); }}
       role="dialog"
       aria-modal="true"
       aria-label="Arama"
@@ -67,7 +68,7 @@ export function SearchOverlay({ isOpen, onClose }: Props) {
             aria-label="Arama"
           />
           <button
-            onClick={onClose}
+            onClick={close}
             className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 transition-all duration-150 hover:bg-white/5"
             style={{ color: "#5a5448" }}
             aria-label="Kapat"
@@ -87,7 +88,7 @@ export function SearchOverlay({ isOpen, onClose }: Props) {
                   <li key={label}>
                     <Link
                       href={href}
-                      onClick={onClose}
+                      onClick={close}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 hover:bg-white/[0.03]"
                       style={{ color: "var(--text-secondary)", textDecoration: "none" }}
                     >

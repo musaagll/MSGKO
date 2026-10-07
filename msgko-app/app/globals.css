@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
-
 @import "tailwindcss";
+
+/* Fontlar app/layout.tsx içinde next/font ile yükleniyor (--font-inter, --font-cinzel). */
 
 /* ─── MSG Design Tokens ─────────────────────────────────────── */
 :root {
@@ -25,11 +25,39 @@
   --border-subtle: rgba(201,168,76,0.12);
   --border-card:   rgba(255,255,255,0.07);
   --radius-card:   12px;
+
+  /* ─── İçerik sayfası token'ları ────────────────────────────────
+     Rehber/boss/item/harita sayfaları bu isimleri kullanıyor;
+     altın temaya eşlenmiş halleri. */
+  --void:            var(--bg-base);
+  --abyss:           var(--bg-01);
+  --surface:         var(--bg-02);
+
+  --platinum:        var(--text-primary);
+  --steel:           var(--text-secondary);
+  --iron:            #6f6858;
+
+  --crimson:         var(--gold-mid);
+  --crimson-bright:  var(--gold-bright);
+  --crimson-dim:     var(--gold-dark);
+  --crimson-subtle:  rgba(201, 168, 76, 0.08);
+  --ember:           var(--gold-dark);
+
+  --border:          rgba(255, 255, 255, 0.06);
+  --border-md:       rgba(255, 255, 255, 0.10);
+  --border-crimson:  rgba(201, 168, 76, 0.28);
+
+  --page-px:    clamp(16px, 3vw, 40px);
+  --max-w:      1280px;
+  --section-pt: clamp(3rem, 6vw, 5rem);
+  --section-pb: clamp(3rem, 6vw, 5rem);
+
+  --font-rajdhani: var(--font-cinzel), serif;
 }
 
 @theme inline {
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-display: 'Cinzel', serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-cinzel), serif;
   --color-gold:    #c9a84c;
   --color-gold-bright: #e8c96a;
   --color-bg-base: #07080d;
@@ -42,7 +70,7 @@ html { color-scheme: dark; }
 body {
   background: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -76,7 +104,92 @@ body {
 }
 
 /* ─── Cinzel display font ────────────────────────────────────── */
-.font-cinzel { font-family: 'Cinzel', serif; }
+.font-cinzel { font-family: var(--font-cinzel), serif; }
+
+/* ─── Sayfa başlığı (index sayfaları) ────────────────────────── */
+.page-header {
+  padding-left: var(--page-px);
+  padding-right: var(--page-px);
+  padding-bottom: clamp(2rem, 4vw, 3rem);
+  border-bottom: 1px solid var(--border-subtle);
+  background:
+    radial-gradient(ellipse 60% 100% at 20% 0%, rgba(201,168,76,0.06) 0%, transparent 70%),
+    linear-gradient(to bottom, var(--bg-01), var(--bg-base));
+}
+.page-header-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold-mid);
+}
+.page-header-eyebrow::before {
+  content: '';
+  width: 20px;
+  height: 1px;
+  background: var(--gold-mid);
+}
+.page-header-title {
+  font-family: var(--font-cinzel), serif;
+  font-size: clamp(1.9rem, 4.5vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+.page-header-desc {
+  max-width: 640px;
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+}
+
+/* ─── Breadcrumb ─────────────────────────────────────────────── */
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.breadcrumb-link { color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
+.breadcrumb-link:hover { color: var(--gold-bright); }
+.breadcrumb-sep { color: var(--text-muted); }
+.breadcrumb-current { color: var(--text-primary); }
+
+/* ─── İçerik kartı ───────────────────────────────────────────── */
+.card-gaming {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.card-gaming::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.card-gaming:hover {
+  border-color: var(--border-crimson);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+  transform: translateY(-2px);
+}
+.card-gaming:hover::before { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card-gaming, .card-gaming:hover { transition: none; transform: none; }
+}
 
 /* ─── Mobile bottom nav padding ─────────────────────────────── */
 @media (max-width: 767px) {

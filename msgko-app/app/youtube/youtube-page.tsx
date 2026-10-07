@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ExternalLink, Play, Eye } from 'lucide-react'
@@ -152,8 +154,9 @@ export function YoutubePage() {
               >
                 <div style={{ position: 'relative', aspectRatio: '9/16', overflow: 'hidden', background: 'var(--abyss)' }}>
                   {v.thumbnail && (
-                    <img src={v.thumbnail} alt={v.title} loading="lazy"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }}
+                    <Image src={v.thumbnail} alt={v.title} fill
+                      sizes="(max-width: 640px) 50vw, 20vw"
+                      style={{ objectFit: 'cover', transition: 'transform 0.5s' }}
                       className="group-hover:scale-[1.07]"
                     />
                   )}
@@ -198,8 +201,9 @@ export function YoutubePage() {
                 {/* Thumbnail */}
                 <div style={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden', background: 'var(--abyss)' }}>
                   {v.thumbnail && (
-                    <img src={v.thumbnail} alt={v.title} loading="lazy"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s' }}
+                    <Image src={v.thumbnail} alt={v.title} fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      style={{ objectFit: 'cover', transition: 'transform 0.6s' }}
                       className="group-hover:scale-[1.06]"
                     />
                   )}

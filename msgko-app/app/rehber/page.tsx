@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import Script from 'next/script'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { KO_CLASSES } from '@/lib/ko-data/classes'
 import { buildMetadata, buildBreadcrumbSchema, buildItemListSchema, BASE_URL } from '@/lib/seo'
 
@@ -54,13 +54,9 @@ const CLASS_ACCENT: Record<string, { border: string; bg: string; label: string }
 export default function RehberIndexPage() {
   return (
     <>
-      <Script
-        id="rehber-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
-      />
+      <JsonLd data={schemas} />
 
-      <main style={{ minHeight: '100vh', background: 'var(--void)' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--void)' }}>
 
         {/* ── Hero header ── */}
         <div className="page-header" style={{ paddingTop: 'clamp(5rem,8vw,6rem)' }}>
@@ -233,7 +229,7 @@ export default function RehberIndexPage() {
             })}
           </div>
         </section>
-      </main>
+      </div>
     </>
   )
 }

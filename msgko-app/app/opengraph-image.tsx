@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og'
 
-export const runtime = 'edge'
 export const alt = 'MSGKO - Knight Online Gelişim & Strateji Rehberi'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
@@ -16,13 +15,13 @@ export default function OgImage() {
           flexDirection: 'column',
           alignItems: 'flex-start',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #07070B 0%, #0e0e18 50%, #14101f 100%)',
+          background: 'linear-gradient(135deg, #06080F 0%, #0A0E1C 50%, #0D1525 100%)',
           padding: '80px',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Arka plan efekti */}
+        {/* Arka plan efekti — altın glow */}
         <div
           style={{
             position: 'absolute',
@@ -31,7 +30,7 @@ export default function OgImage() {
             width: '600px',
             height: '600px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(109,40,217,0.3) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(212,168,50,0.20) 0%, transparent 70%)',
           }}
         />
         <div
@@ -42,11 +41,11 @@ export default function OgImage() {
             width: '400px',
             height: '400px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(58,74,107,0.15) 0%, transparent 70%)',
           }}
         />
 
-        {/* Üst çizgi */}
+        {/* Üst altın çizgi */}
         <div
           style={{
             position: 'absolute',
@@ -54,7 +53,7 @@ export default function OgImage() {
             left: 0,
             right: 0,
             height: '3px',
-            background: 'linear-gradient(90deg, transparent, #7c3aed, #a855f7, #ec4899, transparent)',
+            background: 'linear-gradient(90deg, transparent, #D4A832, #F0C050, #D4A832, transparent)',
           }}
         />
 
@@ -64,8 +63,8 @@ export default function OgImage() {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            background: 'rgba(109,40,217,0.15)',
-            border: '1px solid rgba(139,92,246,0.35)',
+            background: 'rgba(212,168,50,0.10)',
+            border: '1px solid rgba(212,168,50,0.35)',
             padding: '8px 16px',
             marginBottom: '32px',
           }}
@@ -75,12 +74,12 @@ export default function OgImage() {
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              background: '#a78bfa',
+              background: '#F0C050',
             }}
           />
           <span
             style={{
-              color: '#a78bfa',
+              color: '#F0C050',
               fontSize: '14px',
               fontWeight: 700,
               letterSpacing: '0.2em',
@@ -102,7 +101,7 @@ export default function OgImage() {
         >
           <span
             style={{
-              color: 'white',
+              color: '#E8ECF0',
               fontSize: '72px',
               fontWeight: 900,
               lineHeight: 0.9,
@@ -119,7 +118,7 @@ export default function OgImage() {
               lineHeight: 0.9,
               letterSpacing: '-0.02em',
               textTransform: 'uppercase',
-              background: 'linear-gradient(125deg, #e0d7ff, #a78bfa, #ec4899)',
+              background: 'linear-gradient(125deg, #F5E8B8, #F0C050, #D4A832)',
               WebkitBackgroundClip: 'text',
               color: 'transparent',
             }}
@@ -131,7 +130,7 @@ export default function OgImage() {
         {/* Alt yazı */}
         <p
           style={{
-            color: 'rgba(200,200,216,0.65)',
+            color: 'rgba(138,155,176,0.8)',
             fontSize: '22px',
             lineHeight: 1.5,
             maxWidth: '680px',
@@ -153,10 +152,10 @@ export default function OgImage() {
             <div
               key={tag}
               style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgba(212,168,50,0.08)',
+                border: '1px solid rgba(212,168,50,0.25)',
                 padding: '8px 16px',
-                color: 'rgba(255,255,255,0.6)',
+                color: 'rgba(240,192,80,0.7)',
                 fontSize: '14px',
                 fontWeight: 600,
                 letterSpacing: '0.05em',

@@ -6,18 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "check": "node scripts/check-integrity.mts"
   },
   "dependencies": {
-    "@react-three/drei": "^9.119.0",
+    "@react-three/drei": "9.119.0",
     "@react-three/fiber": "^9.0.0-rc.5",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.107.0",
     "@vercel/analytics": "^1.5.0",
-    "cheerio": "^1.2.0",
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.17.0",
-    "next": "16.2.7",
+    "next": "16.4.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "three": "^0.169.0"
@@ -29,7 +30,7 @@
     "@types/react-dom": "^19",
     "@types/three": "^0.169.0",
     "eslint": "^9",
-    "eslint-config-next": "16.2.7",
+    "eslint-config-next": "16.4.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"

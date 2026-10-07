@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Script from 'next/script'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { KO_ITEMS } from '@/lib/ko-data/items'
 import { buildMetadata, buildBreadcrumbSchema, buildItemListSchema, BASE_URL } from '@/lib/seo'
 
@@ -39,9 +39,9 @@ export default function ItemIndexPage() {
 
   return (
     <>
-      <Script id="item-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
+      <JsonLd data={schemas} />
 
-      <main style={{ minHeight: '100vh', background: 'var(--void)' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--void)' }}>
 
         {/* ── Page Header ── */}
         <div className="page-header" style={{ paddingTop: 'clamp(5rem,8vw,6rem)' }}>
@@ -177,7 +177,7 @@ export default function ItemIndexPage() {
             </p>
           </div>
         </section>
-      </main>
+      </div>
     </>
   )
 }

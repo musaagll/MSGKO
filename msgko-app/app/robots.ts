@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next'
-
-const BASE_URL = 'https://msgko.net'
+import { SITE_URL as BASE_URL } from '@/lib/site'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -17,16 +16,10 @@ export default function robots(): MetadataRoute.Robots {
           '/harita/*',
           '/item/',
           '/item/*',
-          '/build/',
-          '/build/*',
-          '/farm/',
-          '/farm/*',
-          '/haber/',
-          '/haber/*',
           '/wallpaper',
           '/youtube',
           '/instagram',
-          '/pazar',
+          '/gb-fiyatlari',
         ],
         disallow: [
           '/api/',

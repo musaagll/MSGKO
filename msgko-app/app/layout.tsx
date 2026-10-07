@@ -1,10 +1,25 @@
 import type { Metadata, Viewport } from 'next'
+import { Cinzel, Inter } from 'next/font/google'
 import './globals.css'
 import { SiteShell } from '@/components/layout/SiteShell'
 import { Analytics } from '@vercel/analytics/next'
 import { PageViewTracker } from '@/components/ui/PageViewTracker'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { SITE_URL as BASE_URL } from '@/lib/site'
 
-const BASE_URL = 'https://msgko.net'
+// Self-host edilen fontlar — render-blocking Google Fonts @import yerine
+const inter = Inter({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+const cinzel = Cinzel({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '600', '700', '800', '900'],
+  variable: '--font-cinzel',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -252,9 +267,6 @@ const jsonLd = [
   },
 ]
 
-// JSON-LD string'leri build-time'da hesapla — her request'te stringify yapma
-const jsonLdStrings = jsonLd.map(schema => JSON.stringify(schema))
-
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -268,14 +280,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="tr" className="dark">
+    <html lang="tr" className={`dark ${inter.variable} ${cinzel.variable}`}>
       <head>
-        {jsonLdStrings.map((str, i) => (
-          <script
-            key={i}
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: str }}
-          />
+        {jsonLd.map((schema) => (
+          <JsonLd key={schema['@type']} data={schema} />
         ))}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

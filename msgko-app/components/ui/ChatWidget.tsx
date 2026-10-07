@@ -12,7 +12,7 @@ export function ChatWidget() {
   const [hovered, setHovered] = useState(false)
 
   return (
-    <div className="fixed bottom-6 left-6 z-[400] flex flex-col items-start gap-3">
+    <div className="fixed bottom-[calc(76px+env(safe-area-inset-bottom))] left-4 md:bottom-6 md:left-6 z-[400] flex flex-col items-start gap-3">
 
       {/* ── Panel ── */}
       <AnimatePresence>
@@ -29,18 +29,18 @@ export function ChatWidget() {
             <div
               className="relative overflow-hidden"
               style={{
-                background: 'rgba(10, 10, 18, 0.92)',
+                background: 'rgba(10, 14, 28, 0.95)',
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',
-                border: '1px solid rgba(139,92,246,0.2)',
-                boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 32px 64px rgba(0,0,0,0.7), 0 0 40px rgba(139,92,246,0.08)',
+                border: '1px solid rgba(212,168,50,0.2)',
+                boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 32px 64px rgba(0,0,0,0.8), 0 0 40px rgba(212,168,50,0.06)',
               }}
             >
               {/* Animated top glow */}
               <div
                 className="absolute top-0 left-0 right-0 h-px"
                 style={{
-                  background: 'linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.8) 30%, rgba(236,72,153,0.8) 70%, transparent 100%)',
+                  background: 'linear-gradient(90deg, transparent 0%, rgba(212,168,50,0.9) 40%, rgba(240,192,80,0.7) 60%, transparent 100%)',
                 }}
               />
 
@@ -48,7 +48,7 @@ export function ChatWidget() {
               <div
                 className="absolute -top-16 -right-16 w-40 h-40 rounded-full pointer-events-none"
                 style={{
-                  background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(212,168,50,0.10) 0%, transparent 70%)',
                   filter: 'blur(20px)',
                 }}
               />
@@ -61,8 +61,8 @@ export function ChatWidget() {
                     <div
                       className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(139,92,246,0.3), rgba(236,72,153,0.2))',
-                        border: '1px solid rgba(139,92,246,0.3)',
+                        background: 'linear-gradient(135deg, rgba(212,168,50,0.25), rgba(58,74,107,0.2))',
+                        border: '1px solid rgba(212,168,50,0.3)',
                       }}
                     >
                       <Image
@@ -71,11 +71,11 @@ export function ChatWidget() {
                         width={36}
                         height={36}
                         className="object-contain"
-                        style={{ mixBlendMode: 'screen' }}
+                        style={{ mixBlendMode: 'screen', filter: 'drop-shadow(0 0 6px rgba(212,168,50,0.4))' }}
                       />
                     </div>
                     {/* Online dot */}
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0a0a12]" />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0a0e1c]" />
                   </div>
 
                   <div>
@@ -94,7 +94,7 @@ export function ChatWidget() {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                  className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white/10"
                   style={{ color: 'rgba(255,255,255,0.4)' }}
                   aria-label="Kapat"
                 >
@@ -103,7 +103,7 @@ export function ChatWidget() {
               </div>
 
               {/* Divider */}
-              <div className="mx-5" style={{ height: '1px', background: 'rgba(255,255,255,0.05)' }} />
+              <div className="mx-5" style={{ height: '1px', background: 'rgba(212,168,50,0.1)' }} />
 
               {/* Body */}
               <div className="px-5 py-5 space-y-4">
@@ -112,23 +112,24 @@ export function ChatWidget() {
                 <div className="flex items-start gap-2.5">
                   <div
                     className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                    style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.4), rgba(236,72,153,0.3))', border: '1px solid rgba(139,92,246,0.25)' }}
+                    style={{ background: 'linear-gradient(135deg, rgba(212,168,50,0.3), rgba(58,74,107,0.2))', border: '1px solid rgba(212,168,50,0.25)' }}
                   >
-                    <Sparkles size={12} className="text-purple-300" />
+                    <Sparkles size={12} style={{ color: '#F0C050' }} />
                   </div>
                   <div
-                    className="flex-1 px-4 py-3 text-[0.82rem] text-[#C8C8D8] leading-relaxed"
+                    className="flex-1 px-4 py-3 text-[0.82rem] leading-relaxed"
                     style={{
                       background: 'rgba(255,255,255,0.04)',
                       border: '1px solid rgba(255,255,255,0.07)',
                       borderRadius: '0 12px 12px 12px',
+                      color: 'rgba(220,220,230,0.85)',
                     }}
                   >
                     Merhaba! 👋 Soru ve görüşleriniz için Instagram üzerinden bana ulaşabilirsiniz.
                   </div>
                 </div>
 
-                {/* CTA Button */}
+                {/* CTA Button — Instagram rengi korunuyor, platformun kimliği */}
                 <motion.a
                   href={INSTAGRAM_DM_URL}
                   target="_blank"
@@ -173,7 +174,7 @@ export function ChatWidget() {
               {/* Bottom glow */}
               <div
                 className="absolute bottom-0 left-0 right-0 h-px"
-                style={{ background: 'linear-gradient(90deg, transparent, rgba(236,72,153,0.3), transparent)' }}
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(212,168,50,0.3), transparent)' }}
               />
             </div>
           </motion.div>
@@ -192,17 +193,17 @@ export function ChatWidget() {
               transition={{ duration: 0.2 }}
               className="absolute left-[68px] top-1/2 -translate-y-1/2 whitespace-nowrap pointer-events-none"
               style={{
-                background: 'rgba(10,10,18,0.95)',
-                border: '1px solid rgba(139,92,246,0.25)',
+                background: 'rgba(10,14,28,0.96)',
+                border: '1px solid rgba(212,168,50,0.25)',
                 backdropFilter: 'blur(16px)',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
                 padding: '6px 14px',
               }}
             >
               <p className="text-white text-[0.75rem] font-medium">Soru ve görüşleriniz için</p>
               <div
                 className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent"
-                style={{ borderRightColor: 'rgba(139,92,246,0.25)' }}
+                style={{ borderRightColor: 'rgba(212,168,50,0.25)' }}
               />
             </motion.div>
           )}
@@ -214,14 +215,14 @@ export function ChatWidget() {
             <div
               className="absolute inset-0 rounded-full animate-ping"
               style={{
-                background: 'radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(212,168,50,0.4) 0%, transparent 70%)',
                 animationDuration: '3s',
               }}
             />
             <div
               className="absolute -inset-1 rounded-full"
               style={{
-                background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(212,168,50,0.12) 0%, transparent 70%)',
                 filter: 'blur(8px)',
               }}
             />
@@ -238,12 +239,14 @@ export function ChatWidget() {
           className="relative w-14 h-14 rounded-full flex items-center justify-center"
           style={{
             background: isOpen
-              ? 'linear-gradient(135deg, #2a2a3e, #1a1a2e)'
-              : 'linear-gradient(135deg, #7c3aed, #a855f7, #ec4899)',
+              ? 'linear-gradient(135deg, #0D1525, #0A0E1C)'
+              : 'linear-gradient(135deg, #7A5A10, #D4A832, #F0C050)',
             boxShadow: isOpen
-              ? '0 8px 32px rgba(0,0,0,0.5)'
-              : '0 8px 32px rgba(139,92,246,0.5), 0 0 0 1px rgba(255,255,255,0.1)',
-            border: '1px solid rgba(255,255,255,0.12)',
+              ? '0 8px 32px rgba(0,0,0,0.6)'
+              : '0 8px 32px rgba(212,168,50,0.5), 0 0 0 1px rgba(255,255,255,0.1)',
+            border: isOpen
+              ? '1px solid rgba(212,168,50,0.3)'
+              : '1px solid rgba(255,255,255,0.12)',
           }}
           aria-label="Sohbet panelini aç"
         >
@@ -256,7 +259,7 @@ export function ChatWidget() {
                 exit={{ rotate: 90, opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <X size={20} className="text-white/80" />
+                <X size={20} style={{ color: 'rgba(212,168,50,0.9)' }} />
               </motion.div>
             ) : (
               <motion.div
@@ -266,7 +269,7 @@ export function ChatWidget() {
                 exit={{ rotate: -90, opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <MessageCircle size={22} className="text-white" />
+                <MessageCircle size={22} style={{ color: '#06080F' }} />
               </motion.div>
             )}
           </AnimatePresence>

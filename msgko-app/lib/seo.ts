@@ -9,18 +9,7 @@
  */
 
 import type { Metadata } from 'next'
-import type {
-  BreadcrumbItem,
-  SeoConfig,
-  Guide,
-  KOItem,
-  Boss,
-  KOMap,
-  Quest,
-  News,
-  FarmSpot,
-  Build,
-} from '@/lib/types'
+import type { BreadcrumbItem, SeoConfig } from '@/lib/types'
 import type { ClassData } from '@/lib/ko-data/classes'
 import type { BossSeedData } from '@/lib/ko-data/bosses'
 import type { MapSeedData } from '@/lib/ko-data/maps'
@@ -28,11 +17,25 @@ import type { ItemSeedData } from '@/lib/ko-data/items'
 
 // ─── Sabitler ─────────────────────────────────────────────────────────────────
 
-const BASE_URL = 'https://msgko.net'
+import { SITE_URL as BASE_URL } from '@/lib/site'
 const SITE_NAME = 'MSGKO — Knight Online Rehber ve Eğitim Sitesi'
 const DEFAULT_OG_IMAGE = `${BASE_URL}/opengraph-image`
 const DEFAULT_AUTHOR = 'musaagll'
 const SUFFIX = 'MSGKO'
+
+// ─── Ortak OpenGraph tabanı ───────────────────────────────────────────────────
+
+/**
+ * Next.js, sayfadaki `openGraph` nesnesini layout'unkiyle birleştirmez, tamamen
+ * değiştirir. Kendi openGraph'ını yazan sayfalar görseli/site adını kaybetmesin
+ * diye bu tabanı spread eder.
+ */
+export const BASE_OPEN_GRAPH = {
+  siteName: SITE_NAME,
+  locale: 'tr_TR',
+  type: 'website' as const,
+  images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: SITE_NAME }],
+}
 
 // ─── Temel Metadata Builder ───────────────────────────────────────────────────
 
@@ -41,10 +44,11 @@ const SUFFIX = 'MSGKO'
  * Tüm sayfa türlerinin ortak kullandığı temel fonksiyondur.
  */
 export function buildMetadata(cfg: SeoConfig): Metadata {
-  const { title, description, canonical, keywords, ogImage, ogType, robots, publishedAt, updatedAt, author } = cfg
+  const { title, description, canonical, ogImage, ogType, robots, publishedAt, updatedAt, author } = cfg
 
   return {
-    title,
+    // Başlıklar zaten "| MSGKO" ile bitiyor; layout şablonunun ikinci kez eklemesini engelle
+    title: { absolute: title },
     description,
     authors: [{ name: author ?? DEFAULT_AUTHOR, url: BASE_URL }],
     creator: DEFAULT_AUTHOR,

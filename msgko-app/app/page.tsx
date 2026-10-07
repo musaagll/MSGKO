@@ -4,6 +4,7 @@ import { FeatureCards } from '@/components/sections/FeatureCards'
 import { LatestVideos } from '@/components/sections/LatestVideos'
 import { getYoutubeVideos } from '@/lib/youtube'
 import type { YTVideo } from '@/lib/youtube'
+import { SITE_URL } from '@/lib/site'
 
 export const revalidate = 3600
 
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
   description:
     'MSGKO.net — Türkiye\'nin Knight Online rehber platformu. Asas, Okçu, Warrior, Mage, Priest build rehberleri, boss drop listesi, harita rehberleri, farm rotaları ve güncel içerikler.',
   alternates: {
-    canonical: 'https://msgko.net',
+    canonical: SITE_URL,
   },
 }
 

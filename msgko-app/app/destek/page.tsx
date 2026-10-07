@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { DestekClient } from './destek-client'
 
-const BASE_URL = 'https://msgko.net'
+import { SITE_URL as BASE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Destek — MSGKO Knight Online Rehber Sitesini Destekle',
@@ -58,11 +58,7 @@ const breadcrumbSchema = {
 export default function DestekPage() {
   return (
     <>
-      <Script
-        id="destek-breadcrumb-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <JsonLd data={breadcrumbSchema} />
       <DestekClient />
     </>
   )

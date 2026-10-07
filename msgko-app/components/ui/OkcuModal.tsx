@@ -38,7 +38,7 @@ export function OkcuModal({ isOpen, onClose }: OkcuModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 text-[#999999] hover:text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+              className="absolute top-4 right-4 text-[#999999] hover:text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
               aria-label="Kapat"
             >
               <X size={18} />
@@ -62,7 +62,7 @@ export function OkcuModal({ isOpen, onClose }: OkcuModalProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="mt-6 text-[0.75rem] text-[#666] hover:text-white transition-colors tracking-[0.08em] uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                className="mt-6 text-[0.75rem] text-[#666] hover:text-white transition-colors tracking-[0.08em] uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
               >
                 Kapat
               </button>

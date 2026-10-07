@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import Script from 'next/script'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { KO_CLASSES, getAllClassSlugs, getClassBySlug } from '@/lib/ko-data/classes'
 import {
   buildGuideMetadata,
@@ -63,13 +63,9 @@ export default async function RehberDetailPage({
 
   return (
     <>
-      <Script
-        id="rehber-detail-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
-      />
+      <JsonLd data={schemas} />
 
-      <main className="min-h-screen" style={{ background: 'var(--void)' }}>
+      <article className="min-h-screen" style={{ background: 'var(--void)' }}>
         {/* Breadcrumb */}
         <nav aria-label="Sayfa konumu" className="max-w-[1280px] mx-auto px-6 sm:px-8 pt-24 pb-2">
           <ol className="flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30">
@@ -100,7 +96,7 @@ export default async function RehberDetailPage({
               />
             </div>
             <div className="flex-1">
-              <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase text-purple-400/60 mb-2">
+              <p className="text-[0.65rem] font-bold tracking-[0.3em] uppercase text-gold-bright/60 mb-2">
                 KARAKTERİ REHBERİ
               </p>
               <h1 className="text-3xl md:text-4xl font-black tracking-[0.04em] uppercase text-white mb-3"
@@ -401,8 +397,8 @@ export default async function RehberDetailPage({
                       </li>
                     ))}
                     <li>
-                      <Link href="/rehber" className="text-[0.72rem] tracking-[0.1em] uppercase text-purple-400/50
-                        hover:text-purple-400 transition-colors duration-200 mt-1 inline-block">
+                      <Link href="/rehber" className="text-[0.72rem] tracking-[0.1em] uppercase text-gold-bright/50
+                        hover:text-gold-bright transition-colors duration-200 mt-1 inline-block">
                         Tüm Rehberler →
                       </Link>
                     </li>
@@ -412,7 +408,7 @@ export default async function RehberDetailPage({
             </aside>
           </div>
         </div>
-      </main>
+      </article>
 
       <style>{`
         .section-title {

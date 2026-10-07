@@ -1,15 +1,15 @@
 /**
- * MSGKO — Ana Sitemap Index
- * Diğer sitemap dosyalarını referans eder (sitemap-*.ts)
+ * MSGKO — Sitemap
+ * Yalnızca var olan ve kendi canonical'ı olan URL'leri listeler.
+ * Yeni bir bölüm (build, farm, haber…) eklenince route'u yayına girdikten sonra buraya eklenmeli.
  */
 import type { MetadataRoute } from 'next'
-import { getAllClassSlugs } from '@/lib/ko-data/classes'
+import { KO_CLASSES } from '@/lib/ko-data/classes'
 import { getPublishedBossSlugs } from '@/lib/ko-data/bosses'
 import { getPublishedMapSlugs } from '@/lib/ko-data/maps'
 import { getPublishedItemSlugs } from '@/lib/ko-data/items'
-import { getPublishedQuestSlugs } from '@/lib/ko-data/quests'
+import { SITE_URL as BASE_URL } from '@/lib/site'
 
-const BASE_URL = 'https://msgko.net'
 const now = new Date()
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -49,7 +49,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
-    ...getAllClassSlugs().map((slug) => ({
+    // Yalnızca canonical guideSlug'lar; alias'lar (battle-priest) canonical olarak /rehber/priest'i gösteriyor
+    ...KO_CLASSES.map(({ guideSlug: slug }) => ({
       url: `${BASE_URL}/rehber/${slug}`,
       lastModified: now,
       changeFrequency: 'weekly' as const,
@@ -105,61 +106,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   ]
 
-  // ── Build sayfaları ───────────────────────────────────────────────────────
-  const buildPages: MetadataRoute.Sitemap = [
-    {
-      url: `${BASE_URL}/build`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-  ]
-
-  // ── Pazar sayfası — her zaman değişir ─────────────────────────────────────
-  const pazarPages: MetadataRoute.Sitemap = [
-    {
-      url: `${BASE_URL}/pazar`,
-      lastModified: now,
-      changeFrequency: 'always',
-      priority: 0.85,
-    },
-  ]
-
-  // ── Farm sayfaları ────────────────────────────────────────────────────────
-  const farmPages: MetadataRoute.Sitemap = [
-    {
-      url: `${BASE_URL}/farm`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.75,
-    },
-  ]
-
-  // ── Haber sayfaları ───────────────────────────────────────────────────────
-  const haberPages: MetadataRoute.Sitemap = [
-    {
-      url: `${BASE_URL}/haber`,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.7,
-    },
-    // Dinamik haberler Supabase'den geldiğinde buraya eklenecek
-    // Şimdilik index sayfası yeterli
-  ]
-
-  // ── Quest sayfaları ───────────────────────────────────────────────────────
-  // Quest route henüz yok ama veriler var — ileride eklenecek
-  // const questPages = getPublishedQuestSlugs().map(...)
-
   return [
     ...corePages,
     ...rehberPages,
     ...bossPages,
     ...haritaPages,
     ...itemPages,
-    ...buildPages,
-    ...pazarPages,
-    ...farmPages,
-    ...haberPages,
   ]
 }

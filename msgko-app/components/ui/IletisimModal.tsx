@@ -38,7 +38,7 @@ export function IletisimModal({ isOpen, onClose }: IletisimModalProps) {
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[301] w-[92vw] max-w-[400px]"
             style={{
               background: 'rgba(10,10,18,0.97)',
-              border: '1px solid rgba(139,92,246,0.22)',
+              border: '1px solid rgba(212,168,50,0.22)',
               boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03)',
             }}
             role="dialog"
@@ -53,7 +53,7 @@ export function IletisimModal({ isOpen, onClose }: IletisimModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center border border-white/[0.08] text-white/35 hover:border-purple-500/40 hover:text-white hover:bg-purple-500/10 transition-all duration-200"
+              className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center border border-white/[0.08] text-white/35 hover:border-gold/40 hover:text-white hover:bg-gold/10 transition-all duration-200"
               aria-label="Kapat"
             >
               <X size={13} />
@@ -168,7 +168,7 @@ export function IletisimModal({ isOpen, onClose }: IletisimModalProps) {
                   <p className="text-[0.88rem] font-semibold text-white/85 group-hover:text-white transition-colors truncate">imusaagll@gmail.com</p>
                 </div>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                  className="text-white/20 group-hover:text-purple-400/60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 flex-shrink-0">
+                  className="text-white/20 group-hover:text-gold-bright/60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 flex-shrink-0">
                   <path d="M7 17L17 7M17 7H7M17 7v10"/>
                 </svg>
               </motion.a>
