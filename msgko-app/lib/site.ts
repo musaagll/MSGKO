@@ -45,6 +45,7 @@ export const MEDIA_LINKS: NavLink[] = [
   { label: 'Videolar', href: '/youtube', description: 'YouTube eğitim videoları ve shorts' },
   { label: 'Instagram', href: '/instagram', description: 'Kısa klipler ve reels' },
   { label: 'Wallpaper', href: '/wallpaper', description: 'HD Knight Online duvar kağıtları' },
+  { label: 'Canlı Pazar', href: '/pazar', description: 'Sunuculardaki aktif merchant ilanları' },
   { label: 'GB Fiyatları', href: '/gb-fiyatlari', description: 'Sitelerin GB fiyat karşılaştırması' },
 ]
 

@@ -59,10 +59,11 @@ export function HeroSection() {
         <div aria-hidden="true" className="emblem-float mt-10 sm:mt-12">
           <div className="emblem-sway relative w-36 sm:w-44">
             <Image
-              src="/brand/emblem.png"
+              src="/brand/emblem-hd.png"
               alt=""
-              width={282}
-              height={256}
+              width={961}
+              height={873}
+              sizes="(min-width: 640px) 176px, 144px"
               priority
               className="h-auto w-full drop-shadow-[0_18px_50px_rgba(102,51,238,0.55)]"
             />

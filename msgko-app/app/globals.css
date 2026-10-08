@@ -388,19 +388,17 @@ p { text-wrap: pretty; }
   inset: 0 -25% -6%;
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(40rem 26rem at 50% 45%, rgba(102, 51, 238, 0.22), transparent 70%),
-    var(--color-ink-950);
+  background: var(--color-ink-950);
   border-bottom-left-radius: 50% 14%;
   border-bottom-right-radius: 50% 14%;
   animation: intro-lift 0.85s cubic-bezier(0.76, 0, 0.24, 1) 1.05s forwards;
 }
 .intro-emblem {
-  width: clamp(7rem, 18vw, 10.5rem);
+  display: block;
+  width: clamp(14rem, 42vw, 24rem);
   height: auto;
   opacity: 0;
   animation: intro-emblem 1.1s var(--ease-soft) 0.05s forwards;
-  filter: drop-shadow(0 12px 40px rgba(102, 51, 238, 0.55));
 }
 .intro-done .intro { display: none; }
 @keyframes intro-emblem { from { opacity: 0; transform: scale(0.82) translateY(10px); } to { opacity: 1; transform: none; } }

@@ -108,6 +108,17 @@ export const SEARCH_INDEX: SearchItem[] = [
     badgeColor: 'pink',
   },
   {
+    id: 'pazar',
+    type: 'sayfa',
+    title: 'Canlı Pazar',
+    description: 'Knight Online sunucularında aktif merchant satış ve alış ilanları',
+    action: 'link',
+    href: '/pazar',
+    keywords: ['pazar', 'canlı pazar', 'market', 'merchant', 'item fiyat', 'pazar fiyat', 'satış ilanı', 'alış ilanı', 'usko pazar'],
+    badge: 'Araç',
+    badgeColor: 'green',
+  },
+  {
     id: 'gb-fiyatlari',
     type: 'sayfa',
     title: 'GB Fiyatları',

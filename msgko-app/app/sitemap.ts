@@ -39,6 +39,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
+    {
+      url: `${BASE_URL}/pazar`,
+      lastModified: now,
+      changeFrequency: 'hourly',
+      priority: 0.7,
+    },
   ]
 
   // ── Rehber sayfaları ──────────────────────────────────────────────────────
