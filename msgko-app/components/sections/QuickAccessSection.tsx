@@ -45,7 +45,7 @@ export function QuickAccessSection() {
   ]
 
   return (
-    <section aria-labelledby="veritabani" className="section">
+    <section aria-labelledby="veritabani" className="section band-raised">
       <div className="container-site">
         <SectionHeading
           id="veritabani"
@@ -53,18 +53,18 @@ export function QuickAccessSection() {
           title="Boss, harita ve item rehberleri"
           description="Oyunun önemli içeriklerini tek tek ele alan, sürekli genişleyen bir başvuru kaynağı."
         />
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {tiles.map(({ title, href, Icon, art, count, text, links }) => (
-            <article key={href} className="card group flex flex-col overflow-hidden">
+            <article key={href} className="reveal card card-interactive group flex flex-col overflow-hidden">
               <div className="relative h-36 overflow-hidden sm:h-44">
                 <Image src={art} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="zoom-media object-cover" />
-                <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-ink-900 via-ink-900/40 to-transparent" />
-                <span className="absolute left-5 top-5 flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-ink-950/60 text-amethyst-200 backdrop-blur">
+                <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-ink-850 via-ink-850/40 to-transparent" />
+                <span className="icon-tile absolute left-6 top-6 bg-ink-950/70 backdrop-blur">
                   <Icon size={20} aria-hidden="true" />
                 </span>
                 <span className="chip absolute right-5 top-5 bg-ink-950/60 backdrop-blur">{count}</span>
               </div>
-              <div className="flex flex-1 flex-col p-6">
+              <div className="flex flex-1 flex-col p-7">
                 <h3 className="text-xl font-bold">
                   <Link href={href} className="hover:text-amethyst-200">{title}</Link>
                 </h3>

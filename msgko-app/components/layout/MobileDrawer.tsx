@@ -37,7 +37,7 @@ export function MobileDrawer({ open, onClose, onSearch }: Props) {
   }, [open])
 
   const linkCls = (href: string) =>
-    `flex min-h-12 items-center justify-between rounded-xl px-3 text-[0.9375rem] font-medium transition-colors ${
+    `flex min-h-12 items-center justify-between rounded-xl px-3 text-base font-semibold transition-colors ${
       pathname === href || pathname.startsWith(href + '/') ? 'bg-white/6 text-fg' : 'text-fg-2 hover:bg-white/4'
     }`
 
@@ -55,7 +55,7 @@ export function MobileDrawer({ open, onClose, onSearch }: Props) {
         aria-modal="true"
         aria-label="Menü"
         inert={!open}
-        className={`absolute inset-y-0 right-0 flex w-[min(24rem,calc(100vw-2.5rem))] flex-col border-l border-white/8 bg-ink-900 shadow-2xl shadow-black transition-transform duration-300 ease-soft ${
+        className={`absolute inset-y-0 right-0 flex w-full flex-col bg-ink-950 shadow-2xl sm:w-[min(26rem,100vw)] sm:border-l sm:border-white/8 shadow-black transition-transform duration-300 ease-soft ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}

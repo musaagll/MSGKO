@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   let videos: YTVideo[] = []
   try {
-    videos = await getYoutubeVideos(4)
+    videos = await getYoutubeVideos(3)
   } catch {
     videos = []
   }

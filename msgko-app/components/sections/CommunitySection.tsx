@@ -13,14 +13,19 @@ const SHORTCUTS = [
 /** Ana sayfa kapanışı: topluluk ve destek çağrısı */
 export function CommunitySection() {
   return (
-    <section aria-labelledby="topluluk" className="section pt-0">
+    <section aria-labelledby="topluluk" className="section">
       <div className="container-site">
-        <div className="card relative isolate overflow-hidden px-6 py-12 text-center sm:px-12 sm:py-16">
-          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(40rem_18rem_at_50%_0%,rgba(110,78,206,0.28),transparent_70%)]" />
-          <Image src="/brand/emblem.png" alt="" width={110} height={100} className="mx-auto h-auto w-24 drop-shadow-[0_6px_30px_rgba(141,108,234,0.5)]" />
-          <h2 id="topluluk" className="display-md mx-auto mt-6 max-w-2xl">Topluluğa katıl</h2>
-          <p className="mx-auto mt-4 max-w-xl text-fg-3">
+        <div className="reveal card relative isolate overflow-hidden px-6 py-14 text-center sm:px-12 sm:py-20">
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(40rem_20rem_at_50%_0%,rgba(102,51,238,0.32),transparent_70%)]" />
+          <div aria-hidden="true" className="emblem-float mx-auto w-24">
+            <Image src="/brand/emblem.png" alt="" width={110} height={100} className="h-auto w-full drop-shadow-[0_10px_36px_rgba(102,51,238,0.6)]" />
+          </div>
+          <h2 id="topluluk" className="display-md mx-auto mt-8 max-w-2xl">Topluluğa katıl</h2>
+          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-fg-3 sm:text-lg">
             Yeni rehberler ve videolardan ilk sen haberdar ol. İçerikleri beğendiysen bir abonelik ya da küçük bir destek büyük motivasyon.
+          </p>
+          <p aria-hidden="true" className="mx-auto mt-5 max-w-md text-sm text-fg-4">
+            “Bazı oyunlar geçici, bazıları ise bir yaşam tarzıdır.”
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <a href={SOCIAL.youtubeSubscribe} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg">

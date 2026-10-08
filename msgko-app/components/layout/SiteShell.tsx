@@ -1,5 +1,6 @@
 import { Navbar } from './Navbar'
 import { Footer } from './Footer'
+import { IntroCurtain } from './IntroCurtain'
 
 /**
  * Site iskeleti. Server component: sayfa içerikleri istemciye taşınmaz.
@@ -14,6 +15,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <Footer />
+      <IntroCurtain />
     </>
   )
 }

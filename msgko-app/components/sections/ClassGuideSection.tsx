@@ -1,26 +1,26 @@
 import { ClassCard } from '@/components/cards/ClassCard'
-import { SectionHeading } from '@/components/ui/SectionHeading'
+import { SectionAction, SectionHeading } from '@/components/ui/SectionHeading'
 import { KO_CLASSES } from '@/lib/ko-data/classes'
 
-/** Ana sayfa: karakter seçme ekranı tarzı sınıf vitrini (mobilde kaydırmalı şerit) */
+/** Ana sayfa: sınıf rehberleri — masaüstünde 3'lü ızgara, son satır ortalanır */
 export function ClassGuideSection() {
   return (
-    <section aria-labelledby="sinif-rehberleri" className="section">
+    <section aria-labelledby="sinif-rehberleri" className="section band-raised">
       <div className="container-site">
         <SectionHeading
           id="sinif-rehberleri"
           eyebrow="Sınıf Rehberleri"
           title="Sınıfını seç"
           description="Skill ağaçları, stat dağılımı, Master açma ve ipuçları — beş sınıfın tamamı için tek yerde."
-          action={{ label: 'Tüm rehberler', href: '/rehber' }}
         />
-        <ul className="scroller -mx-5 scroll-px-5 px-5 pb-2 sm:-mx-8 sm:scroll-px-8 sm:px-8 lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0">
+        <ul className="flex flex-wrap justify-center gap-6">
           {KO_CLASSES.map((cls) => (
-            <li key={cls.slug} className="w-[72vw] max-w-68 sm:w-[42vw] lg:w-auto lg:max-w-none">
+            <li key={cls.slug} className="reveal w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc((100%-3rem)/3)]">
               <ClassCard cls={cls} />
             </li>
           ))}
         </ul>
+        <SectionAction label="Tüm Rehberler" href="/rehber" />
       </div>
     </section>
   )

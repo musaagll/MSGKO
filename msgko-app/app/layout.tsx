@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Barlow, Barlow_Condensed } from 'next/font/google'
+import { Geist } from 'next/font/google'
 import './globals.css'
 import { SiteShell } from '@/components/layout/SiteShell'
 import { Analytics } from '@vercel/analytics/next'
@@ -7,20 +7,17 @@ import { PageViewTracker } from '@/components/ui/PageViewTracker'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { SITE_URL as BASE_URL } from '@/lib/site'
 
-// Self-host edilen fontlar (next/font). Türkçe karakterler için latin-ext dahil.
-// Barlow: arayüz ve metin · Barlow Condensed: başlıklar ve logo
-const barlow = Barlow({
+// Self-host edilen variable font (next/font). Türkçe karakterler için latin-ext dahil.
+// Geist: metin, arayüz ve başlıklar (globals.css'te --font-heading de buna bağlı)
+const geist = Geist({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-body',
   display: 'swap',
 })
-const barlowCondensed = Barlow_Condensed({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['600', '700', '800'],
-  variable: '--font-heading',
-  display: 'swap',
-})
+
+// Açılış perdesi oturumda yalnızca bir kez oynar (components/layout/IntroCurtain.tsx)
+const INTRO_SCRIPT =
+  "try{var h=document.documentElement;if(sessionStorage.getItem('msgko-intro'))h.classList.add('intro-done');else sessionStorage.setItem('msgko-intro','1')}catch(e){document.documentElement.classList.add('intro-done')}"
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -286,8 +283,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="tr" className={`dark ${barlow.variable} ${barlowCondensed.variable}`}>
+    // intro-done sınıfı hidrasyondan önce eklenebildiği için uyarı bastırılır
+    <html lang="tr" className={`dark ${geist.variable}`} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
         {jsonLd.map((schema) => (
           <JsonLd key={schema['@type']} data={schema} />
         ))}
