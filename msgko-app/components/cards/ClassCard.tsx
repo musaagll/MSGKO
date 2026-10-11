@@ -90,7 +90,7 @@ export function ClassCard({ cls, as: Heading = 'h3', variant = 'portrait', sizes
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 opacity-80" style={{ background: cls.color }} />
       </div>
       <div className="relative -mt-8 flex flex-1 flex-col px-7 pb-7">
-        <span className="icon-tile bg-ink-900/90 backdrop-blur" style={{ borderColor: `${cls.color}55` }}>
+        <span className="icon-tile" style={{ borderColor: `${cls.color}55` }}>
           <Image src={meta.weapon} alt="" width={26} height={26} className="h-6.5 w-6.5 object-contain" />
         </span>
         <span className="mt-5 text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: cls.color }}>

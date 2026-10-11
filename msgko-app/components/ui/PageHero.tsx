@@ -36,12 +36,6 @@ export function PageHero({ breadcrumbs, eyebrow, title, description, children, a
           <div className="absolute inset-0 bg-linear-to-t from-ink-950 via-transparent to-ink-950/50" />
         </div>
       )}
-      {!art && (
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-[radial-gradient(48rem_22rem_at_15%_0%,rgba(110,78,206,0.16),transparent_70%)]"
-        />
-      )}
 
       <div className="container-site pb-10 pt-8 sm:pb-14 sm:pt-12">
         <Breadcrumbs items={breadcrumbs} />
@@ -62,7 +56,7 @@ export function PageHero({ breadcrumbs, eyebrow, title, description, children, a
         <div
           aria-hidden="true"
           className="absolute inset-x-0 bottom-0 h-px"
-          style={{ background: `linear-gradient(90deg, ${accent}, transparent 60%)` }}
+          style={{ background: accent, opacity: 0.6 }}
         />
       )}
     </header>

@@ -46,7 +46,7 @@ export function MobileDrawer({ open, onClose, onSearch }: Props) {
       {/* Karartma */}
       <div
         onClick={onClose}
-        className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
+        className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
       />
 
       <div
@@ -55,7 +55,7 @@ export function MobileDrawer({ open, onClose, onSearch }: Props) {
         aria-modal="true"
         aria-label="Menü"
         inert={!open}
-        className={`absolute inset-y-0 right-0 flex w-full flex-col bg-ink-950 shadow-2xl sm:w-[min(26rem,100vw)] sm:border-l sm:border-white/8 shadow-black transition-transform duration-300 ease-soft ${
+        className={`absolute inset-y-0 right-0 flex w-full flex-col bg-ink-950 sm:w-[min(26rem,100vw)] sm:border-l sm:border-white/8 shadow-black transition-transform duration-300 ease-soft ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}

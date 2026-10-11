@@ -73,13 +73,13 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-70 flex items-start justify-center sm:px-4 sm:pt-[12vh]">
-      <div onClick={onClose} className="absolute inset-0 animate-[fade-in_.2s_ease-out] bg-black/70 backdrop-blur-sm" />
+      <div onClick={onClose} className="absolute inset-0 animate-[fade-in_.2s_ease-out] bg-black/75" />
 
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Sitede ara"
-        className="relative flex h-full w-full animate-[pop-in_.22s_var(--ease-soft)] flex-col overflow-hidden border-white/10 bg-ink-900 shadow-2xl shadow-black sm:h-auto sm:max-h-[70vh] sm:max-w-2xl sm:rounded-2xl sm:border"
+        className="relative flex h-full w-full animate-[pop-in_.22s_var(--ease-soft)] flex-col overflow-hidden border-white/10 bg-ink-900 sm:h-auto sm:max-h-[70vh] sm:max-w-2xl sm:rounded-xl sm:border"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         <div className="flex shrink-0 items-center gap-3 border-b border-white/7 px-4 sm:px-5">

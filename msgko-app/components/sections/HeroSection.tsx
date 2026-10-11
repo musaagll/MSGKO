@@ -7,8 +7,8 @@ import { getPublishedMapSlugs } from '@/lib/ko-data/maps'
 import { getPublishedItemSlugs } from '@/lib/ko-data/items'
 
 /**
- * Ana sayfa hero'su — ortalanmış başlık, süzülen MSG amblemi ve iki aksiyon.
- * Arkada silik karakter görseli ve üstten mor ışık (oyun sitesi hissi korunur).
+ * Ana sayfa hero'su — ortalanmış başlık, MSG amblemi ve aksiyonlar.
+ * Arkada silik karakter görseli; okunabilirlik için tek, düz karartma katmanı.
  */
 export function HeroSection() {
   const stats = [
@@ -26,11 +26,10 @@ export function HeroSection() {
         fill
         priority
         sizes="100vw"
-        className="-z-20 object-cover object-[30%_30%] opacity-30"
+        className="-z-20 object-cover object-[30%_30%] opacity-40"
       />
-      {/* Görseli zemine eriten katmanlar + üstten mor ışık */}
-      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_40%,rgba(11,11,13,0.55),var(--color-ink-950)_75%)]" />
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-152 bg-[radial-gradient(44rem_26rem_at_50%_0%,rgba(102,51,238,0.28),transparent_70%)]" />
+      {/* Okunabilirlik karartması + görselin alt kenarını zemine eriten geçiş */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-ink-950/70" />
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-48 bg-linear-to-t from-ink-950 to-transparent" />
 
       <div className="container-site flex flex-col items-center pb-20 pt-[calc(var(--header-h)+4.5rem)] sm:pb-28 sm:pt-[calc(var(--header-h)+6rem)]">
@@ -55,9 +54,9 @@ export function HeroSection() {
           </p>
         </div>
 
-        {/* Süzülen amblem (dekoratif) */}
-        <div aria-hidden="true" className="emblem-float mt-10 sm:mt-12">
-          <div className="emblem-sway relative w-36 sm:w-44">
+        {/* Amblem (dekoratif) */}
+        <div aria-hidden="true" className="mt-10 sm:mt-12">
+          <div className="w-36 sm:w-44">
             <Image
               src="/brand/emblem-hd.png"
               alt=""
@@ -67,7 +66,6 @@ export function HeroSection() {
               priority
               className="h-auto w-full"
             />
-            <span className="emblem-sheen" />
           </div>
         </div>
 
@@ -86,9 +84,9 @@ export function HeroSection() {
           </Link>
         </div>
 
-        <ul aria-label="İçerik sayıları" className="mt-14 grid w-full max-w-2xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/8 bg-white/8 sm:grid-cols-4">
+        <ul aria-label="İçerik sayıları" className="mt-14 grid w-full max-w-2xl grid-cols-2 gap-px overflow-hidden rounded-xl border border-white/8 bg-white/8 sm:grid-cols-4">
           {stats.map((s) => (
-            <li key={s.href} className="bg-ink-950/85 backdrop-blur-md">
+            <li key={s.href} className="bg-ink-950">
               <Link href={s.href} className="flex flex-col items-center px-2 py-5 transition-colors hover:bg-white/4">
                 <span className="text-3xl font-bold tracking-tight tabular-nums text-fg">{s.value}</span>
                 <span className="mt-1 text-sm text-fg-3">{s.label}</span>

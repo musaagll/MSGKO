@@ -8,7 +8,7 @@ const PICKS = [wp('20_00_52'), wp('12_29_30'), wp('20_06_28'), wp('12_29_13')]
 /** Ana sayfa: duvar kağıdı galerisine geçiş — tarayıcı penceresi çerçevesinde önizleme */
 export function WallpaperTeaser() {
   return (
-    <section aria-labelledby="duvar-kagitlari" className="section band-raised">
+    <section aria-labelledby="duvar-kagitlari" className="section">
       <div className="container-site">
         <SectionHeading
           id="duvar-kagitlari"
@@ -26,7 +26,7 @@ export function WallpaperTeaser() {
           </div>
           <div className="grid grid-cols-2 gap-2 p-2 sm:grid-cols-4 sm:gap-3 sm:p-3">
             {PICKS.map((src, i) => (
-              <span key={src} className={`relative block aspect-video overflow-hidden rounded-xl ${i > 1 ? 'hidden sm:block' : ''}`}>
+              <span key={src} className={`relative block aspect-video overflow-hidden rounded-md ${i > 1 ? 'hidden sm:block' : ''}`}>
                 <Image src={src} alt="" fill sizes="(min-width: 640px) 25vw, 50vw" className="zoom-media object-cover" />
               </span>
             ))}

@@ -12,7 +12,7 @@ export function DestekClient() {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="text-center">
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-pink-400/25 bg-pink-500/10 text-pink-300">
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl border border-pink-400/25 bg-pink-500/10 text-pink-300">
           <HandHeart size={26} aria-hidden="true" />
         </span>
         <h2 className="display-md mt-5">Desteklemek İçin</h2>
@@ -34,7 +34,7 @@ export function DestekClient() {
               >
                 <span
                   aria-hidden="true"
-                  className="flex h-14 w-14 items-center justify-center rounded-2xl font-display text-2xl font-bold"
+                  className="flex h-14 w-14 items-center justify-center rounded-xl font-display text-2xl font-bold"
                   style={{ color: accent, background: `${accent}1a`, border: `1px solid ${accent}40` }}
                 >
                   {p.name.charAt(0)}

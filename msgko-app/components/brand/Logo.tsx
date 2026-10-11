@@ -19,7 +19,7 @@ export function Logo({ size = 'md', className = '', priority = false }: { size?:
         width={Math.round(emblem * 1.1)}
         height={emblem}
         priority={priority}
-        className="h-auto shrink-0 drop-shadow-[0_2px_10px_rgba(141,108,234,0.35)] transition-transform duration-500 group-hover:scale-105"
+        className="h-auto shrink-0"
         style={{ width: Math.round(emblem * 1.1) }}
       />
       <span className="flex flex-col whitespace-nowrap leading-none">

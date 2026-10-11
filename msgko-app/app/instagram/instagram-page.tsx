@@ -64,7 +64,7 @@ function ReelDialog({ id, onClose }: { id: string; onClose: () => void }) {
   useModal(true, onClose)
   return (
     <div role="dialog" aria-modal="true" aria-label="Reel oynatıcı" className="fixed inset-0 z-70 flex items-center justify-center p-4">
-      <div onClick={onClose} className="absolute inset-0 animate-[fade-in_.2s_ease-out] bg-black/80 backdrop-blur-sm" />
+      <div onClick={onClose} className="absolute inset-0 animate-[fade-in_.2s_ease-out] bg-black/85" />
       <div className="relative w-full max-w-96 animate-[pop-in_.22s_var(--ease-soft)]">
         <button
           type="button"

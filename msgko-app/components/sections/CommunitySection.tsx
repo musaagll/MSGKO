@@ -15,9 +15,8 @@ export function CommunitySection() {
   return (
     <section aria-labelledby="topluluk" className="section">
       <div className="container-site">
-        <div className="reveal card relative isolate overflow-hidden px-6 py-14 text-center sm:px-12 sm:py-20">
-          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(40rem_20rem_at_50%_0%,rgba(102,51,238,0.32),transparent_70%)]" />
-          <div aria-hidden="true" className="emblem-float mx-auto w-24">
+        <div className="reveal card px-6 py-14 text-center sm:px-12 sm:py-16">
+          <div aria-hidden="true" className="mx-auto w-20">
             <Image src="/brand/emblem-hd.png" alt="" width={961} height={873} sizes="96px" className="h-auto w-full" />
           </div>
           <h2 id="topluluk" className="display-md mx-auto mt-8 max-w-2xl">Topluluğa katıl</h2>

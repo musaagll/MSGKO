@@ -32,7 +32,7 @@ function FooterColumn({ title, links }: { title: string; links: { label: string;
 export function Footer() {
   const year = new Date().getFullYear()
   return (
-    <footer className="pb-tabbar relative mt-10 border-t border-white/7 bg-linear-to-b from-ink-900/60 to-ink-950">
+    <footer className="pb-tabbar relative mt-10 border-t border-white/7 bg-ink-950">
       <div className="container-site grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:gap-12">
         <div className="max-w-sm">
           <Logo />

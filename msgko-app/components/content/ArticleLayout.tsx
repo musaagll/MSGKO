@@ -18,7 +18,7 @@ export function ContentSection({ id, title, children }: { id: string; title: Rea
   return (
     <section aria-labelledby={id} className="scroll-mt-28">
       <h2 id={id} className="mb-5 flex items-center gap-3 text-xl font-bold tracking-tight text-fg sm:text-2xl">
-        <span aria-hidden="true" className="h-5 w-1 shrink-0 rounded-full bg-linear-to-b from-amethyst-300 to-amethyst-600" />
+        <span aria-hidden="true" className="h-5 w-1 shrink-0 rounded-full bg-amethyst-400" />
         <span>{title}</span>
       </h2>
       {children}

@@ -45,7 +45,7 @@ export function QuickAccessSection() {
   ]
 
   return (
-    <section aria-labelledby="veritabani" className="section band-raised">
+    <section aria-labelledby="veritabani" className="section">
       <div className="container-site">
         <SectionHeading
           id="veritabani"
@@ -59,10 +59,10 @@ export function QuickAccessSection() {
               <div className="relative h-36 overflow-hidden sm:h-44">
                 <Image src={art} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="zoom-media object-cover" />
                 <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-ink-850 via-ink-850/40 to-transparent" />
-                <span className="icon-tile absolute left-6 top-6 bg-ink-950/70 backdrop-blur">
+                <span className="icon-tile absolute left-6 top-6">
                   <Icon size={20} aria-hidden="true" />
                 </span>
-                <span className="chip absolute right-5 top-5 bg-ink-950/60 backdrop-blur">{count}</span>
+                <span className="chip absolute right-5 top-5 bg-ink-950/90">{count}</span>
               </div>
               <div className="flex flex-1 flex-col p-7">
                 <h3 className="text-xl font-bold">

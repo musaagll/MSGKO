@@ -19,7 +19,7 @@ export function MobileBottomNav({ onMenu, menuOpen }: { onMenu: () => void; menu
   return (
     <nav
       aria-label="Mobil navigasyon"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-white/7 bg-ink-950/90 backdrop-blur-xl lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-white/7 bg-ink-950 lg:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <ul className="mx-auto grid h-(--tabbar-h) max-w-lg grid-cols-5">

@@ -5,7 +5,7 @@ import { KO_CLASSES } from '@/lib/ko-data/classes'
 /** Ana sayfa: sınıf rehberleri — masaüstünde 3'lü ızgara, son satır ortalanır */
 export function ClassGuideSection() {
   return (
-    <section aria-labelledby="sinif-rehberleri" className="section band-raised">
+    <section aria-labelledby="sinif-rehberleri" className="section">
       <div className="container-site">
         <SectionHeading
           id="sinif-rehberleri"

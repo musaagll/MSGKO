@@ -95,7 +95,7 @@ export function Navbar() {
   const underline = (active: boolean) => (
     <span
       aria-hidden="true"
-      className={`absolute inset-x-3 -bottom-0.5 h-px origin-left bg-linear-to-r from-amethyst-300 to-amethyst-500 transition-transform duration-300 ${
+      className={`absolute inset-x-3 -bottom-0.5 h-px origin-left bg-amethyst-400 transition-transform duration-300 ${
         active ? 'scale-x-100' : 'scale-x-0'
       }`}
     />
@@ -105,7 +105,7 @@ export function Navbar() {
     <>
       <header
         className={`fixed inset-x-0 top-0 z-50 h-(--header-h) border-b transition-[background-color,border-color,backdrop-filter] duration-300 ${
-          solid ? 'border-white/7 bg-ink-950/80 backdrop-blur-xl' : 'border-transparent bg-transparent'
+          solid ? 'border-white/7 bg-ink-950' : 'border-transparent bg-transparent'
         }`}
       >
         <div className="container-site flex h-full items-center justify-between gap-4">
@@ -132,7 +132,7 @@ export function Navbar() {
                   hidden={menu !== 'rehber'}
                   className="absolute left-1/2 top-full w-136 -translate-x-1/2 pt-3"
                 >
-                  <div className="card overflow-hidden bg-ink-900/95 p-2 shadow-2xl shadow-black/60 backdrop-blur-xl">
+                  <div className="card overflow-hidden bg-ink-900 p-2">
                     <ul className="grid grid-cols-2 gap-1">
                       {KO_CLASSES.map((cls) => (
                         <li key={cls.slug}>

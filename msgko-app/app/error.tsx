@@ -17,7 +17,7 @@ export default function Error({
 
   return (
     <section className="container-site flex min-h-[70vh] flex-col items-center justify-center py-20 text-center">
-      <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-ember-400/30 bg-ember-500/10 text-ember-300">
+      <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-ember-400/30 bg-ember-500/10 text-ember-300">
         <TriangleAlert size={26} aria-hidden="true" />
       </span>
       <h1 className="display-md mt-6">Bir şeyler ters gitti</h1>

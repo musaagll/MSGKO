@@ -24,7 +24,6 @@ export function VideoCard({ video, sizes, as: Heading = 'h3', variant = 'plain' 
           className="zoom-media object-cover"
         />
       )}
-      <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
       <span
         aria-hidden="true"
         className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 scale-90 items-center justify-center rounded-full bg-white/90 text-ink-950 opacity-0 shadow-lg transition-all duration-300 group-hover:scale-100 group-hover:opacity-100"
@@ -53,8 +52,7 @@ export function VideoCard({ video, sizes, as: Heading = 'h3', variant = 'plain' 
         </div>
         <div className="relative aspect-video overflow-hidden bg-black">{thumb}</div>
         <div className="flex flex-1 flex-col p-6">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-amethyst-400">YouTube</span>
-          <Heading className="mt-2 line-clamp-2 text-lg font-bold leading-snug tracking-tight text-fg">{video.title}</Heading>
+          <Heading className="line-clamp-2 text-lg font-bold leading-snug tracking-tight text-fg">{video.title}</Heading>
           <p className="mt-2 text-sm text-fg-3">{meta}</p>
           <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-amethyst-400 transition-colors group-hover:text-amethyst-300">
             Videoyu İzle
@@ -70,7 +68,7 @@ export function VideoCard({ video, sizes, as: Heading = 'h3', variant = 'plain' 
       href={video.youtubeUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col gap-3 rounded-2xl focus-visible:outline-offset-4"
+      className="group flex flex-col gap-3 rounded-xl focus-visible:outline-offset-4"
     >
       <div className="card relative aspect-video overflow-hidden">{thumb}</div>
       <div className="px-0.5">

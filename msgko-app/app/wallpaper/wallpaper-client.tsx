@@ -78,7 +78,7 @@ export function WallpaperClient({ wallpapers }: { wallpapers: Wallpaper[] }) {
                     className="zoom-media object-cover"
                   />
                   <span aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent opacity-80" />
-                  <span aria-hidden="true" className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+                  <span aria-hidden="true" className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-lg bg-black/70 text-white opacity-0 transition-opacity group-hover:opacity-100">
                     <Maximize2 size={16} />
                   </span>
                 </button>

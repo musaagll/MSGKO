@@ -35,7 +35,7 @@ export function IletisimPage() {
   return (
     <div className="mx-auto grid grid-cols-1 max-w-4xl gap-8 lg:grid-cols-[1fr_1.1fr]">
       <div>
-        <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-amethyst-400/25 bg-amethyst-500/10 text-amethyst-200">
+        <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-amethyst-400/25 bg-amethyst-500/10 text-amethyst-200">
           <MessageCircle size={22} aria-hidden="true" />
         </span>
         <h2 className="display-md mt-5">Sosyal medya veya e-posta ile ulaşabilirsin.</h2>
