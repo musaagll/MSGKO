@@ -18,7 +18,7 @@ export function CommunitySection() {
         <div className="reveal card relative isolate overflow-hidden px-6 py-14 text-center sm:px-12 sm:py-20">
           <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(40rem_20rem_at_50%_0%,rgba(102,51,238,0.32),transparent_70%)]" />
           <div aria-hidden="true" className="emblem-float mx-auto w-24">
-            <Image src="/brand/emblem.png" alt="" width={110} height={100} className="h-auto w-full drop-shadow-[0_10px_36px_rgba(102,51,238,0.6)]" />
+            <Image src="/brand/emblem-hd.png" alt="" width={961} height={873} sizes="96px" className="h-auto w-full" />
           </div>
           <h2 id="topluluk" className="display-md mx-auto mt-8 max-w-2xl">Topluluğa katıl</h2>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-fg-3 sm:text-lg">

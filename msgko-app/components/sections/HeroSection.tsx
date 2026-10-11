@@ -65,7 +65,7 @@ export function HeroSection() {
               height={873}
               sizes="(min-width: 640px) 176px, 144px"
               priority
-              className="h-auto w-full drop-shadow-[0_18px_50px_rgba(102,51,238,0.55)]"
+              className="h-auto w-full"
             />
             <span className="emblem-sheen" />
           </div>
