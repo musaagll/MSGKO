@@ -1,23 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, BookOpen, Crosshair } from 'lucide-react'
-import { KO_CLASSES } from '@/lib/ko-data/classes'
-import { getPublishedBossSlugs } from '@/lib/ko-data/bosses'
-import { getPublishedMapSlugs } from '@/lib/ko-data/maps'
-import { getPublishedItemSlugs } from '@/lib/ko-data/items'
 
 /**
  * Ana sayfa hero'su — ortalanmış başlık, MSG amblemi ve aksiyonlar.
  * Arkada silik karakter görseli; okunabilirlik için tek, düz karartma katmanı.
  */
 export function HeroSection() {
-  const stats = [
-    { value: KO_CLASSES.length, label: 'Sınıf rehberi', href: '/rehber' },
-    { value: getPublishedBossSlugs().length, label: 'Boss', href: '/boss' },
-    { value: getPublishedMapSlugs().length, label: 'Harita', href: '/harita' },
-    { value: getPublishedItemSlugs().length, label: 'Item', href: '/item' },
-  ]
-
   return (
     <section aria-labelledby="hero-baslik" className="relative isolate -mt-(--header-h) overflow-hidden text-center">
       <Image
@@ -33,7 +22,7 @@ export function HeroSection() {
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-48 bg-linear-to-t from-ink-950 to-transparent" />
 
       <div className="container-site flex flex-col items-center pb-20 pt-[calc(var(--header-h)+4.5rem)] sm:pb-28 sm:pt-[calc(var(--header-h)+6rem)]">
-        <div className="animate-[rise-in_.8s_var(--ease-soft)_both]">
+        <div className="intro-hold animate-[rise-in_.8s_var(--ease-soft)_both]">
           <p className="eyebrow justify-center max-[359px]:tracking-[0.14em]">
             <span lang="en">Knight Online</span>
             <span aria-hidden="true">·</span>
@@ -55,7 +44,7 @@ export function HeroSection() {
         </div>
 
         {/* Amblem (dekoratif) */}
-        <div aria-hidden="true" className="mt-10 sm:mt-12">
+        <div aria-hidden="true" className="intro-hold mt-10 animate-[rise-in_.9s_var(--ease-soft)_both] sm:mt-12">
           <div className="w-36 sm:w-44">
             <Image
               src="/brand/emblem-hd.png"
@@ -69,7 +58,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="mt-10 flex w-full flex-col items-center justify-center gap-3 sm:mt-12 sm:w-auto sm:flex-row sm:flex-wrap">
+        <div className="intro-hold mt-10 flex w-full animate-[rise-in_1s_var(--ease-soft)_both] flex-col items-center justify-center gap-3 sm:mt-12 sm:w-auto sm:flex-row sm:flex-wrap">
           <Link href="/rehber/asas" className="btn btn-primary btn-lg w-full sm:w-auto">
             <Crosshair size={18} aria-hidden="true" />
             Asas Rehberi
@@ -83,17 +72,6 @@ export function HeroSection() {
             <ArrowRight size={18} aria-hidden="true" />
           </Link>
         </div>
-
-        <ul aria-label="İçerik sayıları" className="mt-14 grid w-full max-w-2xl grid-cols-2 gap-px overflow-hidden rounded-xl border border-white/8 bg-white/8 sm:grid-cols-4">
-          {stats.map((s) => (
-            <li key={s.href} className="bg-ink-950">
-              <Link href={s.href} className="flex flex-col items-center px-2 py-5 transition-colors hover:bg-white/4">
-                <span className="text-3xl font-bold tracking-tight tabular-nums text-fg">{s.value}</span>
-                <span className="mt-1 text-sm text-fg-3">{s.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   )

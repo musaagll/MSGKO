@@ -12,7 +12,7 @@ type SearchModule = typeof import('@/lib/search-index')
 let indexPromise: Promise<SearchModule> | null = null
 const loadIndex = () => (indexPromise ??= import('@/lib/search-index'))
 
-const POPULAR_IDS = ['rehber-asas', 'rehber-okcu', 'boss-felankor', 'harita-cz', 'item-raptor', 'gb-fiyatlari']
+const POPULAR_IDS = ['rehber-asas', 'rehber-okcu', 'rehber-warrior', 'rehber-mage', 'rehber-priest', 'wallpaper']
 
 const TYPE_LABEL: Record<string, string> = {
   rehber: 'Rehber', boss: 'Boss', harita: 'Harita', item: 'Item', video: 'Video',

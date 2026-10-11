@@ -55,10 +55,7 @@ export const CLASS_META: Record<KOClassSlug, ClassMeta> = {
   },
 }
 
-/** Veritabanı bölümlerinin kapak görselleri */
+/** Bölüm kapak görselleri */
 export const SECTION_ART = {
-  boss: wp('20_02_08'),
-  harita: wp('12_29_20'),
-  item: wp('19_52_34'),
   wallpaper: wp('20_00_52'),
 } as const

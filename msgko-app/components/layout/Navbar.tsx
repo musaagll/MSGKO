@@ -168,8 +168,6 @@ export function Navbar() {
               {[
                 { label: 'Videolar', href: '/youtube' },
                 { label: 'Wallpaper', href: '/wallpaper' },
-                { label: 'Canlı Pazar', href: '/pazar' },
-                { label: 'GB Fiyatları', href: '/gb-fiyatlari' },
                 { label: 'Destek', href: '/destek' },
                 { label: 'İletişim', href: '/iletisim' },
               ].map((l) => (

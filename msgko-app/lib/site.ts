@@ -33,20 +33,11 @@ export interface NavLink {
   description?: string
 }
 
-/** Veritabanı bölümleri — header açılır menüsü, footer ve ana sayfa */
-export const DATABASE_LINKS: NavLink[] = [
-  { label: 'Boss Rehberleri', href: '/boss', description: 'Spawn yeri, drop listesi ve taktikler' },
-  { label: 'Haritalar', href: '/harita', description: 'Farm noktaları, bosslar ve NPC’ler' },
-  { label: 'Item Veritabanı', href: '/item', description: 'Özellikler, drop ve upgrade bilgisi' },
-]
-
 /** Medya ve araçlar */
 export const MEDIA_LINKS: NavLink[] = [
   { label: 'Videolar', href: '/youtube', description: 'YouTube eğitim videoları ve shorts' },
   { label: 'Instagram', href: '/instagram', description: 'Kısa klipler ve reels' },
   { label: 'Wallpaper', href: '/wallpaper', description: 'HD Knight Online duvar kağıtları' },
-  { label: 'Canlı Pazar', href: '/pazar', description: 'Sunuculardaki aktif merchant ilanları' },
-  { label: 'GB Fiyatları', href: '/gb-fiyatlari', description: 'Sitelerin GB fiyat karşılaştırması' },
 ]
 
 export const SECONDARY_LINKS: NavLink[] = [

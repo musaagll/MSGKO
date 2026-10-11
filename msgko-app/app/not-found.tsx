@@ -10,9 +10,8 @@ export const metadata: Metadata = {
 
 const LINKS = [
   { href: '/rehber', label: 'Karakter Rehberleri' },
-  { href: '/boss', label: 'Boss Rehberleri' },
-  { href: '/harita', label: 'Haritalar' },
-  { href: '/item', label: 'Item Veritabanı' },
+  { href: '/youtube', label: 'Videolar' },
+  { href: '/wallpaper', label: 'Wallpaper' },
   { href: '/youtube', label: 'Videolar' },
 ]
 

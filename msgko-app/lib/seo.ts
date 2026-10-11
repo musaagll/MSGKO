@@ -11,9 +11,6 @@
 import type { Metadata } from 'next'
 import type { BreadcrumbItem, SeoConfig } from '@/lib/types'
 import type { ClassData } from '@/lib/ko-data/classes'
-import type { BossSeedData } from '@/lib/ko-data/bosses'
-import type { MapSeedData } from '@/lib/ko-data/maps'
-import type { ItemSeedData } from '@/lib/ko-data/items'
 
 // ─── Sabitler ─────────────────────────────────────────────────────────────────
 
@@ -102,29 +99,8 @@ export function buildGuideDescription(classData: ClassData): string {
   return `Knight Online ${classData.name} rehberi — ${classData.description.substring(0, 120)}... Skill ağaçları, stat dağılımı ve Master açma için tam rehber.`
 }
 
-/**
- * Item sayfası başlığı
- * Örn: "Knight Online Raptor | Özellikleri, Drop ve Upgrade Rehberi | MSGKO"
- */
-export function buildItemTitle(item: ItemSeedData): string {
-  return `Knight Online ${item.name} | Özellikleri, Drop ve Upgrade Rehberi | ${SUFFIX}`
-}
 
-/**
- * Boss sayfası başlığı
- * Örn: "Knight Online Felankor | Spawn, Drop ve Boss Rehberi | MSGKO"
- */
-export function buildBossTitle(boss: BossSeedData): string {
-  return `Knight Online ${boss.name} | Spawn, Drop ve Boss Rehberi | ${SUFFIX}`
-}
 
-/**
- * Harita sayfası başlığı
- * Örn: "Knight Online Ronark Land (CZ) | PvP, Farm ve Harita Rehberi | MSGKO"
- */
-export function buildMapTitle(map: MapSeedData): string {
-  return map.seo_title ?? `Knight Online ${map.name} | Harita Rehberi | ${SUFFIX}`
-}
 
 /**
  * Haber sayfası başlığı
@@ -156,21 +132,8 @@ export function buildQuestTitle(quest: { name: string }): string {
 
 // ─── Description Oluşturucular ────────────────────────────────────────────────
 
-export function buildItemDescription(item: ItemSeedData): string {
-  const classNames = item.character_class.length
-    ? ` ${item.character_class.join('/')} için.`
-    : ''
-  return `Knight Online ${item.name} item rehberi.${classNames} Nereden düşer, özellikleri neler, nasıl upgrade edilir — tüm bilgiler MSGKO'da.`
-}
 
-export function buildBossDescription(boss: BossSeedData): string {
-  const map = boss.map_slug ? ` ${boss.map_slug.replace(/-/g, ' ')} haritasında spawn olur.` : ''
-  return `Knight Online ${boss.name} boss rehberi.${map} Drop listesi, spawn zamanı ve öldürme taktikleri MSGKO'da.`
-}
 
-export function buildMapDescription(map: MapSeedData): string {
-  return map.seo_description ?? `Knight Online ${map.name} haritası rehberi. Farm rotaları, boss konumları ve harita hakkında tam bilgi.`
-}
 
 export function buildFarmDescription(farm: { title: string; excerpt: string | null; map_slug: string | null }): string {
   return farm.excerpt ?? `Knight Online ${farm.title} farm rotası rehberi. En verimli exp ve item farm için detaylı anlatım MSGKO'da.`
@@ -188,26 +151,8 @@ export function buildGuideBreadcrumbs(classData: ClassData): BreadcrumbItem[] {
     { label: `${classData.name} Rehberi`, href: `/rehber/${classData.guideSlug}` },
   ])
 }
-export function buildItemBreadcrumbs(item: ItemSeedData): BreadcrumbItem[] {
-  return buildBreadcrumbs([
-    { label: 'Item Veritabanı', href: '/item' },
-    { label: item.name, href: `/item/${item.slug}` },
-  ])
-}
 
-export function buildBossBreadcrumbs(boss: BossSeedData): BreadcrumbItem[] {
-  return buildBreadcrumbs([
-    { label: 'Boss Rehberleri', href: '/boss' },
-    { label: boss.name, href: `/boss/${boss.slug}` },
-  ])
-}
 
-export function buildMapBreadcrumbs(map: MapSeedData): BreadcrumbItem[] {
-  return buildBreadcrumbs([
-    { label: 'Haritalar', href: '/harita' },
-    { label: map.name, href: `/harita/${map.slug}` },
-  ])
-}
 
 export function buildNewsBreadcrumbs(news: { title: string; slug: string }): BreadcrumbItem[] {
   return buildBreadcrumbs([
@@ -364,16 +309,6 @@ export function buildWebPageSchema(opts: {
   }
 }
 
-/** Place schema — harita sayfaları için */
-export function buildPlaceSchema(map: MapSeedData) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Place',
-    name: `Knight Online ${map.name}`,
-    description: map.description ?? '',
-    url: `${BASE_URL}/harita/${map.slug}`,
-  }
-}
 
 // ─── Sayfa Tiplerine Özel Tam Metadata ───────────────────────────────────────
 
@@ -392,50 +327,8 @@ export function buildGuideMetadata(classData: ClassData): Metadata {
   })
 }
 
-/** Item sayfası için tam Metadata */
-export function buildItemMetadata(item: ItemSeedData): Metadata {
-  const title = item.seo_title ?? buildItemTitle(item)
-  const description = item.seo_description ?? buildItemDescription(item)
-  const canonical = `${BASE_URL}/item/${item.slug}`
 
-  return buildMetadata({
-    title,
-    description,
-    canonical,
-    keywords: [],
-    ogType: 'article',
-  })
-}
 
-/** Boss sayfası için tam Metadata */
-export function buildBossMetadata(boss: BossSeedData): Metadata {
-  const title = boss.seo_title ?? buildBossTitle(boss)
-  const description = boss.seo_description ?? buildBossDescription(boss)
-  const canonical = `${BASE_URL}/boss/${boss.slug}`
-
-  return buildMetadata({
-    title,
-    description,
-    canonical,
-    keywords: [],
-    ogType: 'article',
-  })
-}
-
-/** Harita sayfası için tam Metadata */
-export function buildMapMetadata(map: MapSeedData): Metadata {
-  const title = buildMapTitle(map)
-  const description = buildMapDescription(map)
-  const canonical = `${BASE_URL}/harita/${map.slug}`
-
-  return buildMetadata({
-    title,
-    description,
-    canonical,
-    keywords: [],
-    ogType: 'article',
-  })
-}
 
 /** Haber sayfası için tam Metadata */
 export function buildNewsMetadata(news: { title: string; slug: string; excerpt: string | null; seo_title: string | null; seo_description: string | null; seo_keywords: string[] | null; published_at: string | null; updated_at: string }): Metadata {
@@ -483,61 +376,7 @@ export function buildClassFAQs(classData: ClassData): { question: string; answer
   ]
 }
 
-/** Item sayfası için standart FAQ listesi */
-export function buildItemFAQs(item: ItemSeedData): { question: string; answer: string }[] {
-  const dropSources = item.drop_info.map(d => d.mob_name ?? d.mob_slug ?? '').filter(Boolean).join(', ')
 
-  return [
-    {
-      question: `Knight Online ${item.name} nereden düşer?`,
-      answer: dropSources
-        ? `${item.name}, ${dropSources} gibi kaynaklardan düşebilir. Tam drop listesi için MSGKO'daki item rehberini inceleyin.`
-        : `${item.name}'in drop kaynakları için MSGKO item rehberini inceleyin.`,
-    },
-    {
-      question: `Knight Online ${item.name} özellikleri nelerdir?`,
-      answer: `${item.name}: ${Object.entries(item.base_stats).map(([k, v]) => `${k.toUpperCase()}: ${v}`).join(', ')}. Tam özellik listesi için MSGKO'daki item sayfasını ziyaret edin.`,
-    },
-    {
-      question: `Knight Online ${item.name} nasıl upgrade edilir?`,
-      answer: `${item.name} maksimum +${item.upgrade_max} seviyesine kadar upgrade edilebilir. +7 sonrası upgrade riski artar. Upgrade rehberi için MSGKO'yu ziyaret edin.`,
-    },
-    {
-      question: `${item.name} hangi karakterler kullanabilir?`,
-      answer: item.character_class.length
-        ? `${item.name}, ${item.character_class.join(', ')} sınıfları tarafından kullanılabilir.`
-        : `${item.name} tüm sınıflar tarafından kullanılabilir.`,
-    },
-  ]
-}
-
-/** Boss sayfası için standart FAQ listesi */
-export function buildBossFAQs(boss: BossSeedData): { question: string; answer: string }[] {
-  return [
-    {
-      question: `Knight Online ${boss.name} nerede spawn olur?`,
-      answer: boss.map_slug
-        ? `${boss.name}, ${boss.map_slug.replace(/-/g, ' ')} haritasında ${boss.spawn_coords ?? ''} koordinatlarında spawn olur.`
-        : `${boss.name}'in spawn yeri için MSGKO boss rehberini inceleyin.`,
-    },
-    {
-      question: `Knight Online ${boss.name} ne zaman çıkar?`,
-      answer: boss.spawn_interval
-        ? `${boss.name} yaklaşık her ${boss.spawn_interval} bir spawn olur.`
-        : `${boss.name}'in spawn zamanı için MSGKO'yu takip edin.`,
-    },
-    {
-      question: `Knight Online ${boss.name} ne düşürür?`,
-      answer: boss.drop_list.length
-        ? `${boss.name} drop listesi: ${boss.drop_list.map(d => d.item_name).join(', ')}. Tam drop listesi ve oranları için MSGKO boss sayfasını ziyaret edin.`
-        : `${boss.name}'in drop listesi için MSGKO boss rehberini inceleyin.`,
-    },
-    {
-      question: `Knight Online ${boss.name} nasıl öldürülür?`,
-      answer: `${boss.name} güçlü bir ${boss.boss_type} boss'tur. Grup halinde gitmek önerilir. Priest buff'ları ve organize bir parti kritik önem taşır.`,
-    },
-  ]
-}
 
 /** Farm sayfası için standart FAQ listesi */
 export function buildFarmFAQs(farm: { title: string; map_slug: string | null; min_level: number | null; max_level: number | null; best_classes: string[] }): { question: string; answer: string }[] {
@@ -566,9 +405,6 @@ export function buildFarmFAQs(farm: { title: string; map_slug: string | null; mi
 export const CANONICAL = {
   home: BASE_URL,
   rehber: (slug?: string) => slug ? `${BASE_URL}/rehber/${slug}` : `${BASE_URL}/rehber`,
-  item: (slug?: string) => slug ? `${BASE_URL}/item/${slug}` : `${BASE_URL}/item`,
-  boss: (slug?: string) => slug ? `${BASE_URL}/boss/${slug}` : `${BASE_URL}/boss`,
-  harita: (slug?: string) => slug ? `${BASE_URL}/harita/${slug}` : `${BASE_URL}/harita`,
   haber: (slug?: string) => slug ? `${BASE_URL}/haber/${slug}` : `${BASE_URL}/haber`,
   build: (slug?: string) => slug ? `${BASE_URL}/build/${slug}` : `${BASE_URL}/build`,
   farm: (slug?: string) => slug ? `${BASE_URL}/farm/${slug}` : `${BASE_URL}/farm`,

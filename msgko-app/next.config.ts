@@ -41,34 +41,76 @@ const nextConfig: NextConfig = {
         destination: '/rehber',
         permanent: true,
       },
+      // Kaldırılan bölümler (boss / harita / item veritabanı) → rehberler
       {
-        source: '/maps',
-        destination: '/harita',
+        source: '/boss',
+        destination: '/rehber',
         permanent: true,
       },
       {
-        source: '/maps/:slug',
-        destination: '/harita/:slug',
+        source: '/boss/:path*',
+        destination: '/rehber',
         permanent: true,
       },
       {
         source: '/bosses',
-        destination: '/boss',
+        destination: '/rehber',
         permanent: true,
       },
       {
-        source: '/bosses/:slug',
-        destination: '/boss/:slug',
+        source: '/bosses/:path*',
+        destination: '/rehber',
+        permanent: true,
+      },
+      {
+        source: '/harita',
+        destination: '/rehber',
+        permanent: true,
+      },
+      {
+        source: '/harita/:path*',
+        destination: '/rehber',
+        permanent: true,
+      },
+      {
+        source: '/maps',
+        destination: '/rehber',
+        permanent: true,
+      },
+      {
+        source: '/maps/:path*',
+        destination: '/rehber',
+        permanent: true,
+      },
+      {
+        source: '/item',
+        destination: '/rehber',
+        permanent: true,
+      },
+      {
+        source: '/item/:path*',
+        destination: '/rehber',
         permanent: true,
       },
       {
         source: '/items',
-        destination: '/item',
+        destination: '/rehber',
         permanent: true,
       },
       {
-        source: '/items/:slug',
-        destination: '/item/:slug',
+        source: '/items/:path*',
+        destination: '/rehber',
+        permanent: true,
+      },
+      // Kaldırılan araçlar (Canlı Pazar, GB Fiyatları) → ana sayfa
+      {
+        source: '/pazar',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/gb-fiyatlari',
+        destination: '/',
         permanent: true,
       },
       {
@@ -125,11 +167,11 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://*.ytimg.com https://*.cdninstagram.com https://image.nttgame.com https://*.supabase.co https://pagead2.googlesyndication.com https://*.googleusercontent.com https://*.googlesyndication.com https://kobugda.com https://www.uskopazar.com https://www.google.com https://ucuzagb.com https://www.enucuzgb.com https://knightpin.com https://www.bynogame.com https://www.kopazar.com https://kopazar.com https://kabasakalonline.com https://cdn.kabasakalonline.net https://oyuneks.com https://www.sonteklif.com https://www.gamesatis.com https://images.gamesatis.com https://www.oyunfor.com https://www.bursagb.com https://assets.hyperteknoloji.com https://cdn.oyunextechnologies.com https://cdn.kopazar.com",
+              "img-src 'self' data: blob: https://*.ytimg.com https://*.cdninstagram.com https://image.nttgame.com https://*.supabase.co https://pagead2.googlesyndication.com https://*.googleusercontent.com https://*.googlesyndication.com https://www.google.com",
               "media-src 'self' blob:",
               "frame-src https://www.youtube.com https://www.instagram.com https://googleads.g.doubleclick.net",
               "worker-src 'self' blob:",
-              "connect-src 'self' https://*.supabase.co https://www.googleapis.com https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ucuzagb.com https://www.enucuzgb.com https://enucuzgb.com",
+              "connect-src 'self' https://*.supabase.co https://www.googleapis.com https://www.instagram.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
@@ -168,36 +210,6 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'image.nttgame.com',
-      },
-      // Google Favicon servisi — GB Fiyatları sayfası
-      {
-        protocol: 'https',
-        hostname: 'www.google.com',
-        pathname: '/s2/favicons/**',
-      },
-      // GB satış siteleri logoları
-      { protocol: 'https', hostname: 'knightpin.com' },
-      { protocol: 'https', hostname: 'www.bynogame.com' },
-      { protocol: 'https', hostname: 'www.kopazar.com' },
-      { protocol: 'https', hostname: 'kabasakalonline.com' },
-      { protocol: 'https', hostname: 'cdn.kabasakalonline.net' },
-      { protocol: 'https', hostname: 'oyuneks.com' },
-      { protocol: 'https', hostname: 'www.sonteklif.com' },
-      { protocol: 'https', hostname: 'www.gamesatis.com' },
-      { protocol: 'https', hostname: 'images.gamesatis.com' },
-      { protocol: 'https', hostname: 'www.oyunfor.com' },
-      { protocol: 'https', hostname: 'www.bursagb.com' },
-      { protocol: 'https', hostname: 'assets.hyperteknoloji.com' },
-      { protocol: 'https', hostname: 'cdn.oyunextechnologies.com' },
-      { protocol: 'https', hostname: 'cdn.kopazar.com' },
-      // enucuzgb / ucuzagb item ikonları
-      {
-        protocol: 'https',
-        hostname: 'www.enucuzgb.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'ucuzagb.com',
       },
     ],
   },

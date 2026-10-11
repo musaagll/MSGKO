@@ -3,7 +3,7 @@ import { ArrowUpRight, Mail } from 'lucide-react'
 import { Logo } from '@/components/brand/Logo'
 import { InstagramIcon, XIcon, YouTubeIcon } from '@/components/ui/BrandIcons'
 import { KO_CLASSES } from '@/lib/ko-data/classes'
-import { CONTACT_EMAIL, DATABASE_LINKS, MEDIA_LINKS, SOCIAL } from '@/lib/site'
+import { CONTACT_EMAIL, MEDIA_LINKS, SOCIAL } from '@/lib/site'
 
 const QUICK_LINKS = [
   { label: 'Ana Sayfa', href: '/' },
@@ -66,7 +66,6 @@ export function Footer() {
           title="Rehberler"
           links={[
             ...KO_CLASSES.map((c) => ({ label: `${c.name} Rehberi`, href: `/rehber/${c.guideSlug}` })),
-            ...DATABASE_LINKS.map(({ label, href }) => ({ label, href })),
           ]}
         />
 

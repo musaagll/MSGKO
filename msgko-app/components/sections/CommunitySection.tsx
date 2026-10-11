@@ -1,12 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, Coins, HandHeart, Mail } from 'lucide-react'
+import { ArrowRight, HandHeart, Mail } from 'lucide-react'
 import { InstagramIcon, YouTubeIcon } from '@/components/ui/BrandIcons'
 import { SOCIAL } from '@/lib/site'
 
-// Eski ana sayfa kartlarının metinleri; mobil alt menüde olmayan iki sayfaya ana sayfadan giriş
+// Ana sayfadan Instagram ve İletişim sayfalarına kısa yollar
 const SHORTCUTS = [
-  { title: 'GB Takip', text: 'Güncel GB fiyatlarını takip et, piyasayı kaçırma.', href: '/gb-fiyatlari', Icon: Coins },
+  { title: 'Instagram', text: 'Kısa klipler, PK anları ve reels — @msgclip.', href: '/instagram', Icon: InstagramIcon },
   { title: 'İletişim', text: 'Soru, öneri ve iş birlikleri için bizimle iletişime geç.', href: '/iletisim', Icon: Mail },
 ]
 

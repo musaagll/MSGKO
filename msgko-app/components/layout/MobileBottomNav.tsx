@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookOpen, Coins, Home, Menu, PlaySquare } from 'lucide-react'
+import { BookOpen, Home, ImageIcon, Menu, PlaySquare } from 'lucide-react'
 
 const ITEMS = [
   { label: 'Ana Sayfa', href: '/', Icon: Home },
   { label: 'Rehberler', href: '/rehber', Icon: BookOpen },
-  { label: 'GB Fiyat', href: '/gb-fiyatlari', Icon: Coins },
+  { label: 'Wallpaper', href: '/wallpaper', Icon: ImageIcon },
   { label: 'Videolar', href: '/youtube', Icon: PlaySquare },
 ] as const
 

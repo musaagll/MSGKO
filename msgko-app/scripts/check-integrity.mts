@@ -1,7 +1,7 @@
 /**
  * İçerik ve stil bütünlük kontrolü — `npm run check` (CI'da da çalışır).
  *
- * 1. Statik veride slug'lar benzersiz mi, SEO alanları dolu mu?
+ * 1. Sınıf rehberi verisi: slug'lar benzersiz mi, açıklamalar dolu mu?
  * 2. Kodda kullanılan her CSS değişkeni (var(--x)) globals.css'te ya da next/font ile tanımlı mı?
  *    (23 Eylül tasarım güncellemesinde 17 değişkenin silinip sayfaların stilsiz kalması gibi
  *    regresyonları yakalar.)
@@ -15,36 +15,19 @@ import { fileURLToPath } from 'node:url'
 const root = fileURLToPath(new URL('..', import.meta.url))
 const data = (f: string) => new URL(`../lib/ko-data/${f}`, import.meta.url).href
 
-const { KO_BOSSES } = await import(data('bosses.ts'))
-const { KO_ITEMS } = await import(data('items.ts'))
-const { KO_MAPS } = await import(data('maps.ts'))
 const { KO_CLASSES } = await import(data('classes.ts'))
 
 const errors: string[] = []
 const warnings: string[] = []
 
 // ── 1. Statik veri ──────────────────────────────────────────────────────────
-type Rec = { slug: string; is_published?: boolean; seo_title?: string | null; seo_description?: string | null }
-for (const [name, list] of [['boss', KO_BOSSES], ['item', KO_ITEMS], ['harita', KO_MAPS]] as [string, Rec[]][]) {
-  const seen = new Set<string>()
-  for (const r of list) {
-    if (seen.has(r.slug)) errors.push(`${name}: tekrar eden slug "${r.slug}"`)
-    seen.add(r.slug)
-    if (!/^[a-z0-9-]+$/.test(r.slug)) errors.push(`${name}: geçersiz slug "${r.slug}"`)
-    if (r.is_published && !r.seo_description) warnings.push(`${name}/${r.slug}: seo_description boş`)
-  }
-}
+const slugs = new Set<string>()
 for (const c of KO_CLASSES as { guideSlug: string; description: string }[]) {
+  if (slugs.has(c.guideSlug)) errors.push(`rehber: tekrar eden slug "${c.guideSlug}"`)
+  slugs.add(c.guideSlug)
   if (!c.description) errors.push(`rehber/${c.guideSlug}: description boş`)
 }
 
-// Yayınlanmamış hedeflere giden referanslar sayfada düz metin olarak basılır; bilgi amaçlı listele
-const pub = (list: Rec[]) => new Set(list.filter((r) => r.is_published).map((r) => r.slug))
-const bosses = pub(KO_BOSSES), items = pub(KO_ITEMS), maps = pub(KO_MAPS)
-let unlinked = 0
-for (const b of KO_BOSSES) for (const d of b.drop_list) if (d.item_slug && !items.has(d.item_slug)) unlinked++
-for (const m of KO_MAPS) for (const b of m.bosses_here) if (!bosses.has(b.boss_slug)) unlinked++
-for (const b of KO_BOSSES) if (b.map_slug && !maps.has(b.map_slug)) unlinked++
 
 // ── 2. CSS değişkenleri ─────────────────────────────────────────────────────
 const walk = (dir: string): string[] =>
@@ -71,7 +54,6 @@ for (const file of [...walk(join(root, 'app')), ...walk(join(root, 'components')
 
 // ── Sonuç ───────────────────────────────────────────────────────────────────
 for (const w of warnings) console.warn('uyarı:', w)
-console.log(`bilgi: yayında olmayan sayfalara ${unlinked} referans düz metin olarak gösteriliyor`)
 if (errors.length) {
   for (const e of [...new Set(errors)]) console.error('HATA:', e)
   process.exit(1)
