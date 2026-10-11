@@ -26,8 +26,8 @@ export const CLASS_META: Record<KOClassSlug, ClassMeta> = {
     tagline: 'Ön safın sarsılmaz duvarı',
   },
   assassin: {
-    art: wp('12_29_30'),
-    focus: '45% 30%',
+    art: wp('19_59_30'),
+    focus: '52% 18%',
     weapon: '/assassin-icon.png',
     role: 'DPS · Gizlilik',
     tagline: 'Gölgelerden gelen tek kombo',
