@@ -22,9 +22,10 @@ export const SOCIAL = {
 export const CONTACT_EMAIL = 'imusaagll@gmail.com'
 
 export const SUPPORT_PLATFORMS = [
-  { id: 'kopazar', name: 'KoPazar', url: 'https://www.kopazar.com/streamer/musaagll' },
-  { id: 'bynogame', name: 'ByNoGame', url: 'https://donate.bynogame.com/musaagll' },
-  { id: 'knightpin', name: 'KnightPin', url: 'https://www.knightpin.com/tr/donate/musaagll' },
+  // logo: koyu zemin için beyaz sürümler (public/partners)
+  { id: 'kopazar', name: 'KoPazar', url: 'https://www.kopazar.com/streamer/musaagll', logo: { src: '/partners/kopazar.svg', width: 200, height: 50 } },
+  { id: 'bynogame', name: 'ByNoGame', url: 'https://donate.bynogame.com/musaagll', logo: { src: '/partners/bynogame.png', width: 480, height: 134 } },
+  { id: 'knightpin', name: 'KnightPin', url: 'https://www.knightpin.com/tr/donate/musaagll', logo: { src: '/partners/knightpin.png', width: 661, height: 246 } },
 ] as const
 
 export interface NavLink {

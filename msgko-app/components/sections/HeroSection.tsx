@@ -23,13 +23,7 @@ export function HeroSection() {
 
       <div className="container-site flex flex-col items-center pb-20 pt-[calc(var(--header-h)+4.5rem)] sm:pb-28 sm:pt-[calc(var(--header-h)+6rem)]">
         <div className="intro-hold animate-[rise-in_.8s_var(--ease-soft)_both]">
-          <p className="eyebrow justify-center max-[359px]:tracking-[0.14em]">
-            <span lang="en">Knight Online</span>
-            <span aria-hidden="true">·</span>
-            <span>Türkçe Rehber</span>
-          </p>
-
-          <h1 id="hero-baslik" className="mx-auto mt-6 max-w-4xl">
+          <h1 id="hero-baslik" className="mx-auto max-w-4xl">
             <span className="display-xl text-silver block">MSGKO</span>
             <span className="sr-only"> — </span>
             <span className="display-lg mt-2 block text-fg">

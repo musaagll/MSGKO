@@ -90,7 +90,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
             value={query}
             onChange={(e) => { setQuery(e.target.value); setActive(0) }}
             onKeyDown={onKeyDown}
-            placeholder="Rehber, boss, harita, item ara…"
+            placeholder="Rehber, video ya da sayfa ara…"
             aria-label="Arama"
             role="combobox"
             aria-expanded={results.length > 0}
@@ -145,7 +145,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
           {showEmpty && (
             <div className="px-3 py-10 text-center">
               <p className="font-semibold text-fg-2">“{query}” için sonuç bulunamadı</p>
-              <p className="mt-1 text-sm text-fg-4">Sınıf adı (asas, okçu), boss (felankor) ya da harita (cz) deneyebilirsin.</p>
+              <p className="mt-1 text-sm text-fg-4">Sınıf adı (asas, okçu, warrior) ya da sayfa adı (wallpaper, videolar) deneyebilirsin.</p>
             </div>
           )}
         </div>

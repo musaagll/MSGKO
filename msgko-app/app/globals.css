@@ -172,6 +172,10 @@ p { text-wrap: pretty; }
   .btn-lg { min-height: 3rem; padding: 0 1.375rem; font-size: 0.9375rem; }
   .btn-sm { min-height: 2.25rem; padding: 0 0.875rem; font-size: 0.875rem; }
 
+  /* Sondaki ok ikonu hover'da hafifçe ilerler */
+  .btn > svg:last-child:not(:first-child) { transition: transform .2s var(--ease-soft); }
+  .btn:hover > svg:last-child:not(:first-child) { transform: translateX(2px); }
+
   .btn-primary {
     color: #fff;
     background: var(--color-amethyst-600);
@@ -337,6 +341,9 @@ p { text-wrap: pretty; }
     animation-timeline: view();
     animation-range: entry 0% entry 55%;
   }
+  /* Izgaralarda kartlar sırayla belirir (3'lü düzene göre hafif kaydırma) */
+  li.reveal:nth-child(3n + 2) { animation-range: entry 6% entry 61%; }
+  li.reveal:nth-child(3n) { animation-range: entry 12% entry 67%; }
 }
 @keyframes reveal-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 

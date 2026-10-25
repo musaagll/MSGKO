@@ -3,7 +3,7 @@
 import { Search } from 'lucide-react'
 
 /** Sayfa içi arama kutusu görünümünde tetikleyici — header'daki site aramasını açar */
-export function SearchBar({ placeholder = 'Rehber, boss, harita ya da item ara…', className = '' }: { placeholder?: string; className?: string }) {
+export function SearchBar({ placeholder = 'Rehber, video ya da sayfa ara…', className = '' }: { placeholder?: string; className?: string }) {
   return (
     <button
       type="button"

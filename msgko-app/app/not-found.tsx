@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 }
 
 const LINKS = [
-  { href: '/rehber', label: 'Karakter Rehberleri' },
+  { href: '/rehber', label: 'Rehberler' },
   { href: '/youtube', label: 'Videolar' },
   { href: '/wallpaper', label: 'Wallpaper' },
-  { href: '/youtube', label: 'Videolar' },
+  { href: '/instagram', label: 'Instagram' },
 ]
 
 export default function NotFound() {
@@ -21,7 +21,7 @@ export default function NotFound() {
       <p className="font-display text-7xl font-bold text-silver sm:text-8xl">404</p>
       <h1 className="display-md mt-4">Sayfa Bulunamadı</h1>
       <p className="mx-auto mt-4 max-w-md text-fg-3">
-        Aradığın sayfa taşınmış ya da hiç var olmamış olabilir. Aradığını bulmak için siteyi tarayabilir ya da aşağıdaki bölümlerden devam edebilirsin.
+        Aradığın sayfa taşınmış ya da kaldırılmış olabilir.
       </p>
       <div className="mt-8 w-full max-w-lg">
         <SearchBar />

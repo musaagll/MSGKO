@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { PageHero } from '@/components/ui/PageHero'
 import { FaqList } from '@/components/ui/FaqList'
-import { FactList } from '@/components/ui/FactList'
 import { ArticleLayout, ContentSection, RelatedLinks, SideCard, TableOfContents } from '@/components/content/ArticleLayout'
 import { KO_CLASSES, getAllClassSlugs, getClassBySlug } from '@/lib/ko-data/classes'
 import { CLASS_META } from '@/lib/class-meta'
@@ -80,7 +79,7 @@ export default async function RehberDetailPage({
 
       <PageHero
         breadcrumbs={breadcrumbs}
-        eyebrow="Karakter Rehberi"
+        eyebrow={meta.role}
         accent={cls.color}
         art={{ src: meta.art, position: meta.focus }}
         title={
@@ -89,35 +88,13 @@ export default async function RehberDetailPage({
           </>
         }
         description={<p>{cls.description}</p>}
-      >
-        <ul className="flex flex-wrap gap-2">
-          <li className="chip border" style={{ color: cls.color, borderColor: `${cls.color}55`, background: `${cls.color}14` }}>{meta.role}</li>
-          <li className="chip">Ana stat: {cls.primaryStat}</li>
-          <li className="chip">Human: {cls.masterTitle.human}</li>
-          <li className="chip">Karus: {cls.masterTitle.karus}</li>
-        </ul>
-      </PageHero>
+      />
 
       <ArticleLayout
         aside={
           <>
             <SideCard title="Bu sayfada">
               <TableOfContents items={toc} />
-            </SideCard>
-            <SideCard title="Hızlı Bilgi">
-              <FactList
-                facts={[
-                  { label: 'Birincil Stat', value: cls.primaryStat },
-                  { label: 'Master (Human)', value: cls.masterTitle.human },
-                  { label: 'Master (Karus)', value: cls.masterTitle.karus },
-                  { label: 'Master NPC', value: <span className="font-normal text-fg-2">{cls.masterNPC}</span> },
-                ]}
-              />
-            </SideCard>
-            <SideCard title="Irklar">
-              <ul className="flex flex-wrap gap-1.5">
-                {cls.races.map((r) => <li key={r} className="chip">{r}</li>)}
-              </ul>
             </SideCard>
             <SideCard title="Diğer Rehberler">
               <RelatedLinks
@@ -133,7 +110,7 @@ export default async function RehberDetailPage({
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
               { label: 'Birincil Stat', value: cls.primaryStat },
-              { label: 'Master NPC', value: cls.masterNPC.split(' — ')[0] },
+              { label: 'Master NPC', value: cls.masterNPC },
               { label: 'Human Unvanı', value: cls.masterTitle.human },
               { label: 'Karus Unvanı', value: cls.masterTitle.karus },
             ].map((f) => (

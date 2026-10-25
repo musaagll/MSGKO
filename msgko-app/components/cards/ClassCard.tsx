@@ -42,21 +42,8 @@ export function ClassCard({ cls, as: Heading = 'h3', variant = 'portrait', sizes
             {meta.role}
           </span>
           <Heading lang={nameLang} className="mt-2 font-display text-2xl font-bold text-fg">{cls.name}</Heading>
-          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-fg-3">{cls.description}</p>
-          <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-            <div className="col-span-2">
-              <dt className="text-xs uppercase tracking-[0.12em] text-fg-4">Ana stat</dt>
-              <dd className="mt-0.5 font-semibold text-fg-2">{cls.primaryStat}</dd>
-            </div>
-            <div>
-              <dt className="text-xs uppercase tracking-[0.12em] text-fg-4">Human</dt>
-              <dd className="mt-0.5 font-semibold text-fg-2">{cls.masterTitle.human}</dd>
-            </div>
-            <div>
-              <dt className="text-xs uppercase tracking-[0.12em] text-fg-4">Karus</dt>
-              <dd className="mt-0.5 font-semibold text-fg-2">{cls.masterTitle.karus}</dd>
-            </div>
-          </dl>
+          {/* Stat ve Master unvanları sayfadaki karşılaştırma tablosunda */}
+          <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-fg-3">{cls.description}</p>
           <span className="mt-auto inline-flex items-center gap-2 pt-6 text-sm font-semibold text-fg transition-colors group-hover:text-amethyst-200">
             Rehberi Oku
             <ArrowRight size={16} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1" />

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { IletisimPage } from './iletisim-page'
-import { PageHero } from '@/components/ui/PageHero'
 import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
@@ -12,16 +11,14 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <>
-      <PageHero
-        breadcrumbs={[{ label: 'Ana Sayfa', href: '/' }, { label: 'İletişim', href: '/iletisim' }]}
-        eyebrow="Bize Ulaş"
-        title="İletişim"
-        description={<p>Soru, öneri ve iş birlikleri için buradayız.</p>}
-      />
-      <div className="container-site py-12 sm:py-16">
+    <div className="container-site py-16 sm:py-24">
+      <div className="text-center">
+        <h1 className="display-md">İletişim</h1>
+        <p className="mt-4 text-fg-3">Soru, öneri ve iş birlikleri için yazabilirsin.</p>
+      </div>
+      <div className="mt-10">
         <IletisimPage />
       </div>
-    </>
+    </div>
   )
 }

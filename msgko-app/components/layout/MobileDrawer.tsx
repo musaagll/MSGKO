@@ -74,7 +74,7 @@ export function MobileDrawer({ open, onClose, onSearch }: Props) {
             className="mb-5 flex min-h-12 w-full items-center gap-3 rounded-xl border border-white/8 bg-white/3 px-4 text-left text-fg-3"
           >
             <Search size={18} aria-hidden="true" />
-            Rehber, boss, harita ara…
+            Rehber, video ya da sayfa ara…
           </button>
 
           <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-[0.16em] text-fg-4">Sınıf Rehberleri</p>

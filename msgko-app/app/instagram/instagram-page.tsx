@@ -29,6 +29,8 @@ export function InstagramPage({ reelIds }: { reelIds: string[] }) {
                 className="h-full w-full border-0"
               />
             </div>
+            {/* Gömmenin alt kenarından taşan açık şeridi örter */}
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-2 bg-black" />
             {/* Tıklama katmanı önizlemenin üstünde */}
             <button
               type="button"
