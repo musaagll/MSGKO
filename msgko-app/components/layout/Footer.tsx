@@ -37,8 +37,7 @@ export function Footer() {
         <div className="max-w-sm">
           <Logo />
           <p className="mt-5 text-[0.9375rem] leading-relaxed text-fg-3">
-            Knight Online için Türkçe rehber ve eğitim platformu: sınıf rehberleri, boss ve harita veritabanı,
-            eğitim videoları.
+            Knight Online için Türkçe rehber ve eğitim platformu: sınıf rehberleri, eğitim videoları ve duvar kağıtları.
           </p>
           <div className="mt-6 flex gap-2">
             {[
